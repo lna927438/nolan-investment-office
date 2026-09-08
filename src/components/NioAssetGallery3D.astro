@@ -1,0 +1,530 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+
+<div class="nio-asset-layer" data-nio-asset-layer data-base={base} aria-hidden="true">
+  <canvas class="nio-asset-canvas" data-nio-asset-canvas></canvas>
+  <div class="nio-asset-hotspot" data-nio-asset-hotspot hidden>
+    <span data-nio-hotspot-index>01</span>
+    <strong data-nio-hotspot-title>System detail</strong>
+    <small data-nio-hotspot-copy>Interactive model point</small>
+  </div>
+</div>
+
+<div class="nio-asset-controls" data-nio-asset-controls>
+  <div class="nio-asset-readout">
+    <span>Self-hosted GLTF · CC0</span>
+    <strong data-nio-asset-label>TECHNOLOGY / CLASSIC LAPTOP</strong>
+    <small data-nio-asset-state>Loading asset</small>
+  </div>
+  <div class="nio-asset-actions">
+    <button type="button" data-nio-asset-material>Material 01</button>
+    <button type="button" data-nio-asset-reset>Reset view</button>
+  </div>
+  <span class="nio-asset-hint">Drag model · click hotspot · M material · Esc reset · scroll fly-through</span>
+</div>
+
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+
+  const layer = document.querySelector('[data-nio-asset-layer]');
+  const canvas = document.querySelector('[data-nio-asset-canvas]');
+  const controls = document.querySelector('[data-nio-asset-controls]');
+
+  if (layer instanceof HTMLElement && canvas instanceof HTMLCanvasElement && controls instanceof HTMLElement) {
+    const base = layer.dataset.base || '/';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    const mobile = coarse || window.innerWidth < 760;
+
+    const labelEl = controls.querySelector('[data-nio-asset-label]');
+    const stateEl = controls.querySelector('[data-nio-asset-state]');
+    const materialButton = controls.querySelector('[data-nio-asset-material]');
+    const resetButton = controls.querySelector('[data-nio-asset-reset]');
+    const hotspotEl = layer.querySelector('[data-nio-asset-hotspot]');
+    const hotspotIndexEl = hotspotEl?.querySelector('[data-nio-hotspot-index]');
+    const hotspotTitleEl = hotspotEl?.querySelector('[data-nio-hotspot-title]');
+    const hotspotCopyEl = hotspotEl?.querySelector('[data-nio-hotspot-copy]');
+
+    const configs = [
+      {
+        label: 'TECHNOLOGY / CLASSIC LAPTOP',
+        url: `${base}models/classic_laptop/classic_laptop_1k.gltf`,
+        accent: 0x7ee8ff,
+        rotation: [0.12, -0.55, 0],
+        hotspots: [
+          { p: [-0.72, 0.42, 0.58], title: 'Display system', copy: 'Interface, optics and information layer.' },
+          { p: [0.76, 0.22, 0.56], title: 'Compute surface', copy: 'Hardware, input and operating workflow.' },
+          { p: [0, -0.62, 0.48], title: 'System base', copy: 'Integrated physical computing platform.' }
+        ]
+      },
+      {
+        label: 'HEALTHCARE / LAB INSTRUMENT',
+        url: `${base}models/bunsen_burner/bunsen_burner_1k.gltf`,
+        accent: 0x89ffd8,
+        rotation: [0.02, 0.52, 0],
+        hotspots: [
+          { p: [0, 0.88, 0.18], title: 'Controlled output', copy: 'A precise laboratory working point.' },
+          { p: [0.16, 0.05, 0.5], title: 'Instrument body', copy: 'Durable physical equipment and repeatable use.' },
+          { p: [0, -0.88, 0.14], title: 'Stable base', copy: 'Reliability and practical deployment.' }
+        ]
+      },
+      {
+        label: 'ENERGY / POWER SYSTEM',
+        url: `${base}models/power_box_01/power_box_01_1k.gltf`,
+        accent: 0xe6c98b,
+        rotation: [0.04, -0.48, 0],
+        hotspots: [
+          { p: [0, 0.82, 0.5], title: 'Distribution layer', copy: 'Power routing and system control.' },
+          { p: [-0.68, 0.08, 0.55], title: 'Switching system', copy: 'Operational infrastructure and reliability.' },
+          { p: [0.58, -0.66, 0.5], title: 'Service interface', copy: 'Maintenance, access and physical resilience.' }
+        ]
+      },
+      {
+        label: 'CONSUMER / MATERIAL OBJECT',
+        url: `${base}models/jug_01/jug_01_1k.gltf`,
+        accent: 0xc58bff,
+        rotation: [0.02, 0.62, 0],
+        hotspots: [
+          { p: [0.22, 0.86, 0.18], title: 'Form language', copy: 'A recognizable product silhouette.' },
+          { p: [0.64, 0.08, 0.22], title: 'Material detail', copy: 'Surface, finish and tactile differentiation.' },
+          { p: [0, -0.82, 0.18], title: 'Product base', copy: 'Everyday utility reinforced by design.' }
+        ]
+      }
+    ];
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 60);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !mobile, powerPreference: 'high-performance' });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.1 : 1.55));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+
+    const stage = new THREE.Group();
+    stage.position.set(mobile ? 0.15 : 2.35, mobile ? -0.72 : 0.02, -0.35);
+    scene.add(stage);
+
+    scene.add(new THREE.HemisphereLight(0xc7ddff, 0x05070d, 1.05));
+    const key = new THREE.DirectionalLight(0xffffff, 2.6);
+    key.position.set(4.5, 5.5, 7);
+    scene.add(key);
+    const rim = new THREE.PointLight(0x7ee8ff, 26, 24, 1.7);
+    rim.position.set(-4.4, 2.4, 5.2);
+    scene.add(rim);
+    const warm = new THREE.PointLight(0xe6c98b, 14, 20, 1.7);
+    warm.position.set(3.8, -3.3, 3.2);
+    scene.add(warm);
+
+    const gltfLoader = new GLTFLoader();
+    const loaded = new Map();
+    let activeIndex = 0;
+    let activeRoot = null;
+    let activeHotspots = [];
+    let selectedHotspot = null;
+    let materialMode = 0;
+    let scrollProgress = 0;
+    let dragging = false;
+    let moved = false;
+    let lastX = 0;
+    let lastY = 0;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let frame = 0;
+    let running = true;
+    let lastTime = performance.now();
+
+    const pointer = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
+    const tempWorld = new THREE.Vector3();
+    const tempProjected = new THREE.Vector3();
+
+    const cameraCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(mobile ? 0 : -0.6, 0.2, mobile ? 10.2 : 8.4),
+      new THREE.Vector3(mobile ? 0.2 : 1.45, 0.85, mobile ? 9.5 : 6.9),
+      new THREE.Vector3(mobile ? -0.2 : 2.6, -0.35, mobile ? 9.2 : 5.8),
+      new THREE.Vector3(mobile ? 0 : 0.8, 0.12, mobile ? 9.8 : 7.0)
+    ]);
+    const cameraTarget = cameraCurve.getPoint(0);
+    const lookTarget = stage.position.clone();
+    camera.position.copy(cameraTarget);
+    camera.lookAt(lookTarget);
+
+    const normalizeObject = (object) => {
+      object.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(object);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const target = mobile ? 2.55 : 3.35;
+      const scale = target / maxDim;
+      object.scale.setScalar(scale);
+      object.position.sub(center.multiplyScalar(scale));
+      object.updateMatrixWorld(true);
+      return object;
+    };
+
+    const prepareMaterials = (object, accent) => {
+      object.traverse((node) => {
+        if (!node.isMesh) return;
+        node.castShadow = false;
+        node.receiveShadow = false;
+        const original = Array.isArray(node.material) ? node.material.map((m) => m.clone()) : node.material.clone();
+        node.userData.nioOriginalMaterial = original;
+        const makeTech = () => new THREE.MeshPhysicalMaterial({
+          color: 0x111a24,
+          emissive: new THREE.Color(accent),
+          emissiveIntensity: 0.12,
+          metalness: 0.78,
+          roughness: 0.24,
+          clearcoat: 0.78,
+          clearcoatRoughness: 0.14,
+          envMapIntensity: 1.4
+        });
+        const makeGlass = () => new THREE.MeshPhysicalMaterial({
+          color: 0xbfdcff,
+          emissive: new THREE.Color(accent),
+          emissiveIntensity: 0.04,
+          metalness: 0.05,
+          roughness: 0.08,
+          transmission: 0.68,
+          thickness: 0.34,
+          ior: 1.4,
+          transparent: true,
+          opacity: 0.76,
+          clearcoat: 1,
+          clearcoatRoughness: 0.04,
+          envMapIntensity: 1.8
+        });
+        node.userData.nioTechMaterial = Array.isArray(node.material) ? node.material.map(() => makeTech()) : makeTech();
+        node.userData.nioGlassMaterial = Array.isArray(node.material) ? node.material.map(() => makeGlass()) : makeGlass();
+      });
+    };
+
+    const applyMaterialMode = () => {
+      if (!activeRoot) return;
+      activeRoot.traverse((node) => {
+        if (!node.isMesh) return;
+        if (materialMode === 0) node.material = node.userData.nioOriginalMaterial;
+        if (materialMode === 1) node.material = node.userData.nioTechMaterial;
+        if (materialMode === 2) node.material = node.userData.nioGlassMaterial;
+      });
+      if (materialButton) materialButton.textContent = `Material 0${materialMode + 1}`;
+    };
+
+    const createHotspots = (root, config) => {
+      const hotspots = [];
+      config.hotspots.forEach((item, index) => {
+        const marker = new THREE.Mesh(
+          new THREE.SphereGeometry(mobile ? 0.065 : 0.075, 20, 20),
+          new THREE.MeshStandardMaterial({
+            color: 0xeef8ff,
+            emissive: new THREE.Color(config.accent),
+            emissiveIntensity: 2.6,
+            roughness: 0.15,
+            metalness: 0.25,
+            depthTest: false
+          })
+        );
+        marker.position.set(...item.p);
+        marker.renderOrder = 9;
+        marker.userData.nioHotspot = { ...item, index };
+        root.add(marker);
+        hotspots.push(marker);
+      });
+      return hotspots;
+    };
+
+    const loadAsset = async (index) => {
+      if (loaded.has(index)) return loaded.get(index);
+      const config = configs[index];
+      if (stateEl) stateEl.textContent = 'Loading model';
+      const gltf = await gltfLoader.loadAsync(config.url);
+      const root = new THREE.Group();
+      root.visible = false;
+      root.rotation.set(...config.rotation);
+      const object = normalizeObject(gltf.scene);
+      prepareMaterials(object, config.accent);
+      root.add(object);
+      const hotspots = createHotspots(root, config);
+      stage.add(root);
+      const record = { root, object, hotspots, config };
+      loaded.set(index, record);
+      return record;
+    };
+
+    const showHotspot = (marker) => {
+      selectedHotspot = marker;
+      const data = marker.userData.nioHotspot;
+      if (hotspotIndexEl) hotspotIndexEl.textContent = String(data.index + 1).padStart(2, '0');
+      if (hotspotTitleEl) hotspotTitleEl.textContent = data.title;
+      if (hotspotCopyEl) hotspotCopyEl.textContent = data.copy;
+      if (hotspotEl) hotspotEl.hidden = false;
+      marker.getWorldPosition(tempWorld);
+      cameraTarget.copy(tempWorld).add(new THREE.Vector3(mobile ? 0.4 : 1.15, 0.45, mobile ? 4.6 : 3.25));
+      lookTarget.copy(tempWorld);
+    };
+
+    const clearHotspot = () => {
+      selectedHotspot = null;
+      if (hotspotEl) hotspotEl.hidden = true;
+    };
+
+    const activate = async (index) => {
+      activeIndex = Math.max(0, Math.min(configs.length - 1, index));
+      clearHotspot();
+      const record = await loadAsset(activeIndex);
+      loaded.forEach((item, i) => { item.root.visible = i === activeIndex; });
+      activeRoot = record.root;
+      activeHotspots = record.hotspots;
+      rim.color.set(record.config.accent);
+      materialMode = 0;
+      applyMaterialMode();
+      if (labelEl) labelEl.textContent = record.config.label;
+      if (stateEl) stateEl.textContent = mobile ? 'Live model · light mode' : 'HDRI environment · live model';
+      resetView(false);
+      window.dispatchEvent(new CustomEvent('nio:assetmodelchange', { detail: { index: activeIndex, label: record.config.label } }));
+    };
+
+    const resetView = (clear = true) => {
+      if (clear) clearHotspot();
+      const p = cameraCurve.getPoint(scrollProgress);
+      cameraTarget.copy(p);
+      lookTarget.copy(stage.position);
+      if (activeRoot) {
+        activeRoot.rotation.set(...configs[activeIndex].rotation);
+      }
+    };
+
+    const updatePointer = (event) => {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -((event.clientY / window.innerHeight) * 2 - 1);
+    };
+
+    const hit = () => {
+      if (!activeRoot) return null;
+      raycaster.setFromCamera(pointer, camera);
+      const hotspotHits = raycaster.intersectObjects(activeHotspots, false);
+      if (hotspotHits.length) return { type: 'hotspot', hit: hotspotHits[0] };
+      const modelHits = raycaster.intersectObject(activeRoot, true).filter((h) => h.object.isMesh && !h.object.userData.nioHotspot);
+      if (modelHits.length) return { type: 'model', hit: modelHits[0] };
+      return null;
+    };
+
+    const onPointerDown = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('a,button,summary,input,textarea,select,label')) return;
+      updatePointer(event);
+      const picked = hit();
+      if (!picked || picked.type !== 'model' || mobile) return;
+      dragging = true;
+      moved = false;
+      dragStartX = lastX = event.clientX;
+      dragStartY = lastY = event.clientY;
+      controls.classList.add('is-dragging');
+    };
+
+    const onPointerMove = (event) => {
+      updatePointer(event);
+      if (!dragging || !activeRoot) return;
+      const dx = event.clientX - lastX;
+      const dy = event.clientY - lastY;
+      if (Math.abs(event.clientX - dragStartX) + Math.abs(event.clientY - dragStartY) > 4) moved = true;
+      activeRoot.rotation.y += dx * 0.007;
+      activeRoot.rotation.x += dy * 0.005;
+      activeRoot.rotation.x = THREE.MathUtils.clamp(activeRoot.rotation.x, -1.15, 1.15);
+      lastX = event.clientX;
+      lastY = event.clientY;
+    };
+
+    const onPointerUp = (event) => {
+      const wasDragging = dragging;
+      dragging = false;
+      controls.classList.remove('is-dragging');
+      if (wasDragging && moved) return;
+      updatePointer(event);
+      const picked = hit();
+      if (picked?.type === 'hotspot') {
+        showHotspot(picked.hit.object);
+      } else if (picked?.type === 'model') {
+        clearHotspot();
+        cameraTarget.copy(stage.position).add(new THREE.Vector3(mobile ? 0 : 0.8, 0.15, mobile ? 6.2 : 4.8));
+        lookTarget.copy(stage.position);
+      }
+    };
+
+    const onScroll = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      scrollProgress = THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
+      if (!selectedHotspot) {
+        cameraTarget.copy(cameraCurve.getPoint(scrollProgress));
+        lookTarget.copy(stage.position).add(new THREE.Vector3(
+          Math.sin(scrollProgress * Math.PI) * 0.3,
+          (0.5 - scrollProgress) * 0.24,
+          -scrollProgress * 0.32
+        ));
+      }
+    };
+
+    window.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('nio:focuschange', (event) => activate(Number(event.detail?.index || 0)));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') resetView();
+      if (event.key.toLowerCase() === 'm' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) {
+        materialMode = (materialMode + 1) % 3;
+        applyMaterialMode();
+      }
+    });
+
+    materialButton?.addEventListener('click', () => {
+      materialMode = (materialMode + 1) % 3;
+      applyMaterialMode();
+    });
+    resetButton?.addEventListener('click', () => resetView());
+
+    const resize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.1 : 1.55));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+    };
+    window.addEventListener('resize', resize);
+
+    if (!mobile) {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      pmrem.compileEquirectangularShader();
+      new RGBELoader().load(`${base}hdri/machine_shop_03_1k.hdr`, (texture) => {
+        const env = pmrem.fromEquirectangular(texture).texture;
+        scene.environment = env;
+        texture.dispose();
+        pmrem.dispose();
+        if (stateEl) stateEl.textContent = 'HDRI environment · live model';
+      }, undefined, () => {
+        pmrem.dispose();
+        if (stateEl) stateEl.textContent = 'Live model · studio lights';
+      });
+    }
+
+    const updateHotspotOverlay = () => {
+      if (!selectedHotspot || !hotspotEl || hotspotEl.hidden) return;
+      selectedHotspot.getWorldPosition(tempWorld);
+      tempProjected.copy(tempWorld).project(camera);
+      const x = (tempProjected.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (-tempProjected.y * 0.5 + 0.5) * window.innerHeight;
+      hotspotEl.style.transform = `translate3d(${Math.round(x + 16)}px,${Math.round(y - 18)}px,0)`;
+    };
+
+    const animate = (now) => {
+      if (!running) return;
+      frame = requestAnimationFrame(animate);
+      const dt = Math.min(1 / 30, Math.max(1 / 120, (now - lastTime) / 1000));
+      lastTime = now;
+      camera.position.lerp(cameraTarget, selectedHotspot ? 0.085 : 0.055);
+      camera.lookAt(lookTarget);
+      if (activeRoot && !dragging && !selectedHotspot) activeRoot.rotation.y += dt * 0.065;
+      key.position.x = 4.5 + pointer.x * 1.2;
+      key.position.y = 5.5 + pointer.y * 0.8;
+      updateHotspotOverlay();
+      renderer.render(scene, camera);
+    };
+
+    onScroll();
+    activate(0).then(() => {
+      if (!mobile) {
+        const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1400));
+        idle(() => {
+          configs.forEach((_, index) => { if (index !== 0) loadAsset(index).catch(() => {}); });
+        });
+      }
+    }).catch(() => {
+      if (stateEl) stateEl.textContent = 'Asset unavailable';
+    });
+
+    if (reduceMotion) {
+      setTimeout(() => renderer.render(scene, camera), 650);
+    } else {
+      frame = requestAnimationFrame(animate);
+    }
+
+    const cleanup = () => {
+      running = false;
+      cancelAnimationFrame(frame);
+      window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', resize);
+      renderer.dispose();
+    };
+    window.addEventListener('pagehide', cleanup, { once: true });
+  }
+</script>
+
+<style is:global>
+  .nio-asset-layer{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .nio-asset-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+  .nio-asset-controls{
+    position:fixed;
+    left:22px;
+    bottom:19px;
+    z-index:9;
+    width:min(470px,calc(100vw - 44px));
+    display:grid;
+    grid-template-columns:1fr auto;
+    grid-template-areas:"readout actions" "hint hint";
+    gap:8px 18px;
+    padding:12px 13px 10px;
+    border:1px solid rgba(126,232,255,.16);
+    background:rgba(3,7,14,.6);
+    backdrop-filter:blur(16px) saturate(130%);
+    -webkit-backdrop-filter:blur(16px) saturate(130%);
+    color:rgba(230,240,253,.86);
+    box-shadow:0 22px 64px rgba(0,0,0,.2);
+  }
+  .nio-asset-controls.is-dragging{border-color:rgba(157,140,255,.48);transform:translateY(-2px)}
+  .nio-asset-readout{grid-area:readout;display:grid;grid-template-columns:auto auto;gap:5px 12px;align-items:baseline;min-width:0}
+  .nio-asset-readout>span{grid-column:1/-1;color:rgba(157,195,230,.48);font:500 7px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+  .nio-asset-readout strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f1f7ff;font:500 10px/1.15 var(--sans);letter-spacing:.11em;text-transform:uppercase}
+  .nio-asset-readout small{justify-self:end;color:rgba(151,187,221,.46);font:500 7px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase}
+  .nio-asset-actions{grid-area:actions;display:flex;gap:6px}
+  .nio-asset-actions button{min-height:32px;padding:0 10px;border:1px solid rgba(162,206,255,.14);background:rgba(11,17,29,.58);color:rgba(225,237,250,.75);font:500 7px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+  .nio-asset-actions button:hover{border-color:rgba(126,232,255,.4);background:rgba(18,32,50,.8);color:#fff}
+  .nio-asset-hint{grid-area:hint;color:rgba(154,187,219,.4);font:500 6.5px/1.25 var(--sans);letter-spacing:.1em;text-transform:uppercase}
+  .nio-asset-hotspot{
+    position:absolute;
+    left:0;
+    top:0;
+    z-index:4;
+    width:min(245px,40vw);
+    padding:11px 12px;
+    border-left:2px solid rgba(126,232,255,.72);
+    background:rgba(4,8,15,.72);
+    backdrop-filter:blur(12px);
+    color:#f0f7ff;
+    pointer-events:none;
+    transform:translate3d(-9999px,-9999px,0);
+  }
+  .nio-asset-hotspot span{display:block;margin-bottom:5px;color:#7ee8ff;font:600 7px/1 var(--sans);letter-spacing:.16em}
+  .nio-asset-hotspot strong{display:block;font:500 10px/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+  .nio-asset-hotspot small{display:block;margin-top:6px;color:rgba(194,215,237,.6);font:400 9px/1.45 var(--sans)}
+  @media(max-width:760px){
+    .nio-asset-controls{left:12px;bottom:12px;width:calc(100vw - 24px);padding:9px 10px}
+    .nio-asset-hint{display:none}
+    .nio-asset-actions button{min-height:30px;padding:0 7px}
+    .nio-asset-hotspot{width:min(220px,65vw)}
+  }
+  @media(prefers-reduced-motion:reduce){.nio-asset-controls{transition:none!important}}
+</style>
