@@ -1,0 +1,201 @@
+---
+interface FocusItem {
+  number: string;
+  slug: string;
+  title: string;
+  code: string;
+  description: string;
+  attention: string;
+  image: string;
+}
+
+interface Props {
+  items: FocusItem[];
+}
+
+const { items } = Astro.props;
+const first = items[0];
+---
+
+<div class="focus-gallery" data-focus-gallery>
+  <div class="focus-gallery-grid">
+    <div class="focus-gallery-copy" aria-live="polite">
+      <div class="focus-gallery-kicker">
+        <span data-focus-count>{first.number} / {String(items.length).padStart(2, "0")}</span>
+        <span data-focus-code>{first.code}</span>
+      </div>
+
+      <h2 data-focus-title>{first.title}</h2>
+      <p class="focus-gallery-description" data-focus-description>{first.description}</p>
+
+      <div class="focus-gallery-attention">
+        <span>Areas of attention</span>
+        <p data-focus-attention>{first.attention}</p>
+      </div>
+    </div>
+
+    <div class="focus-gallery-visual" aria-live="off">
+      <div class="focus-gallery-images">
+        {items.map((item, index) => (
+          <img
+            class:list={["focus-gallery-image", index === 0 && "is-active"]}
+            src={item.image}
+            alt={`${item.title} visual study`}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding="async"
+            data-focus-image={index}
+          />
+        ))}
+      </div>
+
+      <div class="focus-gallery-transition-cards" aria-hidden="true">
+        <span class="focus-transition-card focus-transition-card-a"><img src={items[1]?.image ?? first.image} alt="" /></span>
+        <span class="focus-transition-card focus-transition-card-b"><img src={items[2]?.image ?? first.image} alt="" /></span>
+        <span class="focus-transition-card focus-transition-card-c"><img src={items[3]?.image ?? first.image} alt="" /></span>
+      </div>
+
+      <div class="focus-gallery-visual-meta">
+        <span>Research area</span>
+        <strong data-focus-visual-title>{first.title}</strong>
+      </div>
+      <span class="focus-gallery-mark" aria-hidden="true">NIO / 01</span>
+    </div>
+  </div>
+
+  <div class="focus-gallery-tabs" role="tablist" aria-label="Investment focus areas">
+    {items.map((item, index) => (
+      <button
+        type="button"
+        role="tab"
+        class="focus-gallery-tab"
+        aria-selected={index === 0 ? "true" : "false"}
+        tabindex={index === 0 ? 0 : -1}
+        data-focus-tab={index}
+        data-focus-number={item.number}
+        data-focus-slug={item.slug}
+        data-focus-title={item.title}
+        data-focus-code={item.code}
+        data-focus-description={item.description}
+        data-focus-attention={item.attention}
+      >
+        <span>{item.number}</span>
+        <strong>{item.title}</strong>
+        <i aria-hidden="true">↗</i>
+      </button>
+    ))}
+  </div>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-focus-gallery]').forEach((gallery) => {
+    const tabs = [...gallery.querySelectorAll('[data-focus-tab]')];
+    const images = [...gallery.querySelectorAll('[data-focus-image]')];
+    const cards = [...gallery.querySelectorAll('.focus-transition-card')];
+    const count = gallery.querySelector('[data-focus-count]');
+    const code = gallery.querySelector('[data-focus-code]');
+    const title = gallery.querySelector('[data-focus-title]');
+    const description = gallery.querySelector('[data-focus-description]');
+    const attention = gallery.querySelector('[data-focus-attention]');
+    const visualTitle = gallery.querySelector('[data-focus-visual-title]');
+    const copy = gallery.querySelector('.focus-gallery-copy');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let switching = false;
+
+    const updateText = (tab, index) => {
+      if (count) count.textContent = `${tab.dataset.focusNumber} / ${String(tabs.length).padStart(2, '0')}`;
+      if (code) code.textContent = tab.dataset.focusCode || '';
+      if (title) title.textContent = tab.dataset.focusTitle || '';
+      if (description) description.textContent = tab.dataset.focusDescription || '';
+      if (attention) attention.textContent = tab.dataset.focusAttention || '';
+      if (visualTitle) visualTitle.textContent = tab.dataset.focusTitle || '';
+      tabs.forEach((item, itemIndex) => {
+        item.setAttribute('aria-selected', itemIndex === index ? 'true' : 'false');
+        item.tabIndex = itemIndex === index ? 0 : -1;
+      });
+    };
+
+    const animateCards = (nextImage) => {
+      cards.forEach((card, cardIndex) => {
+        const image = card.querySelector('img');
+        if (image) image.src = nextImage.src;
+        if (reduceMotion) return;
+        const y = cardIndex === 1 ? -90 : 90;
+        const x = cardIndex === 0 ? -28 : cardIndex === 2 ? 28 : 0;
+        card.animate([
+          { opacity: 0, transform: `translate(${x}px, ${y}px) scale(.78) rotate(${cardIndex === 0 ? -4 : cardIndex === 2 ? 4 : 0}deg)` },
+          { opacity: .92, transform: `translate(0, 0) scale(1) rotate(${cardIndex === 0 ? -1.5 : cardIndex === 2 ? 1.5 : 0}deg)`, offset: .55 },
+          { opacity: 0, transform: 'translate(0, -8px) scale(1.04)' }
+        ], { duration: 620, delay: cardIndex * 55, easing: 'cubic-bezier(.25,1,.5,1)', fill: 'both' });
+      });
+    };
+
+    const activate = (index, updateHash = true) => {
+      if (index === current || switching || !tabs[index] || !images[index]) return;
+      switching = true;
+      const outgoing = images[current];
+      const incoming = images[index];
+      const tab = tabs[index];
+
+      updateText(tab, index);
+      if (updateHash && tab.dataset.focusSlug) history.replaceState(null, '', `#${tab.dataset.focusSlug}`);
+
+      if (reduceMotion) {
+        images.forEach((image, imageIndex) => image.classList.toggle('is-active', imageIndex === index));
+        current = index;
+        switching = false;
+        return;
+      }
+
+      animateCards(incoming);
+      copy?.animate([
+        { opacity: .46, transform: 'translateY(8px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ], { duration: 360, easing: 'cubic-bezier(.25,1,.5,1)' });
+
+      incoming.classList.add('is-active');
+      incoming.animate([
+        { opacity: .12, transform: 'scale(1.065)' },
+        { opacity: 1, transform: 'scale(1)' }
+      ], { duration: 650, easing: 'cubic-bezier(.25,1,.5,1)', fill: 'both' });
+
+      outgoing.animate([
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(1.035)' }
+      ], { duration: 520, easing: 'cubic-bezier(.45,0,.55,1)', fill: 'both' }).finished.finally(() => {
+        outgoing.classList.remove('is-active');
+        outgoing.style.opacity = '';
+        outgoing.style.transform = '';
+        incoming.style.opacity = '';
+        incoming.style.transform = '';
+        current = index;
+        switching = false;
+      });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activate(index));
+      tab.addEventListener('keydown', (event) => {
+        if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        let next = index;
+        if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+        if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = tabs.length - 1;
+        tabs[next].focus();
+        activate(next);
+      });
+    });
+
+    const fromHash = () => {
+      const slug = window.location.hash.replace('#', '');
+      if (!slug) return;
+      const index = tabs.findIndex((tab) => tab.dataset.focusSlug === slug);
+      if (index >= 0 && index !== current) activate(index, false);
+    };
+
+    fromHash();
+    window.addEventListener('hashchange', fromHash);
+  });
+</script>
