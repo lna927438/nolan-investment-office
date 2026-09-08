@@ -3,7 +3,9 @@ import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
 import PageSignalDeck from "../components/PageSignalDeck.astro";
 import OfficeProcessNavigator from "../components/OfficeProcessNavigator.astro";
+import OfficeSupportNetwork from "../components/OfficeSupportNetwork.astro";
 import "../styles/process-system.css";
+import "../styles/office-support-network.css";
 
 const support = [
   ["01", "Investment research", "Sector work, company review, market context and diligence support."],
@@ -76,15 +78,7 @@ const officeSignals = [
         <div class="section-number">02 / Operating model</div>
         <h2>Small by intention.</h2>
       </div>
-      <div class="support-grid">
-        {support.map(([n, title, text]) => (
-          <article class="support-item" data-module>
-            <small class="module-index">{n}</small>
-            <h3>{title}</h3>
-            <p>{text}</p>
-          </article>
-        ))}
-      </div>
+      <OfficeSupportNetwork items={support} />
     </div>
   </section>
 
