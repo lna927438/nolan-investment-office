@@ -1,0 +1,128 @@
+/* V2.2: compact mobile density without removing visual information. */
+
+@media(max-width:620px){
+  body:not(.home-shell) .page-hero{
+    min-height:auto;
+    padding:48px 0 36px;
+  }
+
+  body:not(.home-shell) .page-hero h1{
+    font-size:clamp(42px,13vw,60px);
+  }
+
+  body:not(.home-shell) .page-intro{
+    margin-top:30px;
+    padding-top:18px;
+    gap:0;
+  }
+
+  body:not(.home-shell) .page-intro p{
+    font-size:11.5px;
+    line-height:1.7;
+  }
+
+  body:not(.home-shell) .page-intro p+p{
+    margin-top:14px;
+    padding-top:14px;
+  }
+
+  body:not(.home-shell) .page-signal-deck{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    margin-top:0;
+    margin-bottom:20px;
+  }
+
+  body:not(.home-shell) .signal-card{
+    min-height:82px;
+    padding:12px 9px 10px;
+  }
+
+  body:not(.home-shell) .signal-card+.signal-card{
+    border-top:0;
+    border-left:1px solid rgba(27,30,26,.13);
+  }
+
+  body:not(.home-shell) .signal-card-top{
+    gap:5px;
+    font-size:6.2px;
+    letter-spacing:.10em;
+  }
+
+  body:not(.home-shell) .signal-index{
+    display:none;
+  }
+
+  body:not(.home-shell) .signal-label{
+    white-space:normal;
+  }
+
+  body:not(.home-shell) .signal-card-body{
+    margin-top:12px;
+    padding-right:0;
+    gap:3px;
+  }
+
+  body:not(.home-shell) .signal-card-body strong{
+    font-size:16px;
+    line-height:1.05;
+  }
+
+  body:not(.home-shell) .signal-note,
+  body:not(.home-shell) .signal-graphic{
+    display:none;
+  }
+
+  body:not(.home-shell) .page-section{
+    padding:56px 0;
+  }
+
+  body:not(.home-shell) .section-head{
+    margin-bottom:34px;
+  }
+
+  body:not(.home-shell) .section-number{
+    font-size:8px;
+  }
+
+  body:not(.home-shell) .route-section{
+    padding:0;
+  }
+
+  body:not(.home-shell) .route-module{
+    min-height:116px;
+  }
+
+  body:not(.home-shell) footer{
+    padding-top:22px;
+    padding-bottom:28px;
+  }
+
+  body:not(.home-shell) .footer-inner{
+    gap:20px;
+  }
+
+  body:not(.home-shell) .footer-brand-panel{
+    padding:20px 0;
+  }
+
+  body:not(.home-shell) .footer-brand-lockup{
+    gap:13px;
+  }
+
+  body:not(.home-shell) .footer-brand-name strong{
+    font-size:15px;
+  }
+}
+
+@media(max-width:390px){
+  body:not(.home-shell) .signal-card{
+    padding-left:7px;
+    padding-right:7px;
+  }
+  body:not(.home-shell) .signal-card-body strong{
+    font-size:14.5px;
+  }
+  body:not(.home-shell) .signal-label{
+    font-size:5.8px;
+  }
+}
