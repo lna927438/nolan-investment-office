@@ -1,5 +1,6 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
+import NioModelLayer from "../components/NioModelLayer.astro";
 import "../styles/home.css";
 
 const base = import.meta.env.BASE_URL;
@@ -9,6 +10,8 @@ const base = import.meta.env.BASE_URL;
   showFooter={false}
   description="Nolan Investment Office is an independent investment office focused on technology, healthcare, energy, infrastructure and selected enduring businesses."
 >
+  <NioModelLayer />
+
   <section class="v3-home" aria-labelledby="home-title">
     <div class="v3-home-copy">
       <div class="v3-home-kicker">Independent Investment Office · California</div>
@@ -45,7 +48,7 @@ const base = import.meta.env.BASE_URL;
         fetchpriority="high"
       />
       <span class="v3-home-code">NIO / 00</span>
-      <figcaption>Structure · material · long-term view</figcaption>
+      <figcaption>Interactive 3D sculpture · drag · explode</figcaption>
     </figure>
   </section>
 </SiteLayout>
