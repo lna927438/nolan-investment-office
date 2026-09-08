@@ -10,6 +10,7 @@ import "../styles/page-progress.css";
 import "../styles/brand-system.css";
 import "../styles/mobile-density.css";
 import "../styles/refinement-motion.css";
+import "../styles/production-polish.css";
 
 interface Props {
   title?: string;
@@ -106,9 +107,9 @@ const pageCode = pageCodes[pageName];
               <span>California, United States</span>
             </div>
             <nav class="footer-route-map" aria-label="Footer navigation">
-              <a href={url("focus/")}>01 / Focus</a>
-              <a href={url("office/")}>02 / Office</a>
-              <a href={url("contact/")}>03 / Contact</a>
+              <a href={url("focus/")} aria-current={active === "focus" ? "page" : undefined}>01 / Focus</a>
+              <a href={url("office/")} aria-current={active === "office" ? "page" : undefined}>02 / Office</a>
+              <a href={url("contact/")} aria-current={active === "contact" ? "page" : undefined}>03 / Contact</a>
             </nav>
           </div>
 
@@ -129,26 +130,52 @@ const pageCode = pageCodes[pageName];
     )}
 
     <script is:inline>
-      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        document.querySelectorAll('[data-module]').forEach((module) => {
-          module.addEventListener('pointermove', (event) => {
-            const rect = module.getBoundingClientRect();
-            module.style.setProperty('--module-x', `${event.clientX - rect.left}px`);
-            module.style.setProperty('--module-y', `${event.clientY - rect.top}px`);
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      if (finePointer) {
+        let pointerFrame = 0;
+        let pointerModule;
+        let pointerX = 0;
+        let pointerY = 0;
+
+        document.addEventListener('pointermove', (event) => {
+          const target = event.target instanceof Element ? event.target.closest('[data-module]') : null;
+          if (!target) return;
+          pointerModule = target;
+          pointerX = event.clientX;
+          pointerY = event.clientY;
+          if (pointerFrame) return;
+          pointerFrame = requestAnimationFrame(() => {
+            pointerFrame = 0;
+            if (!pointerModule) return;
+            const rect = pointerModule.getBoundingClientRect();
+            pointerModule.style.setProperty('--module-x', `${pointerX - rect.left}px`);
+            pointerModule.style.setProperty('--module-y', `${pointerY - rect.top}px`);
           });
-        });
+        }, { passive: true });
       }
 
       const progressRail = document.querySelector('[data-page-progress]');
       if (progressRail) {
         const progressSection = progressRail.querySelector('[data-progress-section]');
         let sectionTimer;
+        let progressFrame = 0;
+        let activeSection;
+        let activeHead;
 
         const updateProgress = () => {
           const max = document.documentElement.scrollHeight - window.innerHeight;
           const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
           progressRail.style.setProperty('--page-progress', progress.toFixed(4));
           document.body.classList.toggle('has-scrolled', window.scrollY > 56);
+        };
+
+        const requestProgress = () => {
+          if (progressFrame) return;
+          progressFrame = requestAnimationFrame(() => {
+            progressFrame = 0;
+            updateProgress();
+          });
         };
 
         const sectionLabel = (section) => {
@@ -164,30 +191,38 @@ const pageCode = pageCodes[pageName];
         };
 
         const activateSection = (section) => {
+          if (activeSection === section) return;
+          activeSection = section;
           const label = sectionLabel(section);
           if (progressSection && progressSection.textContent !== label) {
             progressSection.textContent = label;
             progressRail.classList.remove('is-section-change');
             requestAnimationFrame(() => progressRail.classList.add('is-section-change'));
             clearTimeout(sectionTimer);
-            sectionTimer = setTimeout(() => progressRail.classList.remove('is-section-change'), 360);
+            sectionTimer = setTimeout(() => progressRail.classList.remove('is-section-change'), 320);
           }
-          document.querySelectorAll('.section-head.nio-section-active').forEach((head) => head.classList.remove('nio-section-active'));
-          section.querySelector('.section-head')?.classList.add('nio-section-active');
+
+          if (activeHead) activeHead.classList.remove('nio-section-active');
+          activeHead = section.querySelector('.section-head');
+          activeHead?.classList.add('nio-section-active');
         };
 
         const sections = [...document.querySelectorAll('main .page-hero, main .page-signal-deck, main .page-section, main .route-section')];
         if ('IntersectionObserver' in window && sections.length) {
           const observer = new IntersectionObserver((entries) => {
-            const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
             if (visible[0]) activateSection(visible[0].target);
-          }, { rootMargin: '-30% 0px -52% 0px', threshold: [0, .01, .1] });
+          }, { rootMargin: '-28% 0px -54% 0px', threshold: [0, .01, .08, .2] });
           sections.forEach((section) => observer.observe(section));
+          activateSection(sections[0]);
         }
 
         updateProgress();
-        window.addEventListener('scroll', updateProgress, { passive: true });
-        window.addEventListener('resize', updateProgress);
+        window.addEventListener('scroll', requestProgress, { passive: true });
+        window.addEventListener('resize', requestProgress);
+        window.addEventListener('pageshow', requestProgress);
       }
     </script>
   </body>
