@@ -1,0 +1,36 @@
+---
+import "../styles/global.css";
+
+const focus = [
+  ["01", "Technology", "AI, automation and software-led business models."],
+  ["02", "Healthcare", "Digital health, life sciences and medical technology."],
+  ["03", "Energy & Infrastructure", "Essential systems, energy and enabling infrastructure."],
+  ["04", "Selective Consumer", "Distinctive businesses where product, brand and technology intersect."]
+];
+
+const approach = [
+  ["01", "Long-term perspective", "We favor durable businesses and patient decision-making over short-term activity."],
+  ["02", "Selective capital", "We invest deliberately, with a focused review process and a high bar for conviction."],
+  ["03", "Direct relationships", "We value thoughtful, straightforward relationships with founders, operators and partners."]
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Nolan Investment Office</title>
+<meta name="description" content="Nolan Investment Office — independent investment across technology, healthcare, energy and enduring businesses." />
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="#top"><strong>NOLAN</strong><span>Investment Office</span></a><nav><a href="#focus">Focus</a><a href="#approach">Approach</a><a href="#office">Office</a><a href="#contact">Contact</a></nav></div></header>
+<main id="top">
+<div class="wrap hero"><div><div class="eyebrow">Independent Investment Office</div><h1>Quiet conviction.<br/>Long-term perspective.</h1><div class="hero-bottom"><div class="hero-copy">Nolan Investment Office invests selectively across technology, healthcare, energy and enduring businesses.</div><div class="hero-note">California based. Privately managed. Built around a direct, research-led investment process.</div></div></div></div>
+<section id="focus"><div class="wrap"><div class="section-head"><div class="section-number">01 / Focus</div><h2>Areas we follow closely.</h2></div><div class="grid">{focus.map(([n,t,p])=><article class="item"><span>{n}</span><h3>{t}</h3><p>{p}</p></article>)}</div></div></section>
+<section id="approach"><div class="wrap"><div class="section-head"><div class="section-number">02 / Approach</div><h2>Simple by design.</h2></div><div class="approach-list">{approach.map(([n,t,p])=><div class="approach-row"><small>{n}</small><strong>{t}</strong><p>{p}</p></div>)}</div></div></section>
+<section id="office"><div class="wrap"><div class="section-head"><div class="section-number">03 / Office</div><h2>A small office with a focused mandate.</h2></div><div class="office-copy">Nolan Investment Office is an independent investment office led by Renee Nolan, supported by a dedicated team across research, operations and professional coordination.</div></div></section>
+<section id="contact" class="contact"><div class="wrap"><div class="section-number">04 / Contact</div><h2>Founder and business inquiries.</h2></div></section>
+</main>
+<footer><div class="wrap">© 2026 Nolan Investment Office</div></footer>
+</body>
+</html>
