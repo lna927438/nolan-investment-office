@@ -1,4 +1,6 @@
 ---
+import NioMark from "./NioMark.astro";
+
 const base = import.meta.env.BASE_URL;
 
 const items = [
@@ -29,7 +31,7 @@ const items = [
   <div class="visual-board-orbit" aria-hidden="true">
     <span class="orbit-mark orbit-mark-a"></span>
     <span class="orbit-mark orbit-mark-b"></span>
-    <span class="orbit-core">NIO</span>
+    <span class="orbit-core"><NioMark className="orbit-brand-mark" /></span>
   </div>
 
   <div class="visual-board-grid" aria-label="Investment focus map">
@@ -59,7 +61,7 @@ const items = [
 
 <div class="home-mobile-visual" aria-label="Investment focus map">
   <span class="mobile-visual-line" aria-hidden="true"></span>
-  <span class="mobile-visual-core" aria-hidden="true">NIO</span>
+  <span class="mobile-visual-core" aria-hidden="true"><NioMark className="mobile-core-mark" /></span>
   {items.map((item) => (
     <a
       class="mobile-focus-node"
