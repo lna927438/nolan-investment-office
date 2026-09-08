@@ -2,10 +2,10 @@
 import "../styles/global.css";
 
 const focus = [
-  ["01", "Technology", "AI, automation and software-led business models."],
-  ["02", "Healthcare", "Digital health, life sciences and medical technology."],
-  ["03", "Energy & Infrastructure", "Essential systems, energy and enabling infrastructure."],
-  ["04", "Selective Consumer", "Distinctive businesses where product, brand and technology intersect."]
+  ["01", "Technology", "AI, automation and software-led business models with practical, durable applications."],
+  ["02", "Healthcare", "Digital health, life sciences and medical technology that improve care, access or outcomes."],
+  ["03", "Energy & Infrastructure", "Essential systems, energy and enabling infrastructure supporting long-term demand."],
+  ["04", "Selective Consumer", "Distinctive businesses where product, brand, technology and customer loyalty intersect."]
 ];
 
 const approach = [
@@ -16,21 +16,159 @@ const approach = [
 ---
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width" />
-<title>Nolan Investment Office</title>
-<meta name="description" content="Nolan Investment Office — independent investment across technology, healthcare, energy and enduring businesses." />
-</head>
-<body>
-<header><div class="wrap nav"><a class="brand" href="#top"><strong>NOLAN</strong><span>Investment Office</span></a><nav><a href="#focus">Focus</a><a href="#approach">Approach</a><a href="#office">Office</a><a href="#contact">Contact</a></nav></div></header>
-<main id="top">
-<div class="wrap hero"><div><div class="eyebrow">Independent Investment Office</div><h1>Quiet conviction.<br/>Long-term perspective.</h1><div class="hero-bottom"><div class="hero-copy">Nolan Investment Office invests selectively across technology, healthcare, energy and enduring businesses.</div><div class="hero-note">California based. Privately managed. Built around a direct, research-led investment process.</div></div></div></div>
-<section id="focus"><div class="wrap"><div class="section-head"><div class="section-number">01 / Focus</div><h2>Areas we follow closely.</h2></div><div class="grid">{focus.map(([n,t,p])=><article class="item"><span>{n}</span><h3>{t}</h3><p>{p}</p></article>)}</div></div></section>
-<section id="approach"><div class="wrap"><div class="section-head"><div class="section-number">02 / Approach</div><h2>Simple by design.</h2></div><div class="approach-list">{approach.map(([n,t,p])=><div class="approach-row"><small>{n}</small><strong>{t}</strong><p>{p}</p></div>)}</div></div></section>
-<section id="office"><div class="wrap"><div class="section-head"><div class="section-number">03 / Office</div><h2>A small office with a focused mandate.</h2></div><div class="office-copy">Nolan Investment Office is an independent investment office led by Renee Nolan, supported by a dedicated team across research, operations and professional coordination.</div></div></section>
-<section id="contact" class="contact"><div class="wrap"><div class="section-number">04 / Contact</div><h2>Founder and business inquiries.</h2></div></section>
-</main>
-<footer><div class="wrap">© 2026 Nolan Investment Office</div></footer>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Nolan Investment Office is an independent investment office focused on technology, healthcare, energy, infrastructure and selected enduring businesses." />
+    <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#f1eee7" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Nolan Investment Office" />
+    <meta property="og:description" content="Independent investing with a selective, long-term perspective." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nolan Investment Office" />
+    <meta name="twitter:description" content="Independent investing with a selective, long-term perspective." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Nolan Investment Office</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="brand" href="#top" aria-label="Nolan Investment Office home">
+          <strong>NOLAN</strong>
+          <span>Investment Office</span>
+        </a>
+        <nav aria-label="Primary navigation">
+          <a href="#focus">Focus</a>
+          <a href="#approach">Approach</a>
+          <a href="#office">Office</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <div id="top" class="wrap hero">
+        <div class="hero-inner" data-reveal>
+          <div class="eyebrow">Independent Investment Office</div>
+          <h1>Quiet conviction.<br />Long-term perspective.</h1>
+          <div class="hero-bottom">
+            <div class="hero-copy">
+              Nolan Investment Office invests selectively across technology,
+              healthcare, energy, infrastructure and enduring businesses.
+            </div>
+            <div class="hero-note">
+              California based. Privately managed. Built around direct
+              relationships and a research-led investment process.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="focus">
+        <div class="wrap" data-reveal>
+          <div class="section-head">
+            <div class="section-number">01 / Focus</div>
+            <h2>Areas we follow closely.</h2>
+          </div>
+          <div class="grid">
+            {focus.map(([n, title, text]) => (
+              <article class="item">
+                <span>{n}</span>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="approach">
+        <div class="wrap" data-reveal>
+          <div class="section-head">
+            <div class="section-number">02 / Approach</div>
+            <h2>Simple by design.</h2>
+          </div>
+          <div class="approach-list">
+            {approach.map(([n, title, text]) => (
+              <div class="approach-row">
+                <small>{n}</small>
+                <strong>{title}</strong>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="office">
+        <div class="wrap" data-reveal>
+          <div class="section-head">
+            <div class="section-number">03 / Office</div>
+            <h2>A small office with a focused mandate.</h2>
+          </div>
+          <div class="office-copy">
+            Nolan Investment Office is an independent investment office led by
+            Renee Nolan, supported by a dedicated team across research,
+            operations and professional coordination.
+          </div>
+          <div class="office-meta">
+            <p>
+              The office is structured to keep decisions direct, diligence
+              practical and relationships personal.
+            </p>
+            <p>
+              We are not built around volume. We prefer a selective pipeline,
+              thoughtful review and long-term alignment.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="contact">
+        <div class="wrap" data-reveal>
+          <div class="section-number">04 / Contact</div>
+          <h2>Founder and business inquiries.</h2>
+          <div class="contact-line">
+            <span class="dot" aria-hidden="true"></span>
+            <span>Direct office contact details will be added before public launch.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap footer-grid">
+        <p class="disclaimer">
+          For general informational purposes only. Nothing on this website
+          constitutes an offer, solicitation, investment recommendation or
+          advisory relationship.
+        </p>
+        <div class="footer-side">
+          <a href="/legal">Legal</a>
+          <span>© 2026 Nolan Investment Office</span>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        items.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+        items.forEach((el) => observer.observe(el));
+      }
+    </script>
+  </body>
 </html>
