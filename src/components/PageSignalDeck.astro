@@ -1,0 +1,31 @@
+---
+interface SignalItem {
+  label: string;
+  value: string;
+  note?: string;
+}
+
+interface Props {
+  items: SignalItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="wrap page-signal-deck" aria-label="Page context">
+  {items.map((item, index) => (
+    <div class="signal-card" data-module>
+      <div class="signal-card-top">
+        <span class="signal-index">0{index + 1}</span>
+        <span class="signal-label">{item.label}</span>
+      </div>
+      <div class="signal-card-body">
+        <strong>{item.value}</strong>
+        {item.note && <span class="signal-note">{item.note}</span>}
+      </div>
+      <div class={`signal-graphic signal-graphic-${index + 1}`} aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  ))}
+</div>
