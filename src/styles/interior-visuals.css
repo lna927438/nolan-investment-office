@@ -1,0 +1,296 @@
+/* Interior-page visual language: diagrams, nodes and quiet geometric markers. */
+
+.leadership-row{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+.leadership-row::after{
+  content:"NIO";
+  position:absolute;
+  right:20px;
+  top:50%;
+  z-index:-1;
+  transform:translateY(-50%);
+  color:rgba(89,100,84,.052);
+  font-family:var(--sans);
+  font-size:clamp(74px,9vw,138px);
+  font-weight:600;
+  line-height:1;
+  letter-spacing:.12em;
+  pointer-events:none;
+}
+
+.leadership-name{
+  position:relative;
+  display:inline-block;
+}
+
+.leadership-name::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-14px;
+  width:42px;
+  height:1px;
+  background:var(--accent);
+  opacity:.72;
+}
+
+.support-item{
+  overflow:hidden;
+}
+
+.support-item::after{
+  content:"";
+  position:absolute;
+  right:24px;
+  top:25px;
+  width:42px;
+  height:42px;
+  opacity:.42;
+  transition:transform 320ms var(--module-ease),opacity 260ms ease,border-color 260ms ease;
+}
+
+.support-item:nth-child(1)::after{
+  border:1px solid var(--module-line-strong);
+  box-shadow:inset 0 0 0 10px rgba(89,100,84,.018);
+}
+
+.support-item:nth-child(2)::after{
+  border:1px solid var(--module-line-strong);
+  border-radius:50%;
+}
+
+.support-item:nth-child(3)::after{
+  width:46px;
+  height:34px;
+  border-top:1px solid var(--module-line-strong);
+  border-bottom:1px solid var(--module-line-strong);
+  background:linear-gradient(to bottom,transparent calc(50% - .5px),var(--module-line-strong) 50%,transparent calc(50% + .5px));
+}
+
+.support-item:hover::after{
+  transform:rotate(7deg) scale(1.05);
+  opacity:.8;
+  border-color:var(--accent);
+}
+
+/* Investment process becomes a visual decision rail. */
+.process-list{
+  position:relative;
+  isolation:isolate;
+}
+
+.process-list::before{
+  content:"";
+  position:absolute;
+  left:40px;
+  top:30px;
+  bottom:30px;
+  width:1px;
+  background:linear-gradient(to bottom,transparent,var(--module-line-strong) 10%,var(--module-line-strong) 90%,transparent);
+  z-index:0;
+}
+
+.process-row{
+  position:relative;
+  z-index:1;
+}
+
+.process-row small{
+  position:relative;
+  z-index:2;
+}
+
+.process-row small::after{
+  content:"";
+  position:absolute;
+  right:-25px;
+  top:50%;
+  width:7px;
+  height:7px;
+  border:1px solid var(--accent);
+  border-radius:50%;
+  background:var(--paper);
+  transform:translate(50%,-50%);
+  transition:background-color 240ms ease,box-shadow 240ms ease,transform 240ms var(--module-ease);
+}
+
+.process-row:hover small::after{
+  background:var(--accent);
+  box-shadow:0 0 0 6px rgba(89,100,84,.08);
+  transform:translate(50%,-50%) scale(1.08);
+}
+
+.process-row:last-child small::after{
+  background:var(--accent);
+}
+
+/* Contact rows use a measured signal bar rather than plain text rows. */
+.correspondence-row{
+  position:relative;
+  overflow:hidden;
+}
+
+.correspondence-row::after{
+  content:"";
+  position:absolute;
+  right:14px;
+  top:50%;
+  width:44px;
+  height:18px;
+  transform:translateY(-50%);
+  background:
+    linear-gradient(to right,var(--module-line-strong) 0 1px,transparent 1px 9px,var(--module-line-strong) 9px 10px,transparent 10px 20px,var(--module-line-strong) 20px 21px,transparent 21px 33px,var(--module-line-strong) 33px 34px,transparent 34px);
+  opacity:.34;
+  transition:opacity 240ms ease,transform 280ms var(--module-ease);
+}
+
+.correspondence-row:hover::after{
+  opacity:.72;
+  transform:translateY(-50%) translateX(-4px);
+}
+
+.correspondence-row h2,
+.correspondence-row p{
+  padding-right:52px;
+}
+
+/* Page hero corners get small architectural anchors. */
+.page-hero-inner{
+  position:relative;
+}
+
+.page-hero-inner::before{
+  content:"";
+  position:absolute;
+  right:0;
+  bottom:-18px;
+  width:64px;
+  height:64px;
+  border-right:1px solid rgba(89,100,84,.15);
+  border-bottom:1px solid rgba(89,100,84,.15);
+  pointer-events:none;
+}
+
+.page-hero-inner::after{
+  content:"";
+  position:absolute;
+  right:12px;
+  bottom:-6px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--accent);
+  opacity:.46;
+  pointer-events:none;
+}
+
+/* Route modules get a subtle architectural backdrop. */
+.route-section{
+  position:relative;
+  overflow:hidden;
+}
+
+.route-section::after{
+  content:"";
+  position:absolute;
+  right:5vw;
+  top:50%;
+  width:150px;
+  height:150px;
+  border:1px solid rgba(89,100,84,.055);
+  border-radius:50%;
+  transform:translateY(-50%);
+  box-shadow:0 0 0 36px rgba(89,100,84,.012);
+  pointer-events:none;
+}
+
+.route-module{
+  position:relative;
+  z-index:1;
+}
+
+@media(max-width:900px){
+  .leadership-row::after{
+    right:0;
+    font-size:84px;
+  }
+
+  .process-list::before{
+    left:29px;
+  }
+
+  .process-row small::after{
+    right:-20px;
+  }
+
+  .correspondence-row::after{
+    right:0;
+    width:34px;
+  }
+
+  .correspondence-row h2,
+  .correspondence-row p{
+    padding-right:40px;
+  }
+}
+
+@media(max-width:620px){
+  .leadership-row::after{
+    display:none;
+  }
+
+  .support-item::after{
+    right:2px;
+    top:22px;
+    transform:scale(.78);
+    transform-origin:top right;
+  }
+
+  .support-item:hover::after{
+    transform:scale(.78);
+  }
+
+  .process-list::before{
+    left:16px;
+    top:22px;
+    bottom:22px;
+  }
+
+  .process-row small::after{
+    right:-10px;
+    width:5px;
+    height:5px;
+  }
+
+  .correspondence-row::after{
+    display:none;
+  }
+
+  .correspondence-row h2,
+  .correspondence-row p{
+    padding-right:0;
+  }
+
+  .page-hero-inner::before,
+  .page-hero-inner::after{
+    display:none;
+  }
+
+  .route-section::after{
+    width:100px;
+    height:100px;
+    right:-35px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .support-item::after,
+  .process-row small::after,
+  .correspondence-row::after{
+    transition:none!important;
+  }
+}
