@@ -1,12 +1,12 @@
-# Nolan Investment Office — V1.7
+# Nolan Investment Office — V1.8
 
 Minimal multi-page website for Nolan Investment Office, built with Astro.
 
 ## Current site structure
 - Home — strict single-screen landing page
-- Focus
-- Office
-- Contact
+- Focus — interactive sector modules
+- Office — modular leadership, operating model and process
+- Contact — modular correspondence categories
 - Legal
 - 404
 
@@ -25,22 +25,26 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - Editorial serif headlines
 - Restrained sans-serif wordmark and navigation
 - Structured hairline dividers and generous whitespace
-- Minimal interaction with no decorative animation dependency
+- Modular interaction without heavy animation libraries
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
-## V1.7 visual refinement
+## V1.8 modular interaction system
 - Preserved the homepage as a strict one-screen layout with no vertical scrolling
-- Added a semantic visual token layer inspired by mature MIT-licensed Astro projects
-- Refined the translucent header and navigation timing
-- Added editorial eyebrow markers and stronger typographic hierarchy
-- Structured page intros with restrained divider grids
-- Added subtle, low-noise row and card hover states on interior pages
-- Refined section headings, CTA surfaces, leadership treatment and legal rows
-- Improved visual depth with a very subtle warm/olive ambient background treatment
-- Kept reduced-motion and reliability overrides intact
-- Removed unfinished public-launch placeholder language from Contact and Legal
+- Added a subtle architectural grid and orbital background field as a shared visual base
+- Added page coordinate marks such as `NIO / 01` for stronger editorial structure
+- Added three compact route modules to the homepage for Focus, Office and Contact
+- Added native cross-document view transitions where supported
+- Added pointer-responsive radial highlight behavior to interactive modules
+- Added tactile hover, focus and press states for desktop and touch input
+- Converted Focus sectors into native accessible disclosure modules
+- Added single-open accordion behavior so only one Focus module expands at a time
+- Added reusable large Route Module components between major pages
+- Added modular index-line states across Office and Contact content blocks
+- Added responsive module behavior for tablet and mobile layouts
+- Preserved reduced-motion accessibility and no-JS content visibility
 
-Open-source visual references and license notes are documented in `docs/visual-references.md`.
+## Visual references
+The visual system incorporates selected design ideas from MIT-licensed Astro projects while keeping Nolan's implementation original and intentionally restrained. Reference and license notes are documented in `docs/visual-references.md`.
 
 ## Development
 
