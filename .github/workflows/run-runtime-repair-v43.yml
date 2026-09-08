@@ -23,11 +23,14 @@ jobs:
       - name: Install deterministic dependencies
         run: npm ci
 
-      - name: Apply runtime repairs
+      - name: Recheck base runtime repairs
         run: python scripts/repair-runtime-v43.py
 
+      - name: Repair GLTF GPU resource cleanup
+        run: python scripts/repair-runtime-v43-memory.py
+
       - name: Validate 3D assets
-        run: node scripts/validate-assets.mjs
+        run: npm run verify
 
       - name: Build repaired site
         run: npm run build
@@ -43,5 +46,5 @@ jobs:
             echo 'Runtime already repaired.'
             exit 0
           fi
-          git commit -m 'Repair V4.2 3D runtime reliability'
+          git commit -m 'Complete V4.2 3D resource cleanup'
           git push
