@@ -1,0 +1,18 @@
+:root{
+  --muted:#686d65;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+[data-reveal]{
+  opacity:1 !important;
+  transform:none !important;
+  transition:none !important;
+}
+
+a:focus-visible{
+  outline:1px solid currentColor;
+  outline-offset:4px;
+}
