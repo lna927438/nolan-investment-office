@@ -1,9 +1,9 @@
-# Nolan Investment Office — V1.5
+# Nolan Investment Office — V1.7
 
 Minimal multi-page website for Nolan Investment Office, built with Astro.
 
 ## Current site structure
-- Home
+- Home — strict single-screen landing page
 - Focus
 - Office
 - Contact
@@ -11,9 +11,7 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - 404
 
 ## Navigation model
-The public navigation uses real pages rather than in-page anchor links:
-
-- `/` — Home overview and approach
+- `/` — single-screen brand landing page
 - `/focus/` — sector focus and areas of attention
 - `/office/` — leadership, operating model and review process
 - `/contact/` — correspondence categories
@@ -23,21 +21,26 @@ The public navigation uses real pages rather than in-page anchor links:
 - Private investment office, not a fund-marketing website
 - Warm ivory background
 - Charcoal typography
+- Muted olive accents
 - Editorial serif headlines
-- Restrained sans-serif wordmark
-- Generous whitespace
-- Minimal motion
+- Restrained sans-serif wordmark and navigation
+- Structured hairline dividers and generous whitespace
+- Minimal interaction with no decorative animation dependency
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
-## V1.5 refinements
-- Reduced the oversized home hero typography so the main statement resolves more cleanly
-- Shortened excess empty space above the hero content
-- Strengthened the NOLAN wordmark while keeping the identity restrained
-- Added a subtle header boundary and understated navigation underline states
-- Tightened desktop and mobile spacing across major sections
-- Reduced secondary text scale to improve hierarchy
-- Refined Focus, Office, Contact and Legal page hero proportions for consistency
-- Preserved responsive behavior and reduced-motion accessibility
+## V1.7 visual refinement
+- Preserved the homepage as a strict one-screen layout with no vertical scrolling
+- Added a semantic visual token layer inspired by mature MIT-licensed Astro projects
+- Refined the translucent header and navigation timing
+- Added editorial eyebrow markers and stronger typographic hierarchy
+- Structured page intros with restrained divider grids
+- Added subtle, low-noise row and card hover states on interior pages
+- Refined section headings, CTA surfaces, leadership treatment and legal rows
+- Improved visual depth with a very subtle warm/olive ambient background treatment
+- Kept reduced-motion and reliability overrides intact
+- Removed unfinished public-launch placeholder language from Contact and Legal
+
+Open-source visual references and license notes are documented in `docs/visual-references.md`.
 
 ## Development
 
@@ -47,14 +50,13 @@ npm run dev
 ```
 
 ## Build verification
-
 Every push to `main` runs an Astro build check and the preview site is deployed through GitHub Pages.
 
 Preview: https://lna927438.github.io/nolan-investment-office/
 
 ## Before formal public launch
 - Confirm final domain
-- Add official office email/contact channel
+- Add an official public office email/contact channel when available
 - Confirm final legal entity wording and disclosure language
 - Decide whether the source repository should remain public
 - Switch preview pages from `noindex` to `index`
