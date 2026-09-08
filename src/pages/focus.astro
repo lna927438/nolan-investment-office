@@ -78,4 +78,16 @@ const sectors = [
     label="About the office"
     href={`${import.meta.env.BASE_URL}office/`}
   />
+
+  <script is:inline>
+    const sectorModules = [...document.querySelectorAll('.sector-module')];
+    sectorModules.forEach((module) => {
+      module.addEventListener('toggle', () => {
+        if (!module.open) return;
+        sectorModules.forEach((other) => {
+          if (other !== module) other.open = false;
+        });
+      });
+    });
+  </script>
 </SiteLayout>
