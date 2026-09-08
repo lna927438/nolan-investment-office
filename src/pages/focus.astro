@@ -2,12 +2,16 @@
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
 import PageSignalDeck from "../components/PageSignalDeck.astro";
+import FocusSectorVisual from "../components/FocusSectorVisual.astro";
+import "../styles/sector-visuals.css";
 
 const sectors = [
   {
     number: "01",
     slug: "technology",
     title: "Technology",
+    visual: "technology" as const,
+    code: "TECH / SYSTEMS",
     description: "We follow AI, automation and software-led business models where technology creates measurable operating leverage, better decision-making or a more useful customer experience.",
     attention: "AI infrastructure, vertical software, workflow automation, applied data systems"
   },
@@ -15,6 +19,8 @@ const sectors = [
     number: "02",
     slug: "healthcare",
     title: "Healthcare",
+    visual: "healthcare" as const,
+    code: "HEALTH / SIGNAL",
     description: "We pay attention to businesses that can improve care, access, diagnosis or outcomes through practical technology, differentiated services or defensible medical products.",
     attention: "Digital health, life sciences, diagnostics, medical technology"
   },
@@ -22,6 +28,8 @@ const sectors = [
     number: "03",
     slug: "energy-infrastructure",
     title: "Energy & Infrastructure",
+    visual: "energy" as const,
+    code: "ENERGY / GRID",
     description: "We follow essential systems and infrastructure connected to long-term demand, reliability and the physical requirements of a more data-intensive economy.",
     attention: "Energy systems, power, data infrastructure, enabling industrial services"
   },
@@ -29,6 +37,8 @@ const sectors = [
     number: "04",
     slug: "selective-consumer",
     title: "Selective Consumer",
+    visual: "consumer" as const,
+    code: "SELECT / LOOP",
     description: "We selectively study consumer businesses where product quality, brand strength, technology and repeat customer behavior reinforce one another over time.",
     attention: "Beauty, wellness, fashion technology, distinctive consumer products"
   }
@@ -79,6 +89,7 @@ const focusSignals = [
               <div class="attention-label">Areas of attention</div>
               <p class="attention-copy">{sector.attention}</p>
             </div>
+            <FocusSectorVisual type={sector.visual} code={sector.code} label={sector.title} />
           </div>
         </details>
       ))}
