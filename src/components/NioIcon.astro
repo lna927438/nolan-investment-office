@@ -1,0 +1,71 @@
+---
+interface Props {
+  name: "arrow-up-right" | "arrow-right" | "layers" | "explode" | "reset" | "focus";
+  className?: string;
+  label?: string;
+}
+
+const { name, className = "", label } = Astro.props;
+---
+<svg
+  class:list={["nio-icon", className]}
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden={label ? undefined : "true"}
+  role={label ? "img" : undefined}
+>
+  {label && <title>{label}</title>}
+
+  {name === "arrow-up-right" && (
+    <>
+      <path d="M7 17L17 7" />
+      <path d="M9.5 7H17V14.5" />
+      <circle class="nio-icon-node" cx="17" cy="7" r="1.35" />
+    </>
+  )}
+
+  {name === "arrow-right" && (
+    <>
+      <path d="M5 12H18" />
+      <path d="M13.5 7.5L18 12L13.5 16.5" />
+      <circle class="nio-icon-node" cx="18" cy="12" r="1.2" />
+    </>
+  )}
+
+  {name === "layers" && (
+    <>
+      <path d="M4.5 8.2L12 4.5L19.5 8.2L12 11.9L4.5 8.2Z" />
+      <path d="M5.8 12L12 15.1L18.2 12" />
+      <path d="M5.8 15.7L12 18.8L18.2 15.7" />
+      <circle class="nio-icon-node" cx="19.5" cy="8.2" r="1.15" />
+    </>
+  )}
+
+  {name === "explode" && (
+    <>
+      <path d="M9.2 9.2L5.2 5.2M5.2 5.2H8.4M5.2 5.2V8.4" />
+      <path d="M14.8 9.2L18.8 5.2M18.8 5.2H15.6M18.8 5.2V8.4" />
+      <path d="M9.2 14.8L5.2 18.8M5.2 18.8H8.4M5.2 18.8V15.6" />
+      <path d="M14.8 14.8L18.8 18.8M18.8 18.8H15.6M18.8 18.8V15.6" />
+      <path d="M9.4 12L12 9.4L14.6 12L12 14.6L9.4 12Z" />
+      <circle class="nio-icon-node" cx="12" cy="12" r="1.15" />
+    </>
+  )}
+
+  {name === "reset" && (
+    <>
+      <path d="M6.2 8.1A7 7 0 1 1 5.3 14.9" />
+      <path d="M6.2 8.1V4.8M6.2 8.1H9.5" />
+      <circle class="nio-icon-node" cx="18.7" cy="12" r="1.15" />
+    </>
+  )}
+
+  {name === "focus" && (
+    <>
+      <circle cx="12" cy="12" r="6.4" />
+      <path d="M12 3.2V6M12 18V20.8M3.2 12H6M18 12H20.8" />
+      <circle class="nio-icon-node" cx="12" cy="12" r="1.55" />
+    </>
+  )}
+</svg>
