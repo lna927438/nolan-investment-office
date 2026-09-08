@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
+import PageSignalDeck from "../components/PageSignalDeck.astro";
 
 const support = [
   ["01", "Investment research", "Sector work, company review, market context and diligence support."],
@@ -14,6 +15,12 @@ const process = [
   ["03", "Diligence", "When interest remains, the review becomes more detailed and may include operating, commercial and professional input."],
   ["04", "Decision", "Capital is deployed selectively. The office prefers clarity and conviction over maintaining a high volume of activity."],
   ["05", "Ongoing relationship", "After an investment or relationship begins, the office stays direct and practical in its communication and support."],
+];
+
+const officeSignals = [
+  { label: "Structure", value: "Independent", note: "Focused mandate" },
+  { label: "Method", value: "Direct review", note: "Research to decision" },
+  { label: "Support", value: "Specialist", note: "Professional partners as needed" },
 ];
 ---
 <SiteLayout
@@ -38,6 +45,8 @@ const process = [
       </div>
     </div>
   </div>
+
+  <PageSignalDeck items={officeSignals} />
 
   <section class="page-section">
     <div class="wrap" data-reveal>
