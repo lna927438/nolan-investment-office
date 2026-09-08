@@ -1,4 +1,4 @@
-# Nolan Investment Office — V2.2
+# Nolan Investment Office — V2.3
 
 Minimal multi-page website for Nolan Investment Office, built with Astro.
 
@@ -25,26 +25,27 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - Editorial serif headlines
 - Restrained Nolan wordmark and custom NIO symbol
 - Structured hairline dividers, modular diagrams and generous whitespace
-- Modular interaction without heavy animation libraries
+- Progressive motion without heavy animation libraries
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
+## V2.3 refinement and motion layer
+- Preserved the strict single-screen homepage and existing V2.2 modular systems
+- Added progressive view-entry movement in supporting browsers while keeping fully visible static fallbacks
+- Added active-section handoff to the right-side Page Progress Rail so it now reports both page code and current content section
+- Added section-heading line-build states as content enters the active reading zone
+- Added a subtle scrolled-state response to the Nolan header symbol
+- Added synchronized micro-transitions when Office Operating Network, Office Decision System and Contact Router change state
+- Added unified Nolan symbol focus pulses inside interactive systems
+- Expanded the homepage Focus Board readout to include selected-sector research keywords without increasing board height
+- Added restrained text transition behavior to the Focus Board readout
+- Preserved keyboard navigation, reduced-motion support and no-JS content visibility
+- Kept mobile density rules intact and avoided adding new mobile page length
+
 ## V2.2 sector and routing system
-- Added four distinct Focus visual languages rather than reusing one graphic treatment across every sector
-- Technology now uses a distributed node/network visual
-- Healthcare now uses diagnostic rings and a measured signal trace
-- Energy & Infrastructure now uses a grid, flow lines and infrastructure nodes
-- Selective Consumer now uses a repeat-loop / orbit visual
-- Integrated each sector visual directly into its accessible Focus disclosure module
-- Replaced the Office operating-model card row with a linked three-layer Operating Network
-- Added synchronized Research, Operations and Professional Partners states with active connections and Nolan symbol movement
-- Replaced static Contact correspondence rows with an interactive Correspondence Router
-- Added Founder, Professional and General routing paths with synchronized map, route labels and useful-first-context guidance
-- Added dynamic Nolan symbol states inside Office and Contact network systems
-- Added a compact mobile density layer for interior pages
-- Converted mobile signal decks into a compact three-column information band to reduce unnecessary page length
-- Tightened mobile hero, section, route and footer spacing while keeping the modular visual language intact
-- Preserved V2.1 NIO branding, homepage focus network, mobile focus rail, Office Decision System, branded footer and page progress rails
-- Preserved reduced-motion and keyboard interaction support
+- Four distinct Focus visual languages for Technology, Healthcare, Energy & Infrastructure and Selective Consumer
+- Linked Office Operating Network with Research, Operations and Professional Partners states
+- Interactive Contact Correspondence Router with Founder, Professional and General routes
+- Compact mobile signal deck and interior density rules
 
 ## Visual references
 The visual system incorporates selected design ideas from MIT-licensed Astro projects while keeping Nolan's implementation original and intentionally restrained. Reference and license notes are documented in `docs/visual-references.md`.
