@@ -43,6 +43,11 @@
   outline-offset:-1px;
 }
 
+/* Deep links land below the sticky navigation instead of under it. */
+.sector-module{
+  scroll-margin-top:112px;
+}
+
 /* Text resilience for narrow widths and OS font substitution. */
 :where(.sector-title,.support-control strong,.contact-route-control strong,.process-tab-title,.route-module h2,.home-route-label){
   overflow-wrap:break-word;
@@ -51,6 +56,21 @@
 
 :where(.sector-summary-copy,.support-control-copy,.contact-route-summary,.process-stage-copy p,.support-network-readout p,.contact-routing-readout p){
   overflow-wrap:anywhere;
+}
+
+/* Current footer route remains visible without competing with the main navigation. */
+.footer-route-map a[aria-current="page"]{
+  color:var(--ink);
+  background:rgba(89,100,84,.04);
+}
+
+.footer-route-map a[aria-current="page"]::before{
+  content:"";
+  width:16px;
+  height:1px;
+  margin-bottom:7px;
+  background:var(--accent);
+  opacity:.7;
 }
 
 /* No sticky hover residue on touch-first devices. Active feedback remains immediate. */
@@ -85,6 +105,10 @@
   .footer-route-map a:active{
     background-color:var(--nio-press);
   }
+
+  .footer-route-map a[aria-current="page"]{
+    background:rgba(89,100,84,.04);
+  }
 }
 
 /* Footer retains identity but resolves faster at the end of a long page. */
@@ -113,6 +137,7 @@ body:not(.home-shell){
   .site-header nav a{min-height:42px}
   .footer-brand-panel{min-height:0}
   .footer-route-map a{min-height:48px}
+  .sector-module{scroll-margin-top:88px}
 
   .support-system,
   .contact-routing-system,
@@ -130,6 +155,7 @@ body:not(.home-shell){
   .home-route{min-height:44px}
   .mobile-focus-node{min-height:54px}
   .footer-route-map a{min-height:44px}
+  .sector-module{scroll-margin-top:72px}
 
   .route-module{
     min-height:112px;
