@@ -1,0 +1,295 @@
+/* V2.2: correspondence routing system. */
+
+.contact-routing-system{
+  display:grid;
+  grid-template-columns:minmax(340px,.86fr) minmax(440px,1.14fr);
+  border-top:1px solid var(--line-strong);
+  border-bottom:1px solid var(--line-strong);
+}
+
+.contact-route-controls{
+  display:grid;
+  align-content:stretch;
+  border-right:1px solid var(--line-strong);
+}
+
+.contact-route-control{
+  appearance:none;
+  position:relative;
+  display:grid;
+  grid-template-columns:38px 1fr 22px;
+  grid-template-rows:auto auto auto;
+  gap:6px 14px;
+  align-content:center;
+  min-height:128px;
+  padding:18px 16px 18px 0;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:transparent;
+  color:var(--ink);
+  text-align:left;
+  font:inherit;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color var(--module-duration) var(--module-ease),padding var(--module-duration) var(--module-ease);
+}
+
+.contact-route-control:last-child{border-bottom:0}
+.contact-route-control:hover,.contact-route-control:focus-visible{background:var(--module-fill-hover)}
+.contact-route-control:focus-visible{outline:1px solid var(--accent);outline-offset:-1px}
+.contact-route-control:active{background:var(--module-fill-press)}
+.contact-route-control[aria-pressed="true"]{background:rgba(89,100,84,.06);padding-left:10px}
+
+.contact-route-number{
+  grid-column:1;
+  grid-row:1 / span 3;
+  align-self:start;
+  padding-top:3px;
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:.12em;
+}
+
+.contact-route-code{
+  grid-column:2;
+  color:var(--accent);
+  font-size:7.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+.contact-route-control strong{
+  grid-column:2;
+  font-family:var(--serif);
+  font-size:clamp(22px,2.2vw,31px);
+  font-weight:400;
+  line-height:1.04;
+  letter-spacing:-.025em;
+}
+
+.contact-route-summary{
+  grid-column:2;
+  color:var(--muted);
+  font-size:11.5px;
+  line-height:1.58;
+  max-width:390px;
+}
+
+.contact-route-state{
+  grid-column:3;
+  grid-row:1 / span 3;
+  align-self:center;
+  justify-self:end;
+  color:var(--muted);
+  transition:transform 230ms var(--module-ease),color 230ms ease;
+}
+
+.contact-route-control[aria-pressed="true"] .contact-route-state{
+  color:var(--accent);
+  transform:translateX(4px);
+}
+
+.contact-routing-board{
+  position:relative;
+  min-height:385px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(89,100,84,.018));
+}
+
+.contact-routing-board::after{
+  content:"";
+  position:absolute;
+  width:270px;
+  height:270px;
+  left:-120px;
+  bottom:-135px;
+  border:1px solid rgba(89,100,84,.055);
+  border-radius:50%;
+  box-shadow:0 0 0 50px rgba(89,100,84,.009),0 0 0 100px rgba(89,100,84,.006);
+  pointer-events:none;
+}
+
+.contact-routing-head{
+  position:relative;
+  z-index:3;
+  display:flex;
+  justify-content:space-between;
+  padding:16px 18px;
+  border-bottom:1px solid var(--line);
+  color:var(--muted);
+  font-size:8px;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+}
+
+.contact-routing-map{
+  position:relative;
+  min-height:210px;
+  margin:7px 18px 0;
+}
+
+.contact-routing-map svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.contact-intake-line,
+.contact-branch{
+  vector-effect:non-scaling-stroke;
+  stroke:rgba(89,100,84,.18);
+  stroke-width:.8;
+  stroke-dasharray:2.6 3.5;
+  transition:stroke 240ms ease,stroke-width 240ms ease,opacity 240ms ease;
+}
+
+.contact-intake-line{
+  stroke:rgba(89,100,84,.32);
+  stroke-dasharray:none;
+}
+
+.contact-route-node,
+.contact-intake-node{
+  vector-effect:non-scaling-stroke;
+  fill:var(--paper);
+  stroke:rgba(89,100,84,.38);
+  stroke-width:1;
+  transition:fill 240ms ease,stroke 240ms ease,r 240ms var(--module-ease);
+}
+
+.contact-intake-node{fill:var(--accent);stroke:var(--accent)}
+
+.contact-routing-core{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:82px;
+  height:82px;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(89,100,84,.11);
+  border-radius:50%;
+  background:rgba(241,238,231,.7);
+  transition:transform 320ms var(--module-ease),border-color 220ms ease;
+}
+
+.contact-core-mark{--mark-size:34px}
+
+.contact-intake-label,
+.contact-map-label{
+  position:absolute;
+  color:var(--muted);
+  font-size:7.5px;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  transition:color 220ms ease,transform 220ms var(--module-ease);
+}
+
+.contact-intake-label{left:2%;top:56%}
+.contact-map-label-a{right:2%;top:17%}
+.contact-map-label-b{right:2%;top:47%}
+.contact-map-label-c{right:2%;bottom:15%}
+
+.contact-routing-board[data-contact-stage="0"] .contact-branch-0,
+.contact-routing-board[data-contact-stage="1"] .contact-branch-1,
+.contact-routing-board[data-contact-stage="2"] .contact-branch-2{
+  stroke:rgba(89,100,84,.8);
+  stroke-width:1.25;
+  stroke-dasharray:none;
+}
+
+.contact-routing-board[data-contact-stage="0"] .contact-route-node-0,
+.contact-routing-board[data-contact-stage="1"] .contact-route-node-1,
+.contact-routing-board[data-contact-stage="2"] .contact-route-node-2{
+  fill:var(--accent);
+  stroke:var(--accent);
+  r:2.8;
+}
+
+.contact-routing-board[data-contact-stage="0"] .contact-map-label-a,
+.contact-routing-board[data-contact-stage="1"] .contact-map-label-b,
+.contact-routing-board[data-contact-stage="2"] .contact-map-label-c{color:var(--accent)}
+
+.contact-routing-board[data-contact-stage="0"] .contact-routing-core{transform:translate(calc(-50% + 6px),calc(-50% - 8px));border-color:rgba(89,100,84,.25)}
+.contact-routing-board[data-contact-stage="1"] .contact-routing-core{transform:translate(-50%,-50%);border-color:rgba(89,100,84,.25)}
+.contact-routing-board[data-contact-stage="2"] .contact-routing-core{transform:translate(calc(-50% + 6px),calc(-50% + 8px));border-color:rgba(89,100,84,.25)}
+.contact-routing-board[data-contact-stage] .contact-core-mark .nio-mark-node{fill:var(--accent)}
+
+.contact-routing-readout{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:.78fr 1.12fr .95fr;
+  gap:20px;
+  padding:18px;
+  border-top:1px solid var(--line);
+  align-items:start;
+}
+
+.contact-routing-readout>div:first-child{
+  display:grid;
+  gap:7px;
+}
+
+.contact-routing-readout span{
+  color:var(--muted);
+  font-size:8px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.contact-routing-readout strong{
+  font-family:var(--serif);
+  font-size:clamp(20px,1.9vw,28px);
+  font-weight:400;
+  line-height:1.05;
+}
+
+.contact-routing-readout>p,
+.contact-routing-guide p{
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.65;
+}
+
+.contact-routing-guide{
+  display:grid;
+  gap:7px;
+  padding-left:18px;
+  border-left:1px solid var(--line);
+}
+
+.contact-routing-guide p{color:var(--ink)}
+
+@media(max-width:900px){
+  .contact-routing-system{grid-template-columns:1fr}
+  .contact-route-controls{border-right:0;border-bottom:1px solid var(--line-strong)}
+  .contact-route-control{min-height:96px;padding-right:8px}
+  .contact-route-control[aria-pressed="true"]{padding-left:8px}
+  .contact-routing-board{min-height:345px}
+}
+
+@media(max-width:620px){
+  .contact-route-control{min-height:82px;grid-template-columns:28px 1fr 16px;gap:4px 10px;padding-top:12px;padding-bottom:12px}
+  .contact-route-control strong{font-size:19px}
+  .contact-route-summary{font-size:10.3px;line-height:1.45}
+  .contact-route-code{font-size:6.5px}
+  .contact-routing-board{min-height:285px}
+  .contact-routing-map{min-height:145px;margin:5px 8px 0}
+  .contact-routing-core{width:64px;height:64px}
+  .contact-core-mark{--mark-size:27px}
+  .contact-intake-label,.contact-map-label{font-size:6.5px}
+  .contact-routing-readout{grid-template-columns:1fr;gap:9px;padding:14px}
+  .contact-routing-readout>p{display:none}
+  .contact-routing-guide{padding-left:0;border-left:0;border-top:1px solid var(--line);padding-top:9px}
+  .contact-routing-readout strong{font-size:23px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .contact-route-control,.contact-route-state,.contact-branch,.contact-route-node,.contact-routing-core,.contact-map-label{transition:none!important}
+}
