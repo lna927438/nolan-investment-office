@@ -1,0 +1,118 @@
+/* Simplified Nolan focus visual for tablet and mobile home layouts. */
+
+.home-mobile-visual{
+  display:none;
+}
+
+@media(max-width:900px){
+  .home-mobile-visual{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    align-items:center;
+    min-height:74px;
+    margin-top:24px;
+    border-top:1px solid var(--module-line-strong);
+    border-bottom:1px solid var(--module-line-strong);
+    overflow:hidden;
+  }
+
+  .mobile-visual-line{
+    position:absolute;
+    left:8%;
+    right:8%;
+    top:31px;
+    height:1px;
+    background:linear-gradient(to right,transparent,var(--module-line-strong) 12%,var(--module-line-strong) 88%,transparent);
+    pointer-events:none;
+  }
+
+  .mobile-visual-core{
+    position:absolute;
+    left:50%;
+    top:31px;
+    z-index:1;
+    transform:translate(-50%,-50%);
+    padding:5px 8px;
+    background:var(--paper);
+    color:var(--accent);
+    font-size:7px;
+    letter-spacing:.16em;
+    border:1px solid rgba(89,100,84,.13);
+    border-radius:50%;
+    pointer-events:none;
+  }
+
+  .mobile-focus-node{
+    position:relative;
+    z-index:2;
+    min-height:74px;
+    display:grid;
+    grid-template-rows:38px auto;
+    place-items:center;
+    color:var(--ink);
+    -webkit-tap-highlight-color:transparent;
+    transition:background-color var(--module-duration) var(--module-ease);
+  }
+
+  .mobile-focus-node+.mobile-focus-node{
+    border-left:1px solid var(--module-line);
+  }
+
+  .mobile-focus-node:active{
+    background:var(--module-fill-press);
+  }
+
+  .mobile-focus-dot{
+    align-self:end;
+    width:27px;
+    height:27px;
+    display:grid;
+    place-items:center;
+    border:1px solid var(--accent);
+    border-radius:50%;
+    background:rgba(241,238,231,.94);
+    font-size:9px;
+    transition:background-color var(--module-duration) ease,color var(--module-duration) ease,transform var(--module-duration) var(--module-ease);
+  }
+
+  .mobile-focus-label{
+    align-self:start;
+    padding-top:6px;
+    color:var(--muted);
+    font-size:7px;
+    letter-spacing:.12em;
+  }
+
+  .mobile-focus-node:active .mobile-focus-dot{
+    background:var(--accent);
+    color:var(--paper);
+    transform:scale(.92);
+  }
+}
+
+@media(max-width:620px){
+  .home-mobile-visual{
+    min-height:62px;
+    margin-top:18px;
+  }
+  .mobile-visual-line,.mobile-visual-core{top:26px}
+  .mobile-focus-node{min-height:62px;grid-template-rows:33px auto}
+  .mobile-focus-dot{width:23px;height:23px;font-size:8px}
+  .mobile-focus-label{font-size:6.5px;padding-top:4px}
+}
+
+@media(max-height:650px) and (max-width:620px){
+  .home-mobile-visual{
+    min-height:52px;
+    margin-top:12px;
+  }
+  .mobile-visual-line,.mobile-visual-core{top:22px}
+  .mobile-focus-node{min-height:52px;grid-template-rows:29px auto}
+  .mobile-focus-dot{width:20px;height:20px;font-size:7px}
+  .mobile-focus-label{font-size:6px;padding-top:3px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .mobile-focus-node,.mobile-focus-dot{transition:none!important}
+}
