@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "verify": "node scripts/validate-assets.mjs",
     "build": "astro build",
     "preview": "astro preview"
   },
