@@ -1,11 +1,8 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
-import PageSignalDeck from "../components/PageSignalDeck.astro";
-import OfficeProcessNavigator from "../components/OfficeProcessNavigator.astro";
-import OfficeSupportNetwork from "../components/OfficeSupportNetwork.astro";
-import "../styles/process-system.css";
-import "../styles/office-support-network.css";
+
+const base = import.meta.env.BASE_URL;
 
 const support = [
   ["01", "Investment research", "Sector work, company review, market context and diligence support."],
@@ -20,12 +17,6 @@ const process = [
   ["04", "Decision", "Capital is deployed selectively. The office prefers clarity and conviction over maintaining a high volume of activity."],
   ["05", "Ongoing relationship", "After an investment or relationship begins, the office stays direct and practical in its communication and support."],
 ];
-
-const officeSignals = [
-  { label: "Structure", value: "Independent", note: "Focused mandate" },
-  { label: "Method", value: "Direct review", note: "Research to decision" },
-  { label: "Support", value: "Specialist", note: "Professional partners as needed" },
-];
 ---
 <SiteLayout
   active="office"
@@ -33,76 +24,80 @@ const officeSignals = [
   description="About Nolan Investment Office, its operating structure, leadership and investment review process."
 >
   <div class="wrap page-hero">
-    <div class="page-hero-inner" data-reveal>
-      <div class="eyebrow">The Office</div>
-      <h1>Independent by structure.</h1>
+    <div class="page-hero-inner">
+      <div class="eyebrow">The Office · NIO / 02</div>
+      <h1>Independent<br />by structure.</h1>
       <div class="page-intro">
         <p>
           Nolan Investment Office is an independent investment office led by
-          Renee Nolan. It is intentionally small, with a focused mandate and a
-          direct approach to research, decisions and relationships.
+          Renee Nolan, intentionally small and built around direct judgment,
+          research and relationships.
         </p>
         <p>
-          The office is supported by a dedicated internal structure and by
-          specialist professional partners when additional expertise is useful.
+          Specialist professional partners support the office when additional
+          legal, accounting or operating expertise is useful.
         </p>
       </div>
     </div>
   </div>
 
-  <PageSignalDeck items={officeSignals} />
-
-  <section class="page-section">
-    <div class="wrap" data-reveal>
-      <div class="section-head">
-        <div class="section-number">01 / Leadership</div>
-        <h2>Clear responsibility.</h2>
-      </div>
-      <div class="leadership-row leadership-row-media" data-module>
-        <div>
-          <div class="leadership-name">Renee Nolan</div>
-          <div class="leadership-role">Principal</div>
-        </div>
-        <p>
-          Renee leads investment decisions and the overall direction of the
-          office. Her role is centered on judgment, relationships and the final
-          allocation of attention and capital.
-        </p>
-        <figure class="office-media-card">
-          <img
-            src={`${import.meta.env.BASE_URL}media/office-architecture.webp`}
-            alt="Abstract concrete architecture used as a visual study of structure and light."
-            loading="lazy"
-            decoding="async"
-            width="1200"
-            height="900"
-          />
-          <figcaption class="office-media-caption">
-            <span>Visual study</span>
-            <span>Structure / light</span>
-          </figcaption>
-        </figure>
-      </div>
+  <section class="v3-leadership" aria-labelledby="leadership-title">
+    <figure class="v3-leadership-media">
+      <img
+        src={`${base}media/office-architecture.webp`}
+        alt="Abstract concrete architecture used as an editorial study of structure and light."
+        loading="eager"
+        decoding="async"
+        width="1200"
+        height="900"
+      />
+    </figure>
+    <div class="v3-leadership-copy">
+      <div class="eyebrow">01 / Leadership</div>
+      <h2 id="leadership-title">Clear<br />responsibility.</h2>
+      <h3>Renee Nolan</h3>
+      <div class="v3-leadership-role">Principal</div>
+      <p>
+        Renee leads investment decisions and the overall direction of the
+        office. Her role centers on judgment, relationships and the final
+        allocation of attention and capital.
+      </p>
     </div>
   </section>
 
   <section class="page-section">
-    <div class="wrap" data-reveal>
+    <div class="wrap">
       <div class="section-head">
         <div class="section-number">02 / Operating model</div>
         <h2>Small by intention.</h2>
       </div>
-      <OfficeSupportNetwork items={support} />
+      <div class="v3-operating">
+        {support.map(([n, title, text]) => (
+          <article>
+            <small>{n}</small>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
-  <section class="page-section process-system-section">
-    <div class="wrap" data-reveal>
+  <section class="page-section">
+    <div class="wrap">
       <div class="section-head">
         <div class="section-number">03 / Process</div>
-        <h2>A direct review process.</h2>
+        <h2>Direct review.<br />Selective decisions.</h2>
       </div>
-      <OfficeProcessNavigator steps={process} />
+      <div class="v3-process">
+        {process.map(([n, title, text]) => (
+          <article>
+            <small>{n}</small>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -110,6 +105,6 @@ const officeSignals = [
     eyebrow="Contact"
     title="Start with a concise introduction."
     label="Contact the office"
-    href={`${import.meta.env.BASE_URL}contact/`}
+    href={`${base}contact/`}
   />
 </SiteLayout>
