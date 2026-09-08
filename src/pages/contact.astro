@@ -1,11 +1,18 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
+import PageSignalDeck from "../components/PageSignalDeck.astro";
 
 const channels = [
   ["01", "Founders & operators", "Company introductions and operating conversations. A concise overview of the business, sector, stage and relevant contact information is sufficient for an initial introduction."],
   ["02", "Professional correspondence", "Advisers, service providers, professional partners and institutional relationships."],
   ["03", "General office", "Administrative and other general office correspondence."],
+];
+
+const contactSignals = [
+  { label: "Introduction", value: "Concise", note: "Relevant context first" },
+  { label: "Base", value: "California", note: "United States" },
+  { label: "Routing", value: "Three channels", note: "Clear correspondence categories" },
 ];
 ---
 <SiteLayout
@@ -30,6 +37,8 @@ const channels = [
       </div>
     </div>
   </div>
+
+  <PageSignalDeck items={contactSignals} />
 
   <section class="page-section contact-page-section">
     <div class="wrap" data-reveal>
