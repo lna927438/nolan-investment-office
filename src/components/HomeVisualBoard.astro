@@ -4,10 +4,10 @@ import NioMark from "./NioMark.astro";
 const base = import.meta.env.BASE_URL;
 
 const items = [
-  { number: "01", label: "Technology", code: "TECH", short: "T", slug: "technology" },
-  { number: "02", label: "Healthcare", code: "HEALTH", short: "H", slug: "healthcare" },
-  { number: "03", label: "Energy & Infrastructure", code: "ENERGY", short: "E", slug: "energy-infrastructure" },
-  { number: "04", label: "Selective Consumer", code: "SELECT", short: "C", slug: "selective-consumer" },
+  { number: "01", label: "Technology", code: "TECH", short: "T", slug: "technology", note: "AI · automation · software" },
+  { number: "02", label: "Healthcare", code: "HEALTH", short: "H", slug: "healthcare", note: "Diagnostics · medtech · digital health" },
+  { number: "03", label: "Energy & Infrastructure", code: "ENERGY", short: "E", slug: "energy-infrastructure", note: "Power · infrastructure · industrial" },
+  { number: "04", label: "Selective Consumer", code: "SELECT", short: "C", slug: "selective-consumer", note: "Beauty · wellness · product" },
 ];
 ---
 <div class="home-visual-board" data-visual-board>
@@ -42,6 +42,7 @@ const items = [
         data-module
         data-focus-index={index}
         data-focus-label={item.label}
+        data-focus-note={item.note}
         aria-label={`Explore ${item.label}`}
       >
         <span class="visual-tile-number">{item.number}</span>
@@ -54,7 +55,7 @@ const items = [
 
   <div class="visual-board-footer">
     <span class="visual-board-readout">Selected <b data-board-readout>All areas</b></span>
-    <span>Research-led</span>
+    <span class="visual-board-context"><span data-board-context>Four selective research areas</span></span>
     <span>Long-term</span>
   </div>
 </div>
@@ -82,17 +83,29 @@ const items = [
   if (board) {
     const tiles = [...board.querySelectorAll('[data-focus-index]')];
     const readout = board.querySelector('[data-board-readout]');
+    const context = board.querySelector('[data-board-context]');
+    const contextWrap = context?.closest('.visual-board-context');
+
+    const pulseContext = () => {
+      if (!contextWrap) return;
+      contextWrap.classList.remove('is-switching');
+      requestAnimationFrame(() => contextWrap.classList.add('is-switching'));
+    };
 
     const setActive = (tile) => {
       const index = tile?.dataset.focusIndex;
       if (index == null) return;
       board.dataset.active = index;
       if (readout) readout.textContent = tile.dataset.focusLabel || 'Area';
+      if (context) context.textContent = tile.dataset.focusNote || '';
+      pulseContext();
     };
 
     const clearActive = () => {
       board.removeAttribute('data-active');
       if (readout) readout.textContent = 'All areas';
+      if (context) context.textContent = 'Four selective research areas';
+      pulseContext();
     };
 
     tiles.forEach((tile) => {
