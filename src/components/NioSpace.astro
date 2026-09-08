@@ -1,0 +1,562 @@
+---
+interface Props {
+  enabled?: boolean;
+}
+
+const { enabled = true } = Astro.props;
+---
+
+{enabled && (
+  <div class="nio-space" data-nio-space aria-hidden="true">
+    <canvas class="nio-space-canvas" data-nio-space-canvas></canvas>
+    <div class="nio-space-vignette"></div>
+    <div class="nio-space-hud">
+      <span class="nio-space-live"><i></i> LIVE 3D</span>
+      <span data-nio-space-mode>DEEP SPACE</span>
+      <span class="nio-space-hint">MOVE · WHEEL · CLICK</span>
+    </div>
+  </div>
+)}
+
+<script>
+  import * as THREE from 'three';
+  import * as CANNON from 'cannon-es';
+  import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+  const mount = document.querySelector('[data-nio-space]');
+  const canvas = document.querySelector('[data-nio-space-canvas]');
+
+  if (mount instanceof HTMLElement && canvas instanceof HTMLCanvasElement) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    const mobile = coarse || window.innerWidth < 760;
+    const page = document.body.dataset.page || 'utility';
+    const modeLabel = mount.querySelector('[data-nio-space-mode]');
+    const modeNames = {
+      home: 'DEEP SPACE',
+      focus: 'SECTOR ORBIT',
+      office: 'STRUCTURE FIELD',
+      contact: 'SIGNAL SPACE',
+      legal: 'QUIET FIELD',
+      utility: 'NIO SPACE'
+    };
+    if (modeLabel) modeLabel.textContent = modeNames[page] || modeNames.utility;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x03050a);
+    scene.fog = new THREE.FogExp2(0x03050a, page === 'home' ? 0.027 : 0.036);
+
+    const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 120);
+    const baseCameraZ = page === 'home' ? 8.8 : page === 'focus' ? 9.8 : 10.4;
+    camera.position.set(0, 0, baseCameraZ);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: !mobile,
+      powerPreference: 'high-performance'
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.75));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = page === 'home' ? 1.12 : 0.98;
+    renderer.shadowMap.enabled = !mobile;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    let composer = null;
+    if (!mobile && !reduceMotion) {
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      const bloom = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        page === 'home' ? 0.68 : 0.48,
+        0.42,
+        0.28
+      );
+      composer.addPass(bloom);
+    }
+
+    const world = new CANNON.World({ gravity: new CANNON.Vec3(0, 0, 0) });
+    world.allowSleep = true;
+    world.broadphase = new CANNON.SAPBroadphase(world);
+    world.solver.iterations = mobile ? 5 : 8;
+    world.defaultContactMaterial.friction = 0.01;
+    world.defaultContactMaterial.restitution = 0.88;
+
+    const root = new THREE.Group();
+    const orbital = new THREE.Group();
+    const physicsGroup = new THREE.Group();
+    scene.add(root);
+    root.add(orbital, physicsGroup);
+
+    const pageAccents = {
+      home: [0x7ee8ff, 0x9d8cff, 0xe6c98b],
+      focus: [0x79dbff, 0x8c9cff, 0xb7ffdc],
+      office: [0xc3d6ff, 0x9b8cff, 0xe6c98b],
+      contact: [0x71f7d4, 0x7aa7ff, 0xc58bff],
+      legal: [0xb4c3d8, 0x8fa1b7, 0xd4c3a2],
+      utility: [0x7ee8ff, 0x9d8cff, 0xe6c98b]
+    };
+    let activeAccents = [...(pageAccents[page] || pageAccents.utility)];
+
+    const hemi = new THREE.HemisphereLight(0x9dbbff, 0x08070b, page === 'home' ? 0.8 : 0.55);
+    scene.add(hemi);
+
+    const keyLight = new THREE.PointLight(activeAccents[0], page === 'home' ? 32 : 22, 34, 1.7);
+    keyLight.position.set(-5.2, 3.8, 5.4);
+    keyLight.castShadow = !mobile;
+    if (!mobile) keyLight.shadow.mapSize.set(512, 512);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.PointLight(activeAccents[1], 24, 30, 1.8);
+    rimLight.position.set(5.8, -2.6, 3.4);
+    scene.add(rimLight);
+
+    const pointerLight = new THREE.PointLight(activeAccents[2], 18, 20, 1.6);
+    pointerLight.position.set(0, 0, 5);
+    scene.add(pointerLight);
+
+    const starCount = reduceMotion ? 700 : mobile ? 1150 : 2800;
+    const starPositions = new Float32Array(starCount * 3);
+    const starColors = new Float32Array(starCount * 3);
+    const color = new THREE.Color();
+    for (let i = 0; i < starCount; i++) {
+      const radius = 10 + Math.pow(Math.random(), 0.42) * 48;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
+      starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      starPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      starPositions[i * 3 + 2] = radius * Math.cos(phi) - 9;
+      const tint = Math.random();
+      color.set(tint > 0.88 ? activeAccents[0] : tint > 0.76 ? activeAccents[1] : 0xf3f7ff);
+      starColors[i * 3] = color.r;
+      starColors[i * 3 + 1] = color.g;
+      starColors[i * 3 + 2] = color.b;
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+    const starMaterial = new THREE.PointsMaterial({
+      size: mobile ? 0.022 : 0.026,
+      sizeAttenuation: true,
+      vertexColors: true,
+      transparent: true,
+      opacity: page === 'home' ? 0.94 : 0.66,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    const dustCount = mobile ? 180 : 520;
+    const dustGeometry = new THREE.BufferGeometry();
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount; i++) {
+      dustPositions[i * 3] = THREE.MathUtils.randFloatSpread(18);
+      dustPositions[i * 3 + 1] = THREE.MathUtils.randFloatSpread(11);
+      dustPositions[i * 3 + 2] = THREE.MathUtils.randFloat(-12, 3);
+    }
+    dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({
+      color: activeAccents[0],
+      size: 0.055,
+      transparent: true,
+      opacity: 0.17,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    }));
+    scene.add(dust);
+
+    const coreMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x0b1018,
+      metalness: 0.86,
+      roughness: 0.12,
+      clearcoat: 1,
+      clearcoatRoughness: 0.08,
+      iridescence: 0.34,
+      iridescenceIOR: 1.7,
+      emissive: new THREE.Color(activeAccents[1]),
+      emissiveIntensity: 0.11
+    });
+    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(page === 'home' ? 1.35 : 1.08, 5), coreMaterial);
+    core.castShadow = !mobile;
+    core.receiveShadow = !mobile;
+    orbital.add(core);
+
+    const coreBody = new CANNON.Body({ mass: 0, shape: new CANNON.Sphere(page === 'home' ? 1.34 : 1.07) });
+    world.addBody(coreBody);
+
+    const edgeGeometry = new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(page === 'home' ? 1.55 : 1.28, 2));
+    const shell = new THREE.LineSegments(edgeGeometry, new THREE.LineBasicMaterial({
+      color: activeAccents[0],
+      transparent: true,
+      opacity: 0.19,
+      blending: THREE.AdditiveBlending
+    }));
+    orbital.add(shell);
+
+    const ringMaterials = activeAccents.map((accent, index) => new THREE.MeshBasicMaterial({
+      color: accent,
+      transparent: true,
+      opacity: index === 0 ? 0.48 : 0.28,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    const ringA = new THREE.Mesh(new THREE.TorusGeometry(2.15, 0.018, 8, 240), ringMaterials[0]);
+    ringA.rotation.set(1.12, 0.24, 0.15);
+    const ringB = new THREE.Mesh(new THREE.TorusGeometry(2.72, 0.012, 8, 260), ringMaterials[1]);
+    ringB.rotation.set(0.42, 1.24, -0.38);
+    const ringC = new THREE.Mesh(new THREE.TorusKnotGeometry(1.78, 0.022, 260, 12, 2, 3), ringMaterials[2]);
+    ringC.rotation.set(0.18, 0.62, 0.4);
+    orbital.add(ringA, ringB, ringC);
+
+    const orbitNodes = [];
+    for (let i = 0; i < 4; i++) {
+      const node = new THREE.Mesh(
+        new THREE.SphereGeometry(i === 0 ? 0.14 : 0.1, 28, 28),
+        new THREE.MeshStandardMaterial({
+          color: 0xeaf7ff,
+          emissive: new THREE.Color(activeAccents[i % activeAccents.length]),
+          emissiveIntensity: i === 0 ? 2.2 : 1.2,
+          metalness: 0.3,
+          roughness: 0.16
+        })
+      );
+      orbitNodes.push(node);
+      orbital.add(node);
+    }
+
+    const frameMaterial = new THREE.LineBasicMaterial({
+      color: activeAccents[0],
+      transparent: true,
+      opacity: page === 'office' ? 0.22 : 0.085,
+      blending: THREE.AdditiveBlending
+    });
+    const frameCount = page === 'office' ? 9 : 5;
+    for (let i = 0; i < frameCount; i++) {
+      const box = new THREE.BoxGeometry(
+        THREE.MathUtils.randFloat(1.2, 3.8),
+        THREE.MathUtils.randFloat(1.2, 3.8),
+        THREE.MathUtils.randFloat(1.2, 3.8)
+      );
+      const frame = new THREE.LineSegments(new THREE.EdgesGeometry(box), frameMaterial.clone());
+      frame.position.set(
+        THREE.MathUtils.randFloatSpread(11),
+        THREE.MathUtils.randFloatSpread(7),
+        THREE.MathUtils.randFloat(-7, -1)
+      );
+      frame.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      frame.scale.multiplyScalar(THREE.MathUtils.randFloat(0.55, 1.15));
+      root.add(frame);
+    }
+
+    const grid = new THREE.GridHelper(34, 52, activeAccents[0], 0x263044);
+    grid.position.y = -5.3;
+    grid.position.z = -4;
+    grid.material.transparent = true;
+    grid.material.opacity = page === 'home' ? 0.11 : 0.065;
+    root.add(grid);
+
+    const physicsItems = [];
+    const bodyMaterial = new CANNON.Material('nio-orb');
+    const dynamicCount = reduceMotion ? 4 : mobile ? 7 : page === 'home' ? 14 : 10;
+    const geometries = [
+      new THREE.IcosahedronGeometry(1, 2),
+      new THREE.OctahedronGeometry(1, 1),
+      new THREE.SphereGeometry(1, 24, 24)
+    ];
+
+    for (let i = 0; i < dynamicCount; i++) {
+      const radius = THREE.MathUtils.randFloat(0.16, i < 3 ? 0.42 : 0.31);
+      const geometry = geometries[i % geometries.length];
+      const material = new THREE.MeshPhysicalMaterial({
+        color: i % 3 === 0 ? 0x172335 : i % 3 === 1 ? 0x221d39 : 0x141b22,
+        emissive: new THREE.Color(activeAccents[i % activeAccents.length]),
+        emissiveIntensity: i < 3 ? 0.28 : 0.12,
+        metalness: 0.78,
+        roughness: 0.2,
+        clearcoat: 0.88,
+        clearcoatRoughness: 0.12
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.scale.setScalar(radius);
+      mesh.castShadow = !mobile;
+      mesh.receiveShadow = !mobile;
+      physicsGroup.add(mesh);
+
+      const shape = new CANNON.Sphere(radius);
+      const body = new CANNON.Body({
+        mass: THREE.MathUtils.randFloat(0.35, 1.1),
+        shape,
+        material: bodyMaterial,
+        linearDamping: 0.006,
+        angularDamping: 0.016,
+        allowSleep: false
+      });
+      body.position.set(
+        THREE.MathUtils.randFloatSpread(7.5),
+        THREE.MathUtils.randFloatSpread(5.4),
+        THREE.MathUtils.randFloat(-2.8, 1.8)
+      );
+      const outward = new CANNON.Vec3(body.position.x, body.position.y, body.position.z);
+      if (outward.lengthSquared() < 2.5) outward.set(2, 1, -1);
+      outward.normalize();
+      body.position.x += outward.x * 1.4;
+      body.position.y += outward.y * 1.4;
+      body.position.z += outward.z * 1.1;
+      body.velocity.set(
+        THREE.MathUtils.randFloatSpread(0.42),
+        THREE.MathUtils.randFloatSpread(0.34),
+        THREE.MathUtils.randFloatSpread(0.3)
+      );
+      body.angularVelocity.set(
+        THREE.MathUtils.randFloatSpread(1.1),
+        THREE.MathUtils.randFloatSpread(1.1),
+        THREE.MathUtils.randFloatSpread(1.1)
+      );
+      world.addBody(body);
+      physicsItems.push({ mesh, body });
+    }
+
+    const boundarySize = 5.7;
+    const planes = [
+      { p: [ boundarySize, 0, 0], q: [0, -Math.PI / 2, 0] },
+      { p: [-boundarySize, 0, 0], q: [0,  Math.PI / 2, 0] },
+      { p: [0,  boundarySize * 0.72, 0], q: [ Math.PI / 2, 0, 0] },
+      { p: [0, -boundarySize * 0.72, 0], q: [-Math.PI / 2, 0, 0] },
+      { p: [0, 0,  3.2], q: [0, Math.PI, 0] },
+      { p: [0, 0, -4.8], q: [0, 0, 0] }
+    ];
+    planes.forEach(({ p, q }) => {
+      const body = new CANNON.Body({ mass: 0, shape: new CANNON.Plane(), material: bodyMaterial });
+      body.position.set(...p);
+      body.quaternion.setFromEuler(...q);
+      world.addBody(body);
+    });
+    world.addContactMaterial(new CANNON.ContactMaterial(bodyMaterial, bodyMaterial, {
+      friction: 0.005,
+      restitution: 0.9
+    }));
+
+    const pointer = new THREE.Vector2();
+    const pointerTarget = new THREE.Vector2();
+    let wheelDepth = 0;
+    let scrollProgress = 0;
+    let focusIndex = 0;
+    let lastTime = performance.now();
+    let frame = 0;
+    let running = true;
+
+    const raycaster = new THREE.Raycaster();
+    const clickPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    const clickPoint = new THREE.Vector3();
+    const impulsePoint = new CANNON.Vec3();
+
+    const onPointerMove = (event) => {
+      pointerTarget.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointerTarget.y = -((event.clientY / window.innerHeight) * 2 - 1);
+    };
+
+    const onWheel = (event) => {
+      wheelDepth = THREE.MathUtils.clamp(wheelDepth + event.deltaY * 0.00065, -1.4, 1.8);
+    };
+
+    const onScroll = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      scrollProgress = THREE.MathUtils.clamp(window.scrollY / max, 0, 1);
+    };
+
+    const onClick = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('a,button,summary,input,textarea,select,label')) return;
+      pointerTarget.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointerTarget.y = -((event.clientY / window.innerHeight) * 2 - 1);
+      raycaster.setFromCamera(pointerTarget, camera);
+      if (!raycaster.ray.intersectPlane(clickPlane, clickPoint)) clickPoint.set(0, 0, 0);
+
+      physicsItems.forEach(({ body }, index) => {
+        const dx = body.position.x - clickPoint.x;
+        const dy = body.position.y - clickPoint.y;
+        const dz = body.position.z - clickPoint.z;
+        const d = Math.max(0.7, Math.sqrt(dx * dx + dy * dy + dz * dz));
+        const force = Math.min(2.2, 1.8 / d) * (index < 3 ? 1.2 : 0.85);
+        impulsePoint.set(dx / d * force, dy / d * force, dz / d * force + 0.12);
+        body.applyImpulse(impulsePoint, body.position);
+        body.wakeUp();
+      });
+
+      const pulse = new THREE.Mesh(
+        new THREE.RingGeometry(0.05, 0.07, 48),
+        new THREE.MeshBasicMaterial({ color: activeAccents[0], transparent: true, opacity: 0.88, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+      );
+      pulse.position.copy(clickPoint);
+      pulse.lookAt(camera.position);
+      root.add(pulse);
+      const started = performance.now();
+      const grow = () => {
+        const t = Math.min(1, (performance.now() - started) / 620);
+        pulse.scale.setScalar(1 + t * 18);
+        pulse.material.opacity = (1 - t) * 0.88;
+        if (t < 1) requestAnimationFrame(grow);
+        else {
+          root.remove(pulse);
+          pulse.geometry.dispose();
+          pulse.material.dispose();
+        }
+      };
+      if (!reduceMotion) grow();
+    };
+
+    const focusPalettes = [
+      [0x7ee8ff, 0x8c9cff, 0xb7ffdc],
+      [0x89ffd8, 0x6fc7ff, 0xe8f7ff],
+      [0xe6c98b, 0x7ee8ff, 0x91a6ff],
+      [0xc58bff, 0xff9ec8, 0x7ee8ff]
+    ];
+
+    const onFocusChange = (event) => {
+      const detail = event.detail || {};
+      focusIndex = Number(detail.index || 0) % 4;
+      activeAccents = [...focusPalettes[focusIndex]];
+      keyLight.color.set(activeAccents[0]);
+      rimLight.color.set(activeAccents[1]);
+      pointerLight.color.set(activeAccents[2]);
+      ringMaterials.forEach((material, index) => material.color.set(activeAccents[index % activeAccents.length]));
+      shell.material.color.set(activeAccents[0]);
+      dust.material.color.set(activeAccents[0]);
+      orbitNodes.forEach((node, index) => {
+        node.material.emissive.set(activeAccents[(index + focusIndex) % activeAccents.length]);
+        node.material.emissiveIntensity = index === focusIndex ? 3 : 1;
+      });
+    };
+
+    const resize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.75));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      composer?.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('click', onClick);
+    window.addEventListener('resize', resize);
+    window.addEventListener('nio:focuschange', onFocusChange);
+    onScroll();
+
+    const animate = (now) => {
+      if (!running) return;
+      frame = requestAnimationFrame(animate);
+      const dt = Math.min(1 / 30, Math.max(1 / 120, (now - lastTime) / 1000));
+      lastTime = now;
+
+      pointer.x += (pointerTarget.x - pointer.x) * 0.055;
+      pointer.y += (pointerTarget.y - pointer.y) * 0.055;
+      wheelDepth *= 0.975;
+
+      const targetCameraZ = baseCameraZ + wheelDepth + scrollProgress * (page === 'home' ? 0 : 2.4);
+      camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
+      camera.position.x += ((pointer.x * (page === 'home' ? 1.45 : 0.9)) - camera.position.x) * 0.035;
+      camera.position.y += ((pointer.y * (page === 'home' ? 0.85 : 0.55)) - camera.position.y) * 0.035;
+      camera.lookAt(0, 0, -0.5 - scrollProgress * 1.6);
+
+      root.rotation.y += ((pointer.x * 0.17 + scrollProgress * 0.42) - root.rotation.y) * 0.028;
+      root.rotation.x += ((-pointer.y * 0.09 + scrollProgress * 0.07) - root.rotation.x) * 0.028;
+      orbital.rotation.y += dt * (page === 'home' ? 0.075 : 0.045);
+      orbital.rotation.z += dt * 0.018;
+      shell.rotation.x -= dt * 0.06;
+      shell.rotation.y += dt * 0.08;
+      ringA.rotation.z += dt * 0.13;
+      ringB.rotation.x -= dt * 0.075;
+      ringC.rotation.y += dt * 0.055;
+      core.rotation.x += dt * 0.025;
+      core.rotation.y += dt * 0.043;
+
+      const orbitTime = now * 0.00024;
+      orbitNodes.forEach((node, index) => {
+        const angle = orbitTime * (1 + index * 0.06) + index * Math.PI * 0.5;
+        const radius = 2.05 + index * 0.2;
+        node.position.set(
+          Math.cos(angle) * radius,
+          Math.sin(angle * 1.17) * (1.05 + index * 0.12),
+          Math.sin(angle) * 0.85
+        );
+        const targetScale = index === focusIndex && page === 'focus' ? 1.85 : 1;
+        node.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.08);
+      });
+
+      keyLight.position.x = -4.8 + pointer.x * 2.3;
+      keyLight.position.y = 3.4 + pointer.y * 1.8;
+      pointerLight.position.x += (pointer.x * 5.6 - pointerLight.position.x) * 0.055;
+      pointerLight.position.y += (pointer.y * 3.8 - pointerLight.position.y) * 0.055;
+      pointerLight.position.z = 4.2 + wheelDepth * 0.6;
+
+      stars.rotation.y += dt * 0.0028;
+      dust.rotation.z -= dt * 0.006;
+      grid.position.z = -4 + scrollProgress * 2.1;
+
+      if (!reduceMotion) {
+        world.step(1 / 60, dt, 3);
+        physicsItems.forEach(({ mesh, body }, index) => {
+          const cx = body.position.x;
+          const cy = body.position.y;
+          const cz = body.position.z;
+          const distance = Math.sqrt(cx * cx + cy * cy + cz * cz) || 1;
+          if (distance > 4.9) {
+            body.velocity.x += (-cx / distance) * dt * 0.28;
+            body.velocity.y += (-cy / distance) * dt * 0.28;
+            body.velocity.z += (-cz / distance) * dt * 0.22;
+          }
+          body.velocity.x += Math.sin(now * 0.00031 + index) * dt * 0.012;
+          body.velocity.y += Math.cos(now * 0.00027 + index * 1.7) * dt * 0.01;
+          mesh.position.copy(body.position);
+          mesh.quaternion.copy(body.quaternion);
+        });
+      }
+
+      if (composer) composer.render();
+      else renderer.render(scene, camera);
+    };
+
+    if (reduceMotion) {
+      physicsItems.forEach(({ mesh, body }) => {
+        mesh.position.copy(body.position);
+        mesh.quaternion.copy(body.quaternion);
+      });
+      renderer.render(scene, camera);
+    } else {
+      frame = requestAnimationFrame(animate);
+    }
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        running = false;
+        cancelAnimationFrame(frame);
+      } else if (!reduceMotion && !running) {
+        running = true;
+        lastTime = performance.now();
+        frame = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    const cleanup = () => {
+      running = false;
+      cancelAnimationFrame(frame);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('click', onClick);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('nio:focuschange', onFocusChange);
+      document.removeEventListener('visibilitychange', onVisibility);
+      renderer.dispose();
+      composer?.dispose();
+    };
+    window.addEventListener('pagehide', cleanup, { once: true });
+  }
+</script>
