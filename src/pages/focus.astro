@@ -1,53 +1,48 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
-import PageSignalDeck from "../components/PageSignalDeck.astro";
-import FocusSectorVisual from "../components/FocusSectorVisual.astro";
-import "../styles/sector-visuals.css";
+import FocusGallery from "../components/FocusGallery.astro";
+import "../styles/focus-gallery.css";
+
+const base = import.meta.env.BASE_URL;
 
 const sectors = [
   {
     number: "01",
     slug: "technology",
     title: "Technology",
-    visual: "technology" as const,
     code: "TECH / SYSTEMS",
     description: "We follow AI, automation and software-led business models where technology creates measurable operating leverage, better decision-making or a more useful customer experience.",
-    attention: "AI infrastructure, vertical software, workflow automation, applied data systems"
+    attention: "AI infrastructure, vertical software, workflow automation, applied data systems",
+    image: `${base}media/focus-technology.webp`,
   },
   {
     number: "02",
     slug: "healthcare",
     title: "Healthcare",
-    visual: "healthcare" as const,
     code: "HEALTH / SIGNAL",
     description: "We pay attention to businesses that can improve care, access, diagnosis or outcomes through practical technology, differentiated services or defensible medical products.",
-    attention: "Digital health, life sciences, diagnostics, medical technology"
+    attention: "Digital health, life sciences, diagnostics, medical technology",
+    image: `${base}media/focus-healthcare.webp`,
   },
   {
     number: "03",
     slug: "energy-infrastructure",
     title: "Energy & Infrastructure",
-    visual: "energy" as const,
     code: "ENERGY / GRID",
     description: "We follow essential systems and infrastructure connected to long-term demand, reliability and the physical requirements of a more data-intensive economy.",
-    attention: "Energy systems, power, data infrastructure, enabling industrial services"
+    attention: "Energy systems, power, data infrastructure, enabling industrial services",
+    image: `${base}media/focus-energy.webp`,
   },
   {
     number: "04",
     slug: "selective-consumer",
     title: "Selective Consumer",
-    visual: "consumer" as const,
-    code: "SELECT / LOOP",
+    code: "SELECT / MATERIAL",
     description: "We selectively study consumer businesses where product quality, brand strength, technology and repeat customer behavior reinforce one another over time.",
-    attention: "Beauty, wellness, fashion technology, distinctive consumer products"
-  }
-];
-
-const focusSignals = [
-  { label: "Scope", value: "Four areas", note: "Current fields of attention" },
-  { label: "Method", value: "Research-led", note: "Selective review" },
-  { label: "Horizon", value: "Long-term", note: "Durable demand and change" },
+    attention: "Beauty, wellness, fashion technology, distinctive consumer products",
+    image: `${base}media/focus-consumer.webp`,
+  },
 ];
 ---
 <SiteLayout
@@ -55,7 +50,7 @@ const focusSignals = [
   title="Focus | Nolan Investment Office"
   description="Investment areas followed by Nolan Investment Office across technology, healthcare, energy, infrastructure and selected consumer businesses."
 >
-  <div class="wrap page-hero">
+  <div class="wrap page-hero focus-page-hero">
     <div class="page-hero-inner" data-reveal>
       <div class="eyebrow">Investment Focus</div>
       <h1>Where we spend time.</h1>
@@ -72,27 +67,9 @@ const focusSignals = [
     </div>
   </div>
 
-  <PageSignalDeck items={focusSignals} />
-
-  <section class="page-section">
-    <div class="wrap sector-modules" data-reveal>
-      {sectors.map((sector, index) => (
-        <details id={sector.slug} name="focus-sector" class="sector-module" data-module open={index === 0}>
-          <summary class="sector-summary">
-            <span class="sector-number module-index">{sector.number}</span>
-            <span class="sector-title">{sector.title}</span>
-            <span class="sector-summary-copy">{sector.description}</span>
-            <span class="module-toggle" aria-hidden="true"></span>
-          </summary>
-          <div class="sector-panel">
-            <div class="sector-copy">
-              <div class="attention-label">Areas of attention</div>
-              <p class="attention-copy">{sector.attention}</p>
-            </div>
-            <FocusSectorVisual type={sector.visual} code={sector.code} label={sector.title} />
-          </div>
-        </details>
-      ))}
+  <section class="focus-gallery-section" data-section-label="Focus areas">
+    <div class="wrap">
+      <FocusGallery items={sectors} />
     </div>
   </section>
 
@@ -100,33 +77,6 @@ const focusSignals = [
     eyebrow="Office"
     title="How the office works."
     label="About the office"
-    href={`${import.meta.env.BASE_URL}office/`}
+    href={`${base}office/`}
   />
-
-  <script is:inline>
-    const sectorModules = [...document.querySelectorAll('.sector-module')];
-
-    const openFromHash = () => {
-      const slug = window.location.hash.replace('#', '');
-      if (!slug) return;
-      const target = document.getElementById(slug);
-      if (!(target instanceof HTMLDetailsElement)) return;
-      sectorModules.forEach((module) => {
-        module.open = module === target;
-      });
-      requestAnimationFrame(() => target.scrollIntoView({ block: 'center' }));
-    };
-
-    sectorModules.forEach((module) => {
-      module.addEventListener('toggle', () => {
-        if (!module.open) return;
-        sectorModules.forEach((other) => {
-          if (other !== module) other.open = false;
-        });
-      });
-    });
-
-    openFromHash();
-    window.addEventListener('hashchange', openFromHash);
-  </script>
 </SiteLayout>
