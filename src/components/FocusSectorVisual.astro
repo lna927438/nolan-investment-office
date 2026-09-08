@@ -6,6 +6,13 @@ interface Props {
 }
 
 const { type, code, label } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const media: Record<typeof type, string> = {
+  technology: `${base}media/focus-technology.webp`,
+  healthcare: `${base}media/focus-healthcare.webp`,
+  energy: `${base}media/focus-energy.webp`,
+  consumer: `${base}media/focus-consumer.webp`,
+};
 ---
 <div class={`sector-visual sector-visual-${type}`} data-sector-visual={type} aria-label={`${label} visual system`}>
   <div class="sector-visual-head">
@@ -14,6 +21,10 @@ const { type, code, label } = Astro.props;
   </div>
 
   <div class="sector-visual-stage" aria-hidden="true">
+    <div class="sector-media">
+      <img src={media[type]} alt="" loading="lazy" decoding="async" width="1080" height="720" />
+    </div>
+
     {type === "technology" && (
       <>
         <svg viewBox="0 0 100 70" class="sector-svg tech-svg">
