@@ -1,0 +1,59 @@
+.page-progress-rail{
+  --page-progress:0;
+  position:fixed;
+  right:20px;
+  top:128px;
+  bottom:54px;
+  z-index:12;
+  width:18px;
+  pointer-events:none;
+  display:flex;
+  justify-content:center;
+}
+.page-progress-track{
+  position:absolute;
+  top:0;
+  bottom:38px;
+  width:1px;
+  background:rgba(27,30,26,.09);
+}
+.page-progress-fill{
+  position:absolute;
+  left:0;
+  top:0;
+  width:1px;
+  height:calc(var(--page-progress) * 100%);
+  background:rgba(89,100,84,.58);
+}
+.page-progress-node{
+  position:absolute;
+  left:50%;
+  top:calc(var(--page-progress) * (100% - 38px));
+  width:7px;
+  height:7px;
+  transform:translate(-50%,-50%);
+  border:1px solid var(--accent);
+  border-radius:50%;
+  background:var(--paper);
+  box-shadow:0 0 0 4px rgba(89,100,84,.045);
+}
+.page-progress-code{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%) rotate(-90deg);
+  transform-origin:center;
+  white-space:nowrap;
+  color:rgba(89,100,84,.66);
+  font-size:7px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+@media(max-width:1180px){
+  .page-progress-rail{display:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .page-progress-node,.page-progress-fill{transition:none!important}
+}
