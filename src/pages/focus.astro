@@ -77,7 +77,7 @@ const focusSignals = [
   <section class="page-section">
     <div class="wrap sector-modules" data-reveal>
       {sectors.map((sector, index) => (
-        <details id={sector.slug} class="sector-module" data-module open={index === 0}>
+        <details id={sector.slug} name="focus-sector" class="sector-module" data-module open={index === 0}>
           <summary class="sector-summary">
             <span class="sector-number module-index">{sector.number}</span>
             <span class="sector-title">{sector.title}</span>
