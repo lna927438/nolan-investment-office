@@ -5,24 +5,28 @@ import RouteModule from "../components/RouteModule.astro";
 const sectors = [
   {
     number: "01",
+    slug: "technology",
     title: "Technology",
     description: "We follow AI, automation and software-led business models where technology creates measurable operating leverage, better decision-making or a more useful customer experience.",
     attention: "AI infrastructure, vertical software, workflow automation, applied data systems"
   },
   {
     number: "02",
+    slug: "healthcare",
     title: "Healthcare",
     description: "We pay attention to businesses that can improve care, access, diagnosis or outcomes through practical technology, differentiated services or defensible medical products.",
     attention: "Digital health, life sciences, diagnostics, medical technology"
   },
   {
     number: "03",
+    slug: "energy-infrastructure",
     title: "Energy & Infrastructure",
     description: "We follow essential systems and infrastructure connected to long-term demand, reliability and the physical requirements of a more data-intensive economy.",
     attention: "Energy systems, power, data infrastructure, enabling industrial services"
   },
   {
     number: "04",
+    slug: "selective-consumer",
     title: "Selective Consumer",
     description: "We selectively study consumer businesses where product quality, brand strength, technology and repeat customer behavior reinforce one another over time.",
     attention: "Beauty, wellness, fashion technology, distinctive consumer products"
@@ -54,7 +58,7 @@ const sectors = [
   <section class="page-section">
     <div class="wrap sector-modules" data-reveal>
       {sectors.map((sector, index) => (
-        <details class="sector-module" data-module open={index === 0}>
+        <details id={sector.slug} class="sector-module" data-module open={index === 0}>
           <summary class="sector-summary">
             <span class="sector-number module-index">{sector.number}</span>
             <span class="sector-title">{sector.title}</span>
@@ -81,6 +85,17 @@ const sectors = [
 
   <script is:inline>
     const sectorModules = [...document.querySelectorAll('.sector-module')];
+
+    const openFromHash = () => {
+      const slug = window.location.hash.replace('#', '');
+      if (!slug) return;
+      const target = document.getElementById(slug);
+      if (!(target instanceof HTMLDetailsElement)) return;
+      sectorModules.forEach((module) => {
+        module.open = module === target;
+      });
+    };
+
     sectorModules.forEach((module) => {
       module.addEventListener('toggle', () => {
         if (!module.open) return;
@@ -89,5 +104,8 @@ const sectors = [
         });
       });
     });
+
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
   </script>
 </SiteLayout>
