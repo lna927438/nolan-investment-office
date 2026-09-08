@@ -9,6 +9,7 @@ import "../styles/signal-deck.css";
 import "../styles/page-progress.css";
 import "../styles/brand-system.css";
 import "../styles/mobile-density.css";
+import "../styles/refinement-motion.css";
 
 interface Props {
   title?: string;
@@ -76,6 +77,7 @@ const pageCode = pageCodes[pageName];
 
     {pageCode && (
       <div class="page-progress-rail" data-page-progress aria-hidden="true">
+        <span class="page-progress-section" data-progress-section>Overview</span>
         <div class="page-progress-track">
           <span class="page-progress-fill"></span>
         </div>
@@ -139,11 +141,50 @@ const pageCode = pageCodes[pageName];
 
       const progressRail = document.querySelector('[data-page-progress]');
       if (progressRail) {
+        const progressSection = progressRail.querySelector('[data-progress-section]');
+        let sectionTimer;
+
         const updateProgress = () => {
           const max = document.documentElement.scrollHeight - window.innerHeight;
           const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
           progressRail.style.setProperty('--page-progress', progress.toFixed(4));
+          document.body.classList.toggle('has-scrolled', window.scrollY > 56);
         };
+
+        const sectionLabel = (section) => {
+          if (section.dataset.sectionLabel) return section.dataset.sectionLabel;
+          if (section.classList.contains('page-hero')) return 'Overview';
+          if (section.classList.contains('page-signal-deck')) return 'Context';
+          if (section.classList.contains('route-section')) return 'Next';
+          const numbered = section.querySelector('.section-number');
+          if (numbered?.textContent) return numbered.textContent.trim();
+          if (section.classList.contains('contact-page-section')) return 'Routing';
+          if (section.querySelector('.sector-modules')) return 'Focus areas';
+          return 'Section';
+        };
+
+        const activateSection = (section) => {
+          const label = sectionLabel(section);
+          if (progressSection && progressSection.textContent !== label) {
+            progressSection.textContent = label;
+            progressRail.classList.remove('is-section-change');
+            requestAnimationFrame(() => progressRail.classList.add('is-section-change'));
+            clearTimeout(sectionTimer);
+            sectionTimer = setTimeout(() => progressRail.classList.remove('is-section-change'), 360);
+          }
+          document.querySelectorAll('.section-head.nio-section-active').forEach((head) => head.classList.remove('nio-section-active'));
+          section.querySelector('.section-head')?.classList.add('nio-section-active');
+        };
+
+        const sections = [...document.querySelectorAll('main .page-hero, main .page-signal-deck, main .page-section, main .route-section')];
+        if ('IntersectionObserver' in window && sections.length) {
+          const observer = new IntersectionObserver((entries) => {
+            const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+            if (visible[0]) activateSection(visible[0].target);
+          }, { rootMargin: '-30% 0px -52% 0px', threshold: [0, .01, .1] });
+          sections.forEach((section) => observer.observe(section));
+        }
+
         updateProgress();
         window.addEventListener('scroll', updateProgress, { passive: true });
         window.addEventListener('resize', updateProgress);
