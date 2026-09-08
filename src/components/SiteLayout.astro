@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import "../styles/reliability.css";
 import "../styles/editorial.css";
+import "../styles/modules.css";
 
 interface Props {
   title?: string;
@@ -21,6 +22,7 @@ const {
 
 const base = import.meta.env.BASE_URL;
 const url = (path = "") => `${base}${path}`;
+const pageName = active ?? "utility";
 ---
 <!doctype html>
 <html lang="en">
@@ -39,7 +41,7 @@ const url = (path = "") => `${base}${path}`;
     <link rel="icon" type="image/svg+xml" href={url("favicon.svg")} />
     <title>{title}</title>
   </head>
-  <body class={active === "home" ? "home-shell" : undefined}>
+  <body class={active === "home" ? "home-shell" : undefined} data-page={pageName}>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
@@ -76,5 +78,17 @@ const url = (path = "") => `${base}${path}`;
         </div>
       </footer>
     )}
+
+    <script is:inline>
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.querySelectorAll('[data-module]').forEach((module) => {
+          module.addEventListener('pointermove', (event) => {
+            const rect = module.getBoundingClientRect();
+            module.style.setProperty('--module-x', `${event.clientX - rect.left}px`);
+            module.style.setProperty('--module-y', `${event.clientY - rect.top}px`);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
