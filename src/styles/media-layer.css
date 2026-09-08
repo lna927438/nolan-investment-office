@@ -1,0 +1,173 @@
+/* V2.5: restrained photographic and material layer. Photography remains secondary to Nolan typography and diagrams. */
+
+body{
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(241,238,231,.968),rgba(241,238,231,.968)),
+    var(--nio-surface);
+  background-repeat:repeat;
+  background-size:auto,720px 720px;
+  background-blend-mode:normal,multiply;
+}
+
+/* Focus photography lives inside existing visual modules instead of creating a stock-photo section. */
+.sector-visual-stage{
+  isolation:isolate;
+}
+
+.sector-media{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.sector-media img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  opacity:.25;
+  filter:grayscale(.38) saturate(.58) contrast(.88) brightness(.96);
+  transform:scale(1.018);
+  transition:
+    opacity 420ms var(--nio-motion-ease),
+    transform 760ms var(--nio-motion-ease),
+    filter 420ms ease;
+}
+
+.sector-media::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(241,238,231,.76),rgba(241,238,231,.38) 48%,rgba(241,238,231,.64)),
+    linear-gradient(180deg,rgba(241,238,231,.16),rgba(89,100,84,.06));
+}
+
+.sector-visual-technology .sector-media img{object-position:58% 50%}
+.sector-visual-healthcare .sector-media img{object-position:55% 48%}
+.sector-visual-energy .sector-media img{object-position:69% 51%;opacity:.22}
+.sector-visual-consumer .sector-media img{object-position:52% 50%;opacity:.24}
+
+.sector-visual-stage > :not(.sector-media){
+  position:relative;
+  z-index:2;
+}
+
+.sector-module[open] .sector-media img{
+  opacity:.31;
+  filter:grayscale(.32) saturate(.62) contrast(.9) brightness(.97);
+}
+
+@media(hover:hover) and (pointer:fine){
+  .sector-module[open]:hover .sector-media img{
+    transform:scale(1.045);
+  }
+}
+
+/* Office image is an editorial visual study, explicitly not a representation of the office premises. */
+.leadership-row-media{
+  grid-template-columns:minmax(210px,.72fr) minmax(300px,1.05fr) minmax(230px,.72fr);
+  gap:clamp(28px,4vw,56px);
+  align-items:stretch;
+}
+
+.office-media-card{
+  position:relative;
+  min-height:218px;
+  margin:0;
+  overflow:hidden;
+  border:1px solid var(--module-line);
+  background:rgba(255,255,255,.08);
+}
+
+.office-media-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(241,238,231,.08),rgba(29,32,28,.18)),
+    linear-gradient(90deg,rgba(241,238,231,.22),transparent 58%);
+  pointer-events:none;
+}
+
+.office-media-card img{
+  width:100%;
+  height:100%;
+  min-height:218px;
+  display:block;
+  object-fit:cover;
+  object-position:52% 50%;
+  opacity:.82;
+  filter:grayscale(.34) saturate(.55) contrast(.92) sepia(.04);
+  transform:scale(1.015);
+  transition:transform 900ms var(--nio-motion-ease),filter 420ms ease;
+}
+
+.office-media-caption{
+  position:absolute;
+  z-index:2;
+  left:13px;
+  right:13px;
+  bottom:11px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:rgba(246,243,237,.88);
+  font-size:7px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+@media(hover:hover) and (pointer:fine){
+  .leadership-row-media:hover .office-media-card img{
+    transform:scale(1.045);
+    filter:grayscale(.28) saturate(.6) contrast(.94) sepia(.04);
+  }
+}
+
+@media(max-width:900px){
+  body{
+    background-image:
+      linear-gradient(rgba(241,238,231,.978),rgba(241,238,231,.978)),
+      var(--nio-surface);
+    background-size:auto,620px 620px;
+  }
+
+  .leadership-row-media{
+    grid-template-columns:1fr;
+    gap:28px;
+  }
+
+  .office-media-card{
+    min-height:210px;
+    aspect-ratio:16 / 8;
+  }
+}
+
+@media(max-width:620px){
+  body{
+    background-image:
+      linear-gradient(rgba(241,238,231,.985),rgba(241,238,231,.985)),
+      var(--nio-surface);
+    background-size:auto,520px 520px;
+  }
+
+  .sector-media img{opacity:.18}
+  .sector-module[open] .sector-media img{opacity:.23}
+  .sector-media::after{
+    background:linear-gradient(90deg,rgba(241,238,231,.8),rgba(241,238,231,.48),rgba(241,238,231,.72));
+  }
+
+  .office-media-card{
+    min-height:168px;
+  }
+  .office-media-card img{min-height:168px}
+  .office-media-caption{font-size:6.3px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sector-media img,.office-media-card img{transition:none!important;transform:none!important}
+}
