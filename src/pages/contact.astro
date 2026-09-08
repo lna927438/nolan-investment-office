@@ -1,38 +1,28 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
-import PageSignalDeck from "../components/PageSignalDeck.astro";
-import ContactRoutingSystem from "../components/ContactRoutingSystem.astro";
-import "../styles/contact-routing.css";
+
+const base = import.meta.env.BASE_URL;
 
 const channels = [
   {
     number: "01",
-    code: "FOUNDER",
     title: "Founders & operators",
     text: "Company introductions and operating conversations. A concise overview of the business, sector, stage and relevant contact information is sufficient for an initial introduction.",
-    guide: "Company, sector, stage and the most relevant point of contact."
+    guide: "Company · sector · stage · relevant point of contact"
   },
   {
     number: "02",
-    code: "PROFESSIONAL",
     title: "Professional correspondence",
     text: "Advisers, service providers, professional partners and institutional relationships.",
-    guide: "Organization, professional role and the reason the correspondence is relevant to the office."
+    guide: "Organization · professional role · reason for the correspondence"
   },
   {
     number: "03",
-    code: "GENERAL",
     title: "General office",
     text: "Administrative and other general office correspondence.",
-    guide: "Purpose, relevant context and the preferred return contact information."
+    guide: "Purpose · context · preferred return contact information"
   },
-];
-
-const contactSignals = [
-  { label: "Introduction", value: "Concise", note: "Relevant context first" },
-  { label: "Base", value: "California", note: "United States" },
-  { label: "Routing", value: "Three channels", note: "Clear correspondence categories" },
 ];
 ---
 <SiteLayout
@@ -41,9 +31,9 @@ const contactSignals = [
   description="Correspondence information and inquiry categories for Nolan Investment Office."
 >
   <div class="wrap page-hero contact-page-hero">
-    <div class="page-hero-inner" data-reveal>
-      <div class="eyebrow">Contact</div>
-      <h1>Office correspondence.</h1>
+    <div class="page-hero-inner">
+      <div class="eyebrow">Contact · NIO / 03</div>
+      <h1>Office<br />correspondence.</h1>
       <div class="page-intro">
         <p>
           The office keeps initial communication straightforward. A concise,
@@ -51,22 +41,29 @@ const contactSignals = [
         </p>
         <p>
           Nolan Investment Office is based in California, United States.
-          Correspondence is reviewed in the context of the office's current
-          areas of focus and ongoing work.
+          Correspondence is reviewed in the context of current focus areas and ongoing work.
         </p>
       </div>
     </div>
   </div>
 
-  <PageSignalDeck items={contactSignals} />
-
   <section class="page-section contact-page-section">
-    <div class="wrap" data-reveal>
+    <div class="wrap">
       <div class="section-head">
         <div class="section-number">01 / Routing</div>
-        <h2>Start with the right context.</h2>
+        <h2>Start with the<br />right context.</h2>
       </div>
-      <ContactRoutingSystem items={channels} />
+
+      <div class="v3-contact-grid">
+        {channels.map((item) => (
+          <article class="v3-contact-card">
+            <small>{item.number}</small>
+            <h2>{item.title}</h2>
+            <p>{item.text}</p>
+            <div class="v3-contact-guide">{item.guide}</div>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -74,6 +71,6 @@ const contactSignals = [
     eyebrow="Focus"
     title="Review the office's current areas of attention."
     label="Investment focus"
-    href={`${import.meta.env.BASE_URL}focus/`}
+    href={`${base}focus/`}
   />
 </SiteLayout>
