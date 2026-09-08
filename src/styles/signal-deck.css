@@ -1,0 +1,182 @@
+.page-signal-deck{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  margin-top:-18px;
+  margin-bottom:38px;
+  border:1px solid rgba(27,30,26,.15);
+  background:rgba(246,243,237,.42);
+  backdrop-filter:blur(12px) saturate(125%);
+  -webkit-backdrop-filter:blur(12px) saturate(125%);
+  box-shadow:0 18px 46px rgba(27,30,26,.025);
+  position:relative;
+  z-index:2;
+}
+
+.signal-card{
+  min-height:118px;
+  position:relative;
+  overflow:hidden;
+  padding:18px 20px 17px;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.18),rgba(89,100,84,.018));
+  transition:
+    background-color var(--module-duration) var(--module-ease),
+    transform var(--module-duration) var(--module-ease);
+}
+.signal-card+.signal-card{border-left:1px solid rgba(27,30,26,.13)}
+.signal-card:hover{background-color:rgba(89,100,84,.04)}
+.signal-card:active{transform:translateY(1px)}
+
+.signal-card-top{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  color:var(--muted);
+  font-size:8px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+.signal-index{
+  color:var(--accent);
+}
+.signal-label{
+  white-space:nowrap;
+}
+
+.signal-card-body{
+  margin-top:25px;
+  padding-right:72px;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.signal-card-body strong{
+  font-family:var(--serif);
+  font-size:clamp(19px,1.8vw,26px);
+  font-weight:400;
+  line-height:1.02;
+  letter-spacing:-.025em;
+}
+.signal-note{
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:.03em;
+}
+
+.signal-graphic{
+  position:absolute;
+  right:17px;
+  bottom:17px;
+  width:48px;
+  height:48px;
+  opacity:.48;
+  transition:opacity 240ms ease,transform 320ms var(--module-ease);
+}
+.signal-card:hover .signal-graphic{
+  opacity:.82;
+  transform:translateY(-2px);
+}
+
+.signal-graphic-1{
+  border:1px solid rgba(89,100,84,.42);
+  border-radius:50%;
+}
+.signal-graphic-1::before,
+.signal-graphic-1::after{
+  content:"";
+  position:absolute;
+  border:1px solid rgba(89,100,84,.22);
+  border-radius:50%;
+}
+.signal-graphic-1::before{inset:8px}
+.signal-graphic-1::after{inset:17px;background:rgba(89,100,84,.13)}
+.signal-graphic-1 span{display:none}
+
+.signal-graphic-2{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:5px;
+  padding:7px 6px;
+  border-bottom:1px solid rgba(89,100,84,.32);
+}
+.signal-graphic-2 span{
+  width:4px;
+  background:rgba(89,100,84,.35);
+  transition:height 280ms var(--module-ease),background-color 280ms ease;
+}
+.signal-graphic-2 span:nth-child(1){height:14px}
+.signal-graphic-2 span:nth-child(2){height:27px}
+.signal-graphic-2 span:nth-child(3){height:20px}
+.signal-graphic-2 span:nth-child(4){height:34px}
+.signal-card:hover .signal-graphic-2 span{background:rgba(89,100,84,.62)}
+
+.signal-graphic-3{
+  border-top:1px solid rgba(89,100,84,.32);
+  border-bottom:1px solid rgba(89,100,84,.32);
+}
+.signal-graphic-3::before,
+.signal-graphic-3::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:1px;
+  background:rgba(89,100,84,.22);
+}
+.signal-graphic-3::before{top:15px}
+.signal-graphic-3::after{bottom:15px}
+.signal-graphic-3 span{
+  position:absolute;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--accent);
+  opacity:.55;
+}
+.signal-graphic-3 span:nth-child(1){left:3px;top:-3px}
+.signal-graphic-3 span:nth-child(2){left:18px;top:13px}
+.signal-graphic-3 span:nth-child(3){right:10px;bottom:13px}
+.signal-graphic-3 span:nth-child(4){right:2px;bottom:-3px}
+
+@media(max-width:900px){
+  .page-signal-deck{
+    grid-template-columns:1fr;
+    margin-top:0;
+  }
+  .signal-card{min-height:96px}
+  .signal-card+.signal-card{
+    border-left:0;
+    border-top:1px solid rgba(27,30,26,.13);
+  }
+  .signal-card-body{margin-top:16px}
+}
+
+@media(max-width:620px){
+  .page-signal-deck{
+    margin-bottom:26px;
+  }
+  .signal-card{
+    min-height:86px;
+    padding:15px 16px;
+  }
+  .signal-card-body{
+    margin-top:13px;
+    padding-right:58px;
+  }
+  .signal-card-body strong{font-size:20px}
+  .signal-graphic{
+    width:40px;
+    height:40px;
+    right:14px;
+    bottom:13px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .signal-card,
+  .signal-graphic,
+  .signal-graphic-2 span{
+    transition:none!important;
+  }
+}
