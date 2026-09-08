@@ -1,5 +1,6 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
+import RouteModule from "../components/RouteModule.astro";
 
 const channels = [
   ["01", "Founders & operators", "Company introductions and operating conversations. A concise overview of the business, sector, stage and relevant contact information is sufficient for an initial introduction."],
@@ -34,8 +35,8 @@ const channels = [
     <div class="wrap" data-reveal>
       <div class="correspondence-list">
         {channels.map(([n, title, text]) => (
-          <article class="correspondence-row">
-            <small>{n}</small>
+          <article class="correspondence-row" data-module>
+            <small class="module-index">{n}</small>
             <h2>{title}</h2>
             <p>{text}</p>
           </article>
@@ -43,4 +44,11 @@ const channels = [
       </div>
     </div>
   </section>
+
+  <RouteModule
+    eyebrow="Focus"
+    title="Review the office's current areas of attention."
+    label="Investment focus"
+    href={`${import.meta.env.BASE_URL}focus/`}
+  />
 </SiteLayout>
