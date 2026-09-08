@@ -1,0 +1,121 @@
+name: Ingest Nolan Media Assets
+
+on:
+  push:
+    paths:
+      - ".github/workflows/asset-ingest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install image tooling
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Download source assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .asset-src public/media
+
+          curl -L --fail --retry 3 --output .asset-src/office.jpg \
+            'https://images.unsplash.com/photo-1776851629268-c878a7978c61?auto=format&fit=crop&fm=jpg&q=86&w=2200'
+
+          curl -L --fail --retry 3 --output .asset-src/technology.jpg \
+            'https://images.pexels.com/photos/37730212/pexels-photo-37730212.jpeg?cs=srgb&fm=jpg&w=2200'
+
+          curl -L --fail --retry 3 --output .asset-src/healthcare.jpg \
+            'https://images.pexels.com/photos/8442031/pexels-photo-8442031.jpeg?cs=srgb&fm=jpg&w=2200'
+
+          curl -L --fail --retry 3 --output .asset-src/energy.jpg \
+            'https://images.unsplash.com/photo-1777734794648-2bd10e93f0b2?auto=format&fit=crop&fm=jpg&q=86&w=2200'
+
+          curl -L --fail --retry 3 --output .asset-src/consumer.jpg \
+            'https://images.unsplash.com/photo-1618330834871-dd22c2c226ca?auto=format&fit=crop&fm=jpg&q=86&w=2200'
+
+          curl -L --fail --retry 3 --output .asset-src/concrete.jpg \
+            'https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/concrete/concrete_diff_4k.jpg'
+
+      - name: Create Nolan web media
+        shell: bash
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageEnhance, ImageOps
+          from pathlib import Path
+
+          src = Path('.asset-src')
+          out = Path('public/media')
+          out.mkdir(parents=True, exist_ok=True)
+
+          jobs = {
+              'office.jpg': ('office-architecture.webp', (1200, 900), 0.72, 0.96, 0.93),
+              'technology.jpg': ('focus-technology.webp', (1080, 720), 0.58, 0.92, 0.84),
+              'healthcare.jpg': ('focus-healthcare.webp', (1080, 720), 0.48, 0.96, 1.01),
+              'energy.jpg': ('focus-energy.webp', (1080, 720), 0.42, 0.91, 0.92),
+              'consumer.jpg': ('focus-consumer.webp', (1080, 720), 0.48, 0.96, 0.98),
+          }
+
+          def crop_cover(im, target):
+              tw, th = target
+              ratio = max(tw / im.width, th / im.height)
+              nw, nh = round(im.width * ratio), round(im.height * ratio)
+              im = im.resize((nw, nh), Image.Resampling.LANCZOS)
+              left = max(0, (nw - tw) // 2)
+              top = max(0, (nh - th) // 2)
+              return im.crop((left, top, left + tw, top + th))
+
+          def grade(im, saturation, contrast, brightness):
+              im = im.convert('RGB')
+              im = ImageEnhance.Color(im).enhance(saturation)
+              im = ImageEnhance.Contrast(im).enhance(contrast)
+              im = ImageEnhance.Brightness(im).enhance(brightness)
+              # Warm ivory overlay at low opacity to keep media inside Nolan palette.
+              wash = Image.new('RGB', im.size, (241, 238, 231))
+              return Image.blend(im, wash, 0.08)
+
+          for source_name, (output_name, target, sat, con, bri) in jobs.items():
+              with Image.open(src / source_name) as im:
+                  im = ImageOps.exif_transpose(im)
+                  im = crop_cover(im, target)
+                  im = grade(im, sat, con, bri)
+                  im.save(out / output_name, 'WEBP', quality=78, method=6)
+
+          # Concrete is intentionally tiny, desaturated and low-detail: it is only a 2–4% surface layer.
+          with Image.open(src / 'concrete.jpg') as im:
+              im = ImageOps.exif_transpose(im).convert('RGB')
+              im = crop_cover(im, (720, 720))
+              im = ImageEnhance.Color(im).enhance(0.18)
+              im = ImageEnhance.Contrast(im).enhance(0.72)
+              wash = Image.new('RGB', im.size, (241, 238, 231))
+              im = Image.blend(im, wash, 0.36)
+              im.save(out / 'surface-concrete.webp', 'WEBP', quality=58, method=6)
+
+          for p in sorted(out.glob('*.webp')):
+              print(p.name, p.stat().st_size)
+          PY
+
+      - name: Commit optimized media
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/media/*.webp
+          if git diff --cached --quiet; then
+            echo 'No media changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Ingest optimized Nolan media assets'
+          git push
