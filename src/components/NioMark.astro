@@ -6,11 +6,17 @@ interface Props {
 
 const { className = "", label } = Astro.props;
 ---
-<span class={`nio-mark ${className}`} role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : "true"}>
-  <svg viewBox="0 0 40 40" focusable="false">
-    <rect class="nio-mark-frame" x="1.5" y="1.5" width="37" height="37" rx="1.5"></rect>
-    <path class="nio-mark-letter" d="M10.5 29V11L29.5 29V11"></path>
-    <circle class="nio-mark-node" cx="20" cy="20" r="2.15"></circle>
-    <path class="nio-mark-axis" d="M20 2.5V7.5M20 32.5V37.5M2.5 20H7.5M32.5 20H37.5"></path>
-  </svg>
-</span>
+<svg
+  class:list={["nio-mark", className]}
+  viewBox="0 0 64 64"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden={label ? undefined : "true"}
+  role={label ? "img" : undefined}
+>
+  {label && <title>{label}</title>}
+  <path class="nio-mark-orbit nio-mark-orbit-primary" d="M8.5 37.5C12.2 49.6 23.6 56 36.4 54.2C47.8 52.6 56.2 44.8 57.3 34.2" />
+  <path class="nio-mark-orbit nio-mark-orbit-secondary" d="M18.4 10.8C28.5 6.1 40.8 7.5 49.2 14.3" />
+  <path class="nio-mark-letter" d="M16 45.5V18.5L47.5 45.5V18.5" />
+  <circle class="nio-mark-node" cx="57.3" cy="34.2" r="2.55" />
+</svg>
