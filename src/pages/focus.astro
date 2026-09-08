@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
+import PageSignalDeck from "../components/PageSignalDeck.astro";
 
 const sectors = [
   {
@@ -32,6 +33,12 @@ const sectors = [
     attention: "Beauty, wellness, fashion technology, distinctive consumer products"
   }
 ];
+
+const focusSignals = [
+  { label: "Scope", value: "Four areas", note: "Current fields of attention" },
+  { label: "Method", value: "Research-led", note: "Selective review" },
+  { label: "Horizon", value: "Long-term", note: "Durable demand and change" },
+];
 ---
 <SiteLayout
   active="focus"
@@ -54,6 +61,8 @@ const sectors = [
       </div>
     </div>
   </div>
+
+  <PageSignalDeck items={focusSignals} />
 
   <section class="page-section">
     <div class="wrap sector-modules" data-reveal>
@@ -94,6 +103,7 @@ const sectors = [
       sectorModules.forEach((module) => {
         module.open = module === target;
       });
+      requestAnimationFrame(() => target.scrollIntoView({ block: 'center' }));
     };
 
     sectorModules.forEach((module) => {
