@@ -2,11 +2,31 @@
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
 import PageSignalDeck from "../components/PageSignalDeck.astro";
+import ContactRoutingSystem from "../components/ContactRoutingSystem.astro";
+import "../styles/contact-routing.css";
 
 const channels = [
-  ["01", "Founders & operators", "Company introductions and operating conversations. A concise overview of the business, sector, stage and relevant contact information is sufficient for an initial introduction."],
-  ["02", "Professional correspondence", "Advisers, service providers, professional partners and institutional relationships."],
-  ["03", "General office", "Administrative and other general office correspondence."],
+  {
+    number: "01",
+    code: "FOUNDER",
+    title: "Founders & operators",
+    text: "Company introductions and operating conversations. A concise overview of the business, sector, stage and relevant contact information is sufficient for an initial introduction.",
+    guide: "Company, sector, stage and the most relevant point of contact."
+  },
+  {
+    number: "02",
+    code: "PROFESSIONAL",
+    title: "Professional correspondence",
+    text: "Advisers, service providers, professional partners and institutional relationships.",
+    guide: "Organization, professional role and the reason the correspondence is relevant to the office."
+  },
+  {
+    number: "03",
+    code: "GENERAL",
+    title: "General office",
+    text: "Administrative and other general office correspondence.",
+    guide: "Purpose, relevant context and the preferred return contact information."
+  },
 ];
 
 const contactSignals = [
@@ -42,15 +62,11 @@ const contactSignals = [
 
   <section class="page-section contact-page-section">
     <div class="wrap" data-reveal>
-      <div class="correspondence-list">
-        {channels.map(([n, title, text]) => (
-          <article class="correspondence-row" data-module>
-            <small class="module-index">{n}</small>
-            <h2>{title}</h2>
-            <p>{text}</p>
-          </article>
-        ))}
+      <div class="section-head">
+        <div class="section-number">01 / Routing</div>
+        <h2>Start with the right context.</h2>
       </div>
+      <ContactRoutingSystem items={channels} />
     </div>
   </section>
 
