@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
+import NioModelLayer from "../components/NioModelLayer.astro";
 
 const base = import.meta.env.BASE_URL;
 
@@ -30,6 +31,8 @@ const channels = [
   title="Contact | Nolan Investment Office"
   description="Correspondence information and inquiry categories for Nolan Investment Office."
 >
+  <NioModelLayer />
+
   <div class="wrap page-hero contact-page-hero">
     <div class="page-hero-inner">
       <div class="eyebrow">Contact · NIO / 03</div>
