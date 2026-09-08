@@ -2,10 +2,10 @@
 const base = import.meta.env.BASE_URL;
 
 const items = [
-  { number: "01", label: "Technology", code: "TECH", slug: "technology" },
-  { number: "02", label: "Healthcare", code: "HEALTH", slug: "healthcare" },
-  { number: "03", label: "Energy & Infrastructure", code: "ENERGY", slug: "energy-infrastructure" },
-  { number: "04", label: "Selective Consumer", code: "SELECT", slug: "selective-consumer" },
+  { number: "01", label: "Technology", code: "TECH", short: "T", slug: "technology" },
+  { number: "02", label: "Healthcare", code: "HEALTH", short: "H", slug: "healthcare" },
+  { number: "03", label: "Energy & Infrastructure", code: "ENERGY", short: "E", slug: "energy-infrastructure" },
+  { number: "04", label: "Selective Consumer", code: "SELECT", short: "C", slug: "selective-consumer" },
 ];
 ---
 <div class="home-visual-board" data-visual-board>
@@ -55,6 +55,21 @@ const items = [
     <span>Research-led</span>
     <span>Long-term</span>
   </div>
+</div>
+
+<div class="home-mobile-visual" aria-label="Investment focus map">
+  <span class="mobile-visual-line" aria-hidden="true"></span>
+  <span class="mobile-visual-core" aria-hidden="true">NIO</span>
+  {items.map((item) => (
+    <a
+      class="mobile-focus-node"
+      href={`${base}focus/#${item.slug}`}
+      aria-label={`Explore ${item.label}`}
+    >
+      <span class="mobile-focus-dot">{item.short}</span>
+      <span class="mobile-focus-label">{item.code}</span>
+    </a>
+  ))}
 </div>
 
 <script is:inline>
