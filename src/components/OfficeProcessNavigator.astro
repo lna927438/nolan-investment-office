@@ -1,0 +1,84 @@
+---
+interface Props {
+  steps: [string, string, string][];
+}
+
+const { steps } = Astro.props;
+const first = steps[0];
+---
+<div class="process-system" data-process-system>
+  <div class="process-tabs" role="tablist" aria-label="Investment review process">
+    {steps.map(([number, title, text], index) => (
+      <button
+        class="process-tab"
+        type="button"
+        role="tab"
+        aria-selected={index === 0 ? "true" : "false"}
+        data-process-index={index}
+        data-process-title={title}
+        data-process-copy={text}
+      >
+        <span class="process-tab-number">{number}</span>
+        <span class="process-tab-title">{title}</span>
+        <span class="process-tab-arrow" aria-hidden="true">→</span>
+      </button>
+    ))}
+  </div>
+
+  <div class="process-stage" data-module data-process-stage="0">
+    <div class="process-stage-head">
+      <span>Decision system</span>
+      <span data-process-count>01 / 05</span>
+    </div>
+
+    <div class="process-stage-map" aria-hidden="true">
+      <div class="process-stage-axis"></div>
+      {steps.map((_, index) => (
+        <span class="process-stage-node" data-stage-node={index}></span>
+      ))}
+      <div class="process-stage-orbit">
+        <span>NIO</span>
+      </div>
+    </div>
+
+    <div class="process-stage-copy">
+      <span class="process-stage-kicker">Current stage</span>
+      <strong data-process-title>{first[1]}</strong>
+      <p data-process-copy>{first[2]}</p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-process-system]').forEach((system) => {
+    const tabs = [...system.querySelectorAll('[data-process-index]')];
+    const stage = system.querySelector('[data-process-stage]');
+    const count = system.querySelector('[data-process-count]');
+    const title = system.querySelector('[data-process-title]');
+    const copy = system.querySelector('[data-process-copy]');
+
+    const activate = (tab) => {
+      const index = Number(tab.dataset.processIndex || 0);
+      tabs.forEach((item, itemIndex) => {
+        item.setAttribute('aria-selected', itemIndex === index ? 'true' : 'false');
+      });
+      if (stage) stage.dataset.processStage = String(index);
+      if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(tabs.length).padStart(2, '0')}`;
+      if (title) title.textContent = tab.dataset.processTitle || '';
+      if (copy) copy.textContent = tab.dataset.processCopy || '';
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => activate(tab));
+      tab.addEventListener('keydown', (event) => {
+        if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(event.key)) return;
+        event.preventDefault();
+        const current = tabs.indexOf(tab);
+        const direction = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1;
+        const next = tabs[(current + direction + tabs.length) % tabs.length];
+        next.focus();
+        activate(next);
+      });
+    });
+  });
+</script>
