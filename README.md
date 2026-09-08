@@ -1,4 +1,4 @@
-# Nolan Investment Office — V1.4
+# Nolan Investment Office — V1.5
 
 Minimal multi-page website for Nolan Investment Office, built with Astro.
 
@@ -11,7 +11,7 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - 404
 
 ## Navigation model
-The public navigation now uses real pages rather than in-page anchor links:
+The public navigation uses real pages rather than in-page anchor links:
 
 - `/` — Home overview and approach
 - `/focus/` — sector focus and areas of attention
@@ -29,15 +29,15 @@ The public navigation now uses real pages rather than in-page anchor links:
 - Minimal motion
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
-## V1.4 refinements
-- Converted the original single-page navigation into a true multi-page site
-- Added a shared site layout for consistent navigation, metadata and footer behavior
-- Kept Approach on the Home page to avoid unnecessary page fragmentation
-- Added a dedicated Focus page with four research areas
-- Added a dedicated Office page covering leadership, operating structure and review workflow
-- Added a dedicated Contact page without publishing placeholder or invented contact data
-- Added current-page navigation states
-- Preserved GitHub Pages base-path compatibility and noindex preview status
+## V1.5 refinements
+- Reduced the oversized home hero typography so the main statement resolves more cleanly
+- Shortened excess empty space above the hero content
+- Strengthened the NOLAN wordmark while keeping the identity restrained
+- Added a subtle header boundary and understated navigation underline states
+- Tightened desktop and mobile spacing across major sections
+- Reduced secondary text scale to improve hierarchy
+- Refined Focus, Office, Contact and Legal page hero proportions for consistency
+- Preserved responsive behavior and reduced-motion accessibility
 
 ## Development
 
