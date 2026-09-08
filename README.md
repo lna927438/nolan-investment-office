@@ -1,4 +1,4 @@
-# Nolan Investment Office — V2.3
+# Nolan Investment Office — V2.4
 
 Minimal multi-page website for Nolan Investment Office, built with Astro.
 
@@ -28,18 +28,26 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - Progressive motion without heavy animation libraries
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
+## V2.4 production polish
+- Preserved the strict single-screen homepage
+- Expanded practical hit targets for navigation and touch interaction without creating visible button chrome
+- Removed sticky hover residue on touch-first devices and separated hover / press behavior
+- Added text wrapping resilience for narrow layouts and OS font substitutions
+- Added Focus deep-link scroll offsets and native grouped disclosure behavior
+- Upgraded the Office process tabs with roving tabindex, Home/End navigation and explicit tab / panel relationships
+- Added polite live-region updates to interactive Office and Contact readouts
+- Reduced high-frequency pointer and scroll work through requestAnimationFrame scheduling
+- Reduced mobile backdrop-filter cost while preserving the visual hierarchy
+- Tightened footer height and retained active-route context
+- Added prefers-contrast, forced-colors and reduced-motion production fallbacks
+
 ## V2.3 refinement and motion layer
-- Preserved the strict single-screen homepage and existing V2.2 modular systems
-- Added progressive view-entry movement in supporting browsers while keeping fully visible static fallbacks
-- Added active-section handoff to the right-side Page Progress Rail so it now reports both page code and current content section
-- Added section-heading line-build states as content enters the active reading zone
-- Added a subtle scrolled-state response to the Nolan header symbol
-- Added synchronized micro-transitions when Office Operating Network, Office Decision System and Contact Router change state
-- Added unified Nolan symbol focus pulses inside interactive systems
-- Expanded the homepage Focus Board readout to include selected-sector research keywords without increasing board height
-- Added restrained text transition behavior to the Focus Board readout
-- Preserved keyboard navigation, reduced-motion support and no-JS content visibility
-- Kept mobile density rules intact and avoided adding new mobile page length
+- Progressive view-entry movement with static fallbacks
+- Active-section handoff to the right-side Page Progress Rail
+- Section-heading line-build states
+- Scrolled-state response to the Nolan header symbol
+- Synchronized micro-transitions for Office and Contact interactive systems
+- Homepage Focus Board second-level research readout
 
 ## V2.2 sector and routing system
 - Four distinct Focus visual languages for Technology, Healthcare, Energy & Infrastructure and Selective Consumer
@@ -47,8 +55,10 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - Interactive Contact Correspondence Router with Founder, Professional and General routes
 - Compact mobile signal deck and interior density rules
 
-## Visual references
-The visual system incorporates selected design ideas from MIT-licensed Astro projects while keeping Nolan's implementation original and intentionally restrained. Reference and license notes are documented in `docs/visual-references.md`.
+## Visual references and asset sourcing
+Open-source design references and license notes are documented in `docs/visual-references.md`.
+
+The curated media / texture / SVG / motion shortlist is documented in `docs/nolan-asset-library.md`. The asset library records source URLs, license baselines, intended placement, treatment guidance and recommendation priority before any media is promoted into the production site.
 
 ## Development
 
