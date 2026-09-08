@@ -1,0 +1,204 @@
+/* V2.2: sector-specific focus visual language. */
+
+.sector-panel{
+  grid-template-columns:80px minmax(220px,.78fr) minmax(340px,1.22fr) 48px;
+  align-items:stretch;
+}
+
+.sector-panel .sector-copy{
+  grid-column:2;
+  align-self:center;
+}
+
+.sector-visual{
+  grid-column:3;
+  min-height:190px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  border:1px solid var(--module-line);
+  background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(89,100,84,.018));
+  overflow:hidden;
+  position:relative;
+  isolation:isolate;
+}
+
+.sector-visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(to right,transparent calc(50% - .5px),rgba(27,30,26,.035) 50%,transparent calc(50% + .5px)),
+    linear-gradient(to bottom,transparent calc(50% - .5px),rgba(27,30,26,.035) 50%,transparent calc(50% + .5px));
+}
+
+.sector-visual-head,
+.sector-visual-foot{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:10px 12px;
+  color:var(--muted);
+  font-size:7.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+.sector-visual-head{border-bottom:1px solid var(--module-line)}
+.sector-visual-foot{border-top:1px solid var(--module-line)}
+.sector-visual-foot span+span::before{
+  content:"";
+  display:inline-block;
+  width:3px;
+  height:3px;
+  margin:0 8px 1px 0;
+  border-radius:50%;
+  background:var(--accent);
+  opacity:.5;
+}
+
+.sector-visual-stage{
+  min-height:126px;
+  position:relative;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+
+.sector-svg{
+  width:88%;
+  height:88%;
+  overflow:visible;
+}
+
+.sector-svg path,
+.sector-svg polyline,
+.sector-svg circle{
+  fill:none;
+  stroke:rgba(89,100,84,.42);
+  stroke-width:1;
+  vector-effect:non-scaling-stroke;
+}
+
+.sector-svg circle{fill:var(--paper);stroke-width:1.1}
+.sector-svg .sector-svg-active{fill:var(--accent);stroke:var(--accent)}
+
+/* Technology: distributed network. */
+.sector-visual-technology .sector-visual-stage{
+  background:
+    radial-gradient(circle at 54% 55%,rgba(89,100,84,.065),transparent 38%),
+    linear-gradient(transparent,rgba(255,255,255,.035));
+}
+.tech-svg path{stroke-dasharray:2.5 3.2}
+.tech-pulse{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border:1px solid var(--accent);
+  border-radius:50%;
+  opacity:.48;
+}
+.tech-pulse-a{left:51%;top:51%;box-shadow:0 0 0 8px rgba(89,100,84,.035)}
+.tech-pulse-b{right:16%;top:20%;width:5px;height:5px}
+
+/* Healthcare: diagnosis / signal rings. */
+.sector-visual-healthcare .sector-visual-stage{
+  background:radial-gradient(circle at center,rgba(255,255,255,.18),transparent 62%);
+}
+.health-ring{
+  position:absolute;
+  border:1px solid rgba(89,100,84,.12);
+  border-radius:50%;
+}
+.health-ring-a{width:116px;height:116px}
+.health-ring-b{width:78px;height:78px}
+.health-ring-c{width:42px;height:42px;border-color:rgba(89,100,84,.22)}
+.health-core{
+  width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.75;box-shadow:0 0 0 7px rgba(89,100,84,.055)
+}
+.health-svg{position:absolute;inset:auto 6% 8%;width:88%;height:42%}
+.health-svg polyline{stroke:rgba(89,100,84,.58)}
+
+/* Energy: grid / flow / infrastructure. */
+.energy-grid{
+  position:absolute;
+  inset:17% 10%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  border-left:1px solid rgba(89,100,84,.12);
+  border-top:1px solid rgba(89,100,84,.12);
+}
+.energy-grid span{border-right:1px solid rgba(89,100,84,.12);border-bottom:1px solid rgba(89,100,84,.12)}
+.energy-flow{
+  position:absolute;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.48;
+  transform-origin:left center;
+}
+.energy-flow-a{width:48%;left:10%;top:34%}
+.energy-flow-b{width:44%;left:44%;top:50%;transform:rotate(90deg)}
+.energy-flow-c{width:54%;left:35%;bottom:29%}
+.energy-node{
+  position:absolute;width:8px;height:8px;border:1px solid var(--accent);background:var(--paper);transform:rotate(45deg)
+}
+.energy-node-a{left:21%;top:30%}
+.energy-node-b{left:49%;top:46%;background:var(--accent)}
+.energy-node-c{right:18%;bottom:25%}
+
+/* Consumer: brand / repeat-loop system. */
+.consumer-orbit{
+  position:absolute;
+  border:1px solid rgba(89,100,84,.14);
+  border-radius:50%;
+}
+.consumer-orbit-a{width:128px;height:128px}
+.consumer-orbit-b{width:78px;height:78px;border-style:dashed}
+.consumer-core{
+  width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(89,100,84,.24);border-radius:50%;
+  font-family:var(--serif);font-size:18px;color:var(--accent);background:rgba(241,238,231,.88)
+}
+.consumer-point{
+  position:absolute;width:8px;height:8px;border-radius:50%;background:var(--paper);border:1px solid var(--accent)
+}
+.consumer-point-a{top:18%;left:48%}
+.consumer-point-b{right:21%;top:48%;background:var(--accent)}
+.consumer-point-c{bottom:18%;left:48%}
+.consumer-point-d{left:21%;top:48%}
+
+.sector-module[open] .sector-visual{
+  border-color:rgba(89,100,84,.26);
+}
+
+@media(hover:hover) and (pointer:fine){
+  .sector-module:hover .sector-visual{
+    background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(89,100,84,.03));
+  }
+}
+
+@media(max-width:900px){
+  .sector-panel{
+    grid-template-columns:52px 1fr 40px;
+  }
+  .sector-panel .sector-copy{grid-column:2}
+  .sector-visual{grid-column:2;min-height:170px;margin-top:22px}
+}
+
+@media(max-width:620px){
+  .sector-panel{grid-template-columns:34px 1fr 34px}
+  .sector-visual{min-height:146px;margin-top:18px}
+  .sector-visual-stage{min-height:96px}
+  .sector-visual-head,.sector-visual-foot{font-size:6.5px;padding:8px 9px}
+  .health-ring-a{width:90px;height:90px}
+  .health-ring-b{width:60px;height:60px}
+  .consumer-orbit-a{width:94px;height:94px}
+  .consumer-orbit-b{width:58px;height:58px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sector-visual *{animation:none!important;transition:none!important}
+}
