@@ -9,6 +9,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "cannon-es": "^0.20.0",
+    "three": "^0.180.0"
   }
 }
