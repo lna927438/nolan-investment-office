@@ -2,6 +2,8 @@
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
 import PageSignalDeck from "../components/PageSignalDeck.astro";
+import OfficeProcessNavigator from "../components/OfficeProcessNavigator.astro";
+import "../styles/process-system.css";
 
 const support = [
   ["01", "Investment research", "Sector work, company review, market context and diligence support."],
@@ -86,21 +88,13 @@ const officeSignals = [
     </div>
   </section>
 
-  <section class="page-section">
+  <section class="page-section process-system-section">
     <div class="wrap" data-reveal>
       <div class="section-head">
         <div class="section-number">03 / Process</div>
         <h2>A direct review process.</h2>
       </div>
-      <div class="process-list">
-        {process.map(([n, title, text]) => (
-          <div class="process-row" data-module>
-            <small class="module-index">{n}</small>
-            <strong>{title}</strong>
-            <p>{text}</p>
-          </div>
-        ))}
-      </div>
+      <OfficeProcessNavigator steps={process} />
     </div>
   </section>
 
