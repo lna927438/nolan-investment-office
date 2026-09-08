@@ -12,10 +12,13 @@ const first = steps[0];
   <div class="process-tabs" role="tablist" aria-label="Investment review process">
     {steps.map(([number, title, text], index) => (
       <button
+        id={`office-process-tab-${index}`}
         class="process-tab"
         type="button"
         role="tab"
         aria-selected={index === 0 ? "true" : "false"}
+        aria-controls="office-process-panel"
+        tabindex={index === 0 ? 0 : -1}
         data-process-index={index}
         data-process-title={title}
         data-process-copy={text}
@@ -27,7 +30,15 @@ const first = steps[0];
     ))}
   </div>
 
-  <div class="process-stage" data-module data-process-stage="0">
+  <div
+    id="office-process-panel"
+    class="process-stage"
+    role="tabpanel"
+    aria-live="polite"
+    aria-labelledby="office-process-tab-0"
+    data-module
+    data-process-stage="0"
+  >
     <div class="process-stage-head">
       <span>Decision system</span>
       <span data-process-count>01 / 05</span>
@@ -65,28 +76,38 @@ const first = steps[0];
       requestAnimationFrame(() => stage.classList.add('is-switching'));
     };
 
-    const activate = (tab) => {
+    const activate = (tab, moveFocus = false) => {
       const index = Number(tab.dataset.processIndex || 0);
       tabs.forEach((item, itemIndex) => {
-        item.setAttribute('aria-selected', itemIndex === index ? 'true' : 'false');
+        const selected = itemIndex === index;
+        item.setAttribute('aria-selected', selected ? 'true' : 'false');
+        item.setAttribute('tabindex', selected ? '0' : '-1');
       });
-      if (stage) stage.dataset.processStage = String(index);
+      if (stage) {
+        stage.dataset.processStage = String(index);
+        stage.setAttribute('aria-labelledby', tab.id);
+      }
       if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(tabs.length).padStart(2, '0')}`;
       if (title) title.textContent = tab.dataset.processTitle || '';
       if (copy) copy.textContent = tab.dataset.processCopy || '';
+      if (moveFocus) tab.focus();
       refreshStage();
     };
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => activate(tab));
       tab.addEventListener('keydown', (event) => {
-        if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(event.key)) return;
-        event.preventDefault();
         const current = tabs.indexOf(tab);
-        const direction = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1;
-        const next = tabs[(current + direction + tabs.length) % tabs.length];
-        next.focus();
-        activate(next);
+        let next;
+
+        if (event.key === 'Home') next = tabs[0];
+        if (event.key === 'End') next = tabs[tabs.length - 1];
+        if (['ArrowDown', 'ArrowRight'].includes(event.key)) next = tabs[(current + 1) % tabs.length];
+        if (['ArrowUp', 'ArrowLeft'].includes(event.key)) next = tabs[(current - 1 + tabs.length) % tabs.length];
+        if (!next) return;
+
+        event.preventDefault();
+        activate(next, true);
       });
     });
   });
