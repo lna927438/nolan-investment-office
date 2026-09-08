@@ -1,4 +1,6 @@
 ---
+import NioMark from "./NioMark.astro";
+
 interface Props {
   steps: [string, string, string][];
 }
@@ -37,7 +39,7 @@ const first = steps[0];
         <span class="process-stage-node" data-stage-node={index}></span>
       ))}
       <div class="process-stage-orbit">
-        <span>NIO</span>
+        <NioMark className="process-core-mark" />
       </div>
     </div>
 
