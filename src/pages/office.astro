@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import RouteModule from "../components/RouteModule.astro";
+import NioModelLayer from "../components/NioModelLayer.astro";
 
 const base = import.meta.env.BASE_URL;
 
@@ -23,6 +24,8 @@ const process = [
   title="Office | Nolan Investment Office"
   description="About Nolan Investment Office, its operating structure, leadership and investment review process."
 >
+  <NioModelLayer />
+
   <div class="wrap page-hero">
     <div class="page-hero-inner">
       <div class="eyebrow">The Office · NIO / 02</div>
