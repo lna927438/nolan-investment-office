@@ -1,4 +1,5 @@
 ---
+import NioMark from "./NioMark.astro";
 import "../styles/global.css";
 import "../styles/reliability.css";
 import "../styles/editorial.css";
@@ -6,6 +7,7 @@ import "../styles/modules.css";
 import "../styles/interior-visuals.css";
 import "../styles/signal-deck.css";
 import "../styles/page-progress.css";
+import "../styles/brand-system.css";
 
 interface Props {
   title?: string;
@@ -57,8 +59,11 @@ const pageCode = pageCodes[pageName];
     <header class="site-header">
       <div class="wrap nav">
         <a class="brand" href={url()} aria-label="Nolan Investment Office home">
-          <strong>NOLAN</strong>
-          <span>Investment Office</span>
+          <NioMark className="brand-mark" />
+          <span class="brand-copy">
+            <strong>NOLAN</strong>
+            <span>Investment Office</span>
+          </span>
         </a>
         <nav aria-label="Primary navigation">
           <a href={url("focus/")} aria-current={active === "focus" ? "page" : undefined}>Focus</a>
@@ -84,16 +89,37 @@ const pageCode = pageCodes[pageName];
 
     {showFooter && (
       <footer>
-        <div class="wrap footer-grid">
-          <p class="disclaimer">
-            For general informational purposes only. Nothing on this website
-            constitutes an offer, solicitation, investment recommendation or
-            advisory relationship.
-          </p>
-          <div class="footer-side">
-            <span>California, United States</span>
-            <a href={url("legal/")} aria-current={active === "legal" ? "page" : undefined}>Legal</a>
-            <span>© 2026 Nolan Investment Office</span>
+        <div class="wrap footer-inner">
+          <div class="footer-brand-panel" data-module>
+            <div class="footer-brand-lockup">
+              <NioMark className="footer-mark" />
+              <div class="footer-brand-name">
+                <strong>NOLAN</strong>
+                <span>Investment Office</span>
+              </div>
+            </div>
+            <div class="footer-brand-meta">
+              <span>Independent Investment Office</span>
+              <span>California, United States</span>
+            </div>
+            <nav class="footer-route-map" aria-label="Footer navigation">
+              <a href={url("focus/")}>01 / Focus</a>
+              <a href={url("office/")}>02 / Office</a>
+              <a href={url("contact/")}>03 / Contact</a>
+            </nav>
+          </div>
+
+          <div class="footer-grid">
+            <p class="disclaimer">
+              For general informational purposes only. Nothing on this website
+              constitutes an offer, solicitation, investment recommendation or
+              advisory relationship.
+            </p>
+            <div class="footer-side">
+              <span>California, United States</span>
+              <a href={url("legal/")} aria-current={active === "legal" ? "page" : undefined}>Legal</a>
+              <span>© 2026 Nolan Investment Office</span>
+            </div>
           </div>
         </div>
       </footer>
