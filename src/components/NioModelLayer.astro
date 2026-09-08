@@ -313,6 +313,17 @@ const { enabled = true } = Astro.props;
         lookTarget.copy(focusPosition);
         focused = true;
       }
+      if (reduceMotion) {
+        pageModels.forEach((model) => {
+          model.position.copy(model.userData.positionTarget);
+          model.scale.setScalar(model.userData.scaleTarget);
+          model.rotation.copy(model.userData.rotationTarget);
+          setModelVisualOpacity(model, model.userData.opacityTarget ?? 1);
+        });
+        camera.position.copy(cameraTarget);
+        camera.lookAt(lookTarget);
+        renderer.render(scene, camera);
+      }
       window.dispatchEvent(new CustomEvent('nio:modelchange', { detail: { index: activeIndex, label: active.userData.label } }));
     };
 
@@ -361,6 +372,10 @@ const { enabled = true } = Astro.props;
         active.userData.rotationTarget.y += dx * 0.007;
         active.userData.rotationTarget.x += dy * 0.005;
         active.userData.rotationTarget.x = THREE.MathUtils.clamp(active.userData.rotationTarget.x, -1.05, 1.05);
+        if (reduceMotion) {
+          active.rotation.copy(active.userData.rotationTarget);
+          renderer.render(scene, camera);
+        }
         lastX = event.clientX;
         lastY = event.clientY;
         controls.classList.add('is-dragging');
@@ -395,6 +410,8 @@ const { enabled = true } = Astro.props;
       dragging = false;
       controls.classList.remove('is-dragging');
       if (wasDragging && movedDuringDrag) return;
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('a,button,summary,input,textarea,select,label')) return;
       updatePointer(event);
       const hit = hitModel();
       if (hit && hit.object.userData.model === pageModels[activeIndex]) activateModel(activeIndex, true);
@@ -414,14 +431,51 @@ const { enabled = true } = Astro.props;
       pageModels.forEach((model) => {
         model.userData.explodeTarget = 0;
         model.userData.rotationTarget.set(0.08, -0.22, 0);
+        if (reduceMotion) {
+          model.userData.explode = 0;
+          model.rotation.copy(model.userData.rotationTarget);
+          model.userData.pieces.forEach((piece) => {
+            if (piece.userData.basePosition) piece.position.copy(piece.userData.basePosition);
+          });
+        }
       });
       if (explodeButton instanceof HTMLButtonElement) explodeButton.setAttribute('aria-pressed', 'false');
+      if (reduceMotion) {
+        camera.position.copy(cameraTarget);
+        camera.lookAt(lookTarget);
+        renderer.render(scene, camera);
+      }
     };
 
     const toggleExplode = () => {
       const active = pageModels[activeIndex];
       active.userData.explodeTarget = active.userData.explodeTarget > 0.5 ? 0 : 1;
       if (explodeButton instanceof HTMLButtonElement) explodeButton.setAttribute('aria-pressed', active.userData.explodeTarget ? 'true' : 'false');
+      if (reduceMotion) {
+        active.userData.explode = active.userData.explodeTarget;
+        active.userData.pieces.forEach((piece) => {
+          const base = piece.userData.basePosition;
+          const vector = piece.userData.explodeVector;
+          if (base && vector) piece.position.copy(base).addScaledVector(vector, active.userData.explode);
+        });
+        renderer.render(scene, camera);
+      }
+    };
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') resetView();
+      if (event.key.toLowerCase() === 'e' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) toggleExplode();
+    };
+    const onPointerCancel = () => {
+      dragging = false;
+      movedDuringDrag = false;
+      controls.classList.remove('is-dragging');
+    };
+    const onContextLost = (event) => {
+      event.preventDefault();
+      running = false;
+      cancelAnimationFrame(frame);
+      document.documentElement.classList.add('webgl-lost');
     };
 
     explodeButton?.addEventListener('click', toggleExplode);
@@ -429,11 +483,11 @@ const { enabled = true } = Astro.props;
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerCancel);
+    window.addEventListener('blur', onPointerCancel);
     window.addEventListener('click', onClick);
-    window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') resetView();
-      if (event.key.toLowerCase() === 'e' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) toggleExplode();
-    });
+    window.addEventListener('keydown', onKeyDown);
+    canvas.addEventListener('webglcontextlost', onContextLost, false);
 
     const onFocusChange = (event) => {
       if (page !== 'focus') return;
@@ -521,12 +575,20 @@ const { enabled = true } = Astro.props;
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerCancel);
+      window.removeEventListener('blur', onPointerCancel);
       window.removeEventListener('click', onClick);
+      window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', resize);
       window.removeEventListener('nio:focuschange', onFocusChange);
       document.removeEventListener('visibilitychange', onVisibility);
-      renderer.dispose();
+      canvas.removeEventListener('webglcontextlost', onContextLost, false);
+      explodeButton?.removeEventListener('click', toggleExplode);
+      resetButton?.removeEventListener('click', resetView);
+      document.documentElement.classList.remove('webgl-lost');
       composer?.dispose();
+      renderer.dispose();
+      renderer.forceContextLoss?.();
     };
     window.addEventListener('pagehide', cleanup, { once: true });
   }

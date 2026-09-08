@@ -15,6 +15,7 @@ import "../styles/production-polish.css";
 import "../styles/media-layer.css";
 import "../styles/v3-reset.css";
 import "../styles/space3d.css";
+import "../styles/runtime-safety.css";
 
 interface Props {
   title?: string;
@@ -45,10 +46,25 @@ const pageCode = pageCodes[pageName];
 const surfaceStyle = `--nio-surface:url('${url("media/surface-concrete.webp")}')`;
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.remove('no-js');
+        root.classList.add('js');
+        try {
+          const probe = document.createElement('canvas');
+          const gl = probe.getContext('webgl2') || probe.getContext('webgl');
+          if (!gl) root.classList.add('no-webgl');
+          gl?.getExtension('WEBGL_lose_context')?.loseContext();
+        } catch {
+          root.classList.add('no-webgl');
+        }
+      })();
+    </script>
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex,follow" : "index,follow"} />
     <meta name="theme-color" content="#03050a" />
