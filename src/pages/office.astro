@@ -58,7 +58,7 @@ const officeSignals = [
         <div class="section-number">01 / Leadership</div>
         <h2>Clear responsibility.</h2>
       </div>
-      <div class="leadership-row" data-module>
+      <div class="leadership-row leadership-row-media" data-module>
         <div>
           <div class="leadership-name">Renee Nolan</div>
           <div class="leadership-role">Principal</div>
@@ -68,6 +68,20 @@ const officeSignals = [
           office. Her role is centered on judgment, relationships and the final
           allocation of attention and capital.
         </p>
+        <figure class="office-media-card">
+          <img
+            src={`${import.meta.env.BASE_URL}media/office-architecture.webp`}
+            alt="Abstract concrete architecture used as a visual study of structure and light."
+            loading="lazy"
+            decoding="async"
+            width="1200"
+            height="900"
+          />
+          <figcaption class="office-media-caption">
+            <span>Visual study</span>
+            <span>Structure / light</span>
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>
