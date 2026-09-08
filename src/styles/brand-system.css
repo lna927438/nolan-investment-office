@@ -36,6 +36,17 @@
   gap:12px;
 }
 
+/* Reset legacy .brand span rules for the new lockup wrappers. */
+.brand > .brand-mark,
+.brand > .brand-copy{
+  margin-top:0;
+  color:inherit;
+  font-size:inherit;
+  font-weight:inherit;
+  letter-spacing:normal;
+  text-transform:none;
+}
+
 .brand-mark{
   --mark-size:29px;
   transition:transform var(--transition-base,var(--module-duration)) var(--ease-out-quart,var(--module-ease));
@@ -45,6 +56,15 @@
   display:flex;
   flex-direction:column;
   line-height:1;
+}
+
+.brand-copy > span{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:8px;
+  font-weight:500;
+  letter-spacing:.25em;
+  text-transform:uppercase;
 }
 
 .brand:hover .brand-mark{
@@ -167,6 +187,7 @@
 @media(max-width:620px){
   .brand{gap:8px}
   .brand-mark{--mark-size:22px}
+  .brand-copy > span{font-size:6.7px;letter-spacing:.22em;margin-top:5px}
   .footer-brand-panel{grid-template-columns:1fr;gap:20px;min-height:0;padding:24px 0}
   .footer-mark{--mark-size:42px}
   .footer-brand-meta{padding-left:0;border-left:0}
