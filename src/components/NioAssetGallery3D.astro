@@ -1,4 +1,6 @@
 ---
+import NioIcon from "./NioIcon.astro";
+
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -18,8 +20,8 @@ const base = import.meta.env.BASE_URL;
     <small data-nio-asset-state>Loading asset</small>
   </div>
   <div class="nio-asset-actions">
-    <button type="button" data-nio-asset-material>Material 01</button>
-    <button type="button" data-nio-asset-reset>Reset view</button>
+    <button type="button" data-nio-asset-material><NioIcon name="layers" className="nio-action-icon" /><span>Material 01</span></button>
+    <button type="button" data-nio-asset-reset><NioIcon name="reset" className="nio-action-icon" /><span>Reset</span></button>
   </div>
   <span class="nio-asset-hint">Drag model · click hotspot · M material · Esc reset · scroll fly-through</span>
 </div>
@@ -42,6 +44,7 @@ const base = import.meta.env.BASE_URL;
     const labelEl = controls.querySelector('[data-nio-asset-label]');
     const stateEl = controls.querySelector('[data-nio-asset-state]');
     const materialButton = controls.querySelector('[data-nio-asset-material]');
+    const materialLabel = materialButton?.querySelector('span');
     const resetButton = controls.querySelector('[data-nio-asset-reset]');
     const hotspotEl = layer.querySelector('[data-nio-asset-hotspot]');
     const hotspotIndexEl = hotspotEl?.querySelector('[data-nio-hotspot-index]');
@@ -248,7 +251,7 @@ const base = import.meta.env.BASE_URL;
         if (materialMode === 1) node.material = node.userData.nioTechMaterial;
         if (materialMode === 2) node.material = node.userData.nioGlassMaterial;
       });
-      if (materialButton) materialButton.textContent = `Material 0${materialMode + 1}`;
+      if (materialLabel) materialLabel.textContent = `Material 0${materialMode + 1}`;
       if (reduceMotion && !destroyed) renderer.render(scene, camera);
     };
 

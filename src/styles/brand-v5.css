@@ -49,6 +49,7 @@
 
 .brand:hover .nio-mark-node,
 .brand:focus-visible .nio-mark-node{
+  fill:var(--space-cyan,#7ee8ff);
   transform:scale(1.35);
   filter:drop-shadow(0 0 7px rgba(126,232,255,.82));
 }
@@ -95,6 +96,13 @@
   width:14px;
   height:14px;
   opacity:.78;
+}
+
+.v3-home-routes strong{
+  display:flex!important;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
 }
 
 .nio-route-icon{

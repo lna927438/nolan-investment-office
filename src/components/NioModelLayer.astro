@@ -1,4 +1,6 @@
 ---
+import NioIcon from "./NioIcon.astro";
+
 interface Props {
   enabled?: boolean;
 }
@@ -14,12 +16,12 @@ const { enabled = true } = Astro.props;
     <div class="nio-model-controls" data-nio-model-controls>
       <div class="nio-model-readout">
         <span>Interactive model</span>
-        <strong data-nio-model-label>NIO CORE</strong>
+        <strong data-nio-model-label>NOLAN ORBIT</strong>
         <small data-nio-model-count>01 / 01</small>
       </div>
       <div class="nio-model-actions">
-        <button type="button" data-nio-model-explode aria-pressed="false">Explode</button>
-        <button type="button" data-nio-model-reset>Reset</button>
+        <button type="button" data-nio-model-explode aria-pressed="false"><NioIcon name="explode" className="nio-action-icon" /><span>Explode</span></button>
+        <button type="button" data-nio-model-reset><NioIcon name="reset" className="nio-action-icon" /><span>Reset</span></button>
       </div>
       <span class="nio-model-hint">Click model · drag · Esc reset</span>
     </div>
@@ -159,14 +161,37 @@ const { enabled = true } = Astro.props;
     };
 
     const buildNioCore = () => {
-      const m = createModel('NIO SCULPTURE', 0x7ee8ff, 0);
-      const mat = metal(0x7ee8ff, { color: 0x101827, emissiveIntensity: 0.28, roughness: 0.12 });
-      addPiece(m, new THREE.BoxGeometry(0.24, 2.4, 0.42), mat.clone(), [-0.78, 0, 0], [-1.4, 0.2, 0.4]);
-      addPiece(m, new THREE.BoxGeometry(0.24, 2.4, 0.42), mat.clone(), [0.78, 0, 0], [1.4, -0.2, -0.4]);
-      addPiece(m, new THREE.BoxGeometry(0.25, 2.15, 0.42), mat.clone(), [0, 0, 0], [0, 1.1, 0.9], [0, 0, -0.67]);
-      addPiece(m, new THREE.TorusGeometry(1.48, 0.035, 12, 160), metal(0x9d8cff, { color: 0x0e1420, emissiveIntensity: 0.52 }), [0, 0, -0.14], [0, 0, -1.2], [1.14, 0.3, 0.18]);
-      addPiece(m, new THREE.IcosahedronGeometry(0.34, 3), glass(0xe6c98b), [0, 0, 0.3], [0, 0, 1.55]);
-      addEdgeShell(m, new THREE.BoxGeometry(2.6, 2.9, 1.1), 0x7ee8ff, 0.18);
+      const m = createModel('NOLAN ORBIT', 0x7ee8ff, 0);
+      const letter = metal(0x7ee8ff, { color: 0x111a28, emissiveIntensity: 0.3, roughness: 0.13 });
+      const orbit = metal(0x9d8cff, { color: 0x0b111c, emissiveIntensity: 0.68, roughness: 0.1 });
+
+      addPiece(m, new THREE.BoxGeometry(0.19, 2.5, 0.3), letter.clone(), [-0.72, 0, 0], [-1.35, 0.08, 0.42]);
+      addPiece(m, new THREE.BoxGeometry(0.19, 2.5, 0.3), letter.clone(), [0.72, 0, 0], [1.35, -0.08, -0.42]);
+      addPiece(m, new THREE.BoxGeometry(0.19, 2.36, 0.3), letter.clone(), [0, 0, 0], [0, 1.25, 0.72], [0, 0, -0.55]);
+
+      addPiece(
+        m,
+        new THREE.TorusGeometry(1.55, 0.026, 10, 180, Math.PI * 1.42),
+        orbit.clone(),
+        [0, -0.08, -0.16],
+        [0.2, -0.65, -1.25],
+        [0.16, 0.32, -0.68]
+      );
+      addPiece(
+        m,
+        new THREE.TorusGeometry(1.38, 0.018, 10, 120, Math.PI * 0.62),
+        metal(0x7ee8ff, { color: 0x0b111c, emissiveIntensity: 0.44, roughness: 0.12 }),
+        [0.02, 0.03, -0.1],
+        [-0.35, 0.8, 0.75],
+        [0.2, -0.15, 2.38]
+      );
+      addPiece(
+        m,
+        new THREE.SphereGeometry(0.115, 28, 28),
+        metal(0x7ee8ff, { color: 0x7ee8ff, emissiveIntensity: 2.4, metalness: 0.18, roughness: 0.08 }),
+        [1.48, -0.28, 0.18],
+        [1.15, -0.35, 1.2]
+      );
       return m;
     };
 

@@ -1,4 +1,6 @@
 ---
+import NioIcon from "./NioIcon.astro";
+
 interface FocusItem {
   number: string;
   slug: string;
@@ -80,7 +82,7 @@ const first = items[0];
       >
         <span>{item.number}</span>
         <strong>{item.title}</strong>
-        <i aria-hidden="true">↗</i>
+        <NioIcon name="arrow-up-right" className="nio-route-icon" />
       </button>
     ))}
   </div>
