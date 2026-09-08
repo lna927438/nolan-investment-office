@@ -177,6 +177,33 @@ const base = import.meta.env.BASE_URL;
       return object;
     };
 
+    const disposeObjectResources = (object) => {
+      if (!object) return;
+      const geometries = new Set();
+      const materials = new Set();
+      const textures = new Set();
+      const collectMaterial = (value) => {
+        const list = Array.isArray(value) ? value : value ? [value] : [];
+        list.forEach((material) => {
+          if (!material || materials.has(material)) return;
+          materials.add(material);
+          Object.values(material).forEach((candidate) => {
+            if (candidate?.isTexture) textures.add(candidate);
+          });
+        });
+      };
+      object.traverse((node) => {
+        if (node.geometry) geometries.add(node.geometry);
+        collectMaterial(node.material);
+        collectMaterial(node.userData?.nioOriginalMaterial);
+        collectMaterial(node.userData?.nioTechMaterial);
+        collectMaterial(node.userData?.nioGlassMaterial);
+      });
+      textures.forEach((texture) => texture.dispose?.());
+      materials.forEach((material) => material.dispose?.());
+      geometries.forEach((geometry) => geometry.dispose?.());
+    };
+
     const prepareMaterials = (object, accent) => {
       object.traverse((node) => {
         if (!node.isMesh) return;
@@ -255,7 +282,10 @@ const base = import.meta.env.BASE_URL;
       if (announce && stateEl) stateEl.textContent = 'Loading model';
       const task = (async () => {
         const gltf = await gltfLoader.loadAsync(config.url);
-        if (destroyed) return null;
+        if (destroyed) {
+          disposeObjectResources(gltf.scene);
+          return null;
+        }
         const root = new THREE.Group();
         root.visible = false;
         root.rotation.set(...config.rotation);
@@ -462,6 +492,7 @@ const base = import.meta.env.BASE_URL;
       camera.updateProjectionMatrix();
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.1 : 1.55));
       renderer.setSize(window.innerWidth, window.innerHeight, false);
+      if (reduceMotion && !destroyed) renderer.render(scene, camera);
     };
     window.addEventListener('resize', resize);
 
@@ -552,14 +583,11 @@ const base = import.meta.env.BASE_URL;
       canvas.removeEventListener('webglcontextlost', onContextLost, false);
       materialButton?.removeEventListener('click', onMaterialClick);
       resetButton?.removeEventListener('click', onResetClick);
+      scene.environment = null;
       environmentTexture?.dispose();
-      loaded.forEach(({ root }) => {
-        root.traverse((node) => {
-          node.geometry?.dispose?.();
-          const mats = node.material ? (Array.isArray(node.material) ? node.material : [node.material]) : [];
-          mats.forEach((mat) => mat?.dispose?.());
-        });
-      });
+      loaded.forEach(({ root }) => disposeObjectResources(root));
+      loaded.clear();
+      loading.clear();
       document.documentElement.classList.remove('webgl-lost');
       renderer.dispose();
       renderer.forceContextLoss?.();
