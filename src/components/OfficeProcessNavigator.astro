@@ -59,6 +59,12 @@ const first = steps[0];
     const title = system.querySelector('[data-process-display-title]');
     const copy = system.querySelector('[data-process-display-copy]');
 
+    const refreshStage = () => {
+      if (!stage) return;
+      stage.classList.remove('is-switching');
+      requestAnimationFrame(() => stage.classList.add('is-switching'));
+    };
+
     const activate = (tab) => {
       const index = Number(tab.dataset.processIndex || 0);
       tabs.forEach((item, itemIndex) => {
@@ -68,6 +74,7 @@ const first = steps[0];
       if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(tabs.length).padStart(2, '0')}`;
       if (title) title.textContent = tab.dataset.processTitle || '';
       if (copy) copy.textContent = tab.dataset.processCopy || '';
+      refreshStage();
     };
 
     tabs.forEach((tab) => {
