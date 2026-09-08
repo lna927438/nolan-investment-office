@@ -11,8 +11,20 @@ const items = [
 <div class="home-visual-board" data-visual-board>
   <div class="visual-board-header">
     <span>Focus map</span>
-    <span>NIO / Research</span>
+    <span class="visual-board-status"><i aria-hidden="true"></i>04 areas</span>
   </div>
+
+  <svg class="visual-network" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <line class="visual-link visual-link-0" x1="50" y1="50" x2="24" y2="24"></line>
+    <line class="visual-link visual-link-1" x1="50" y1="50" x2="76" y2="24"></line>
+    <line class="visual-link visual-link-2" x1="50" y1="50" x2="24" y2="76"></line>
+    <line class="visual-link visual-link-3" x1="50" y1="50" x2="76" y2="76"></line>
+    <circle class="visual-node visual-node-0" cx="24" cy="24" r="1.15"></circle>
+    <circle class="visual-node visual-node-1" cx="76" cy="24" r="1.15"></circle>
+    <circle class="visual-node visual-node-2" cx="24" cy="76" r="1.15"></circle>
+    <circle class="visual-node visual-node-3" cx="76" cy="76" r="1.15"></circle>
+    <circle class="visual-center-node" cx="50" cy="50" r="1.35"></circle>
+  </svg>
 
   <div class="visual-board-orbit" aria-hidden="true">
     <span class="orbit-mark orbit-mark-a"></span>
@@ -21,11 +33,13 @@ const items = [
   </div>
 
   <div class="visual-board-grid" aria-label="Investment focus map">
-    {items.map((item) => (
+    {items.map((item, index) => (
       <a
         class="visual-tile"
         href={`${base}focus/#${item.slug}`}
         data-module
+        data-focus-index={index}
+        data-focus-label={item.label}
         aria-label={`Explore ${item.label}`}
       >
         <span class="visual-tile-number">{item.number}</span>
@@ -37,8 +51,8 @@ const items = [
   </div>
 
   <div class="visual-board-footer">
+    <span class="visual-board-readout">Selected <b data-board-readout>All areas</b></span>
     <span>Research-led</span>
-    <span>Direct</span>
     <span>Long-term</span>
   </div>
 </div>
@@ -48,22 +62,49 @@ const items = [
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (board && finePointer && !reduceMotion) {
-    board.addEventListener('pointermove', (event) => {
-      const rect = board.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      board.style.setProperty('--board-rx', `${(-y * 2.2).toFixed(2)}deg`);
-      board.style.setProperty('--board-ry', `${(x * 2.6).toFixed(2)}deg`);
-      board.style.setProperty('--board-shine-x', `${((x + 0.5) * 100).toFixed(1)}%`);
-      board.style.setProperty('--board-shine-y', `${((y + 0.5) * 100).toFixed(1)}%`);
+  if (board) {
+    const tiles = [...board.querySelectorAll('[data-focus-index]')];
+    const readout = board.querySelector('[data-board-readout]');
+
+    const setActive = (tile) => {
+      const index = tile?.dataset.focusIndex;
+      if (index == null) return;
+      board.dataset.active = index;
+      if (readout) readout.textContent = tile.dataset.focusLabel || 'Area';
+    };
+
+    const clearActive = () => {
+      board.removeAttribute('data-active');
+      if (readout) readout.textContent = 'All areas';
+    };
+
+    tiles.forEach((tile) => {
+      tile.addEventListener('pointerenter', () => setActive(tile));
+      tile.addEventListener('focus', () => setActive(tile));
+      tile.addEventListener('blur', () => {
+        if (!board.matches(':hover')) clearActive();
+      });
     });
 
-    board.addEventListener('pointerleave', () => {
-      board.style.setProperty('--board-rx', '0deg');
-      board.style.setProperty('--board-ry', '0deg');
-      board.style.setProperty('--board-shine-x', '72%');
-      board.style.setProperty('--board-shine-y', '18%');
-    });
+    board.addEventListener('pointerleave', clearActive);
+
+    if (finePointer && !reduceMotion) {
+      board.addEventListener('pointermove', (event) => {
+        const rect = board.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        board.style.setProperty('--board-rx', `${(-y * 2.2).toFixed(2)}deg`);
+        board.style.setProperty('--board-ry', `${(x * 2.6).toFixed(2)}deg`);
+        board.style.setProperty('--board-shine-x', `${((x + 0.5) * 100).toFixed(1)}%`);
+        board.style.setProperty('--board-shine-y', `${((y + 0.5) * 100).toFixed(1)}%`);
+      });
+
+      board.addEventListener('pointerleave', () => {
+        board.style.setProperty('--board-rx', '0deg');
+        board.style.setProperty('--board-ry', '0deg');
+        board.style.setProperty('--board-shine-x', '72%');
+        board.style.setProperty('--board-shine-y', '18%');
+      });
+    }
   }
 </script>
