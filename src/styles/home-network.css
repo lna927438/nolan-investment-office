@@ -1,0 +1,150 @@
+.home-visual-board{
+  box-shadow:
+    10px 10px 0 -1px rgba(241,238,231,.96),
+    10px 10px 0 0 rgba(27,30,26,.075),
+    20px 20px 0 -1px rgba(241,238,231,.78),
+    20px 20px 0 0 rgba(27,30,26,.038);
+}
+
+.visual-board-status{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.visual-board-status i{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 4px rgba(89,100,84,.06);
+  opacity:.72;
+}
+
+.visual-network{
+  position:absolute;
+  left:0;
+  right:0;
+  top:42px;
+  width:100%;
+  height:calc(100% - 84px);
+  z-index:1;
+  pointer-events:none;
+  overflow:visible;
+}
+.visual-link{
+  vector-effect:non-scaling-stroke;
+  stroke:rgba(89,100,84,.15);
+  stroke-width:.75;
+  stroke-dasharray:2.6 3.8;
+  transition:stroke 260ms ease,stroke-width 260ms ease,opacity 260ms ease;
+}
+.visual-node{
+  vector-effect:non-scaling-stroke;
+  fill:var(--paper);
+  stroke:rgba(89,100,84,.32);
+  stroke-width:.8;
+  transition:fill 260ms ease,stroke 260ms ease,r 260ms var(--module-ease);
+}
+.visual-center-node{
+  vector-effect:non-scaling-stroke;
+  fill:var(--accent);
+  stroke:rgba(241,238,231,.88);
+  stroke-width:1.2;
+  opacity:.62;
+}
+
+.home-visual-board[data-active] .visual-link{opacity:.25}
+.home-visual-board[data-active] .visual-node{opacity:.35}
+.home-visual-board[data-active] .visual-tile{opacity:.52}
+
+.home-visual-board[data-active="0"] .visual-link-0,
+.home-visual-board[data-active="1"] .visual-link-1,
+.home-visual-board[data-active="2"] .visual-link-2,
+.home-visual-board[data-active="3"] .visual-link-3{
+  opacity:1;
+  stroke:rgba(89,100,84,.72);
+  stroke-width:1.15;
+  stroke-dasharray:none;
+}
+.home-visual-board[data-active="0"] .visual-node-0,
+.home-visual-board[data-active="1"] .visual-node-1,
+.home-visual-board[data-active="2"] .visual-node-2,
+.home-visual-board[data-active="3"] .visual-node-3{
+  opacity:1;
+  fill:var(--accent);
+  stroke:var(--accent);
+  r:1.65;
+}
+.home-visual-board[data-active="0"] .visual-tile:nth-child(1),
+.home-visual-board[data-active="1"] .visual-tile:nth-child(2),
+.home-visual-board[data-active="2"] .visual-tile:nth-child(3),
+.home-visual-board[data-active="3"] .visual-tile:nth-child(4){
+  opacity:1;
+  background:rgba(89,100,84,.07);
+}
+
+.home-visual-board .visual-tile{
+  transition:
+    opacity 260ms ease,
+    background-color 260ms var(--module-ease),
+    transform 260ms var(--module-ease);
+}
+
+.visual-board-orbit{
+  z-index:3;
+  transition:transform 360ms var(--module-ease),border-color 260ms ease,background-color 260ms ease;
+  background:rgba(241,238,231,.28);
+  backdrop-filter:blur(2px);
+}
+.home-visual-board[data-active="0"] .visual-board-orbit{
+  transform:translate(calc(-50% - 9px),calc(-50% - 9px)) scale(.96);
+  border-color:rgba(89,100,84,.28);
+}
+.home-visual-board[data-active="1"] .visual-board-orbit{
+  transform:translate(calc(-50% + 9px),calc(-50% - 9px)) scale(.96);
+  border-color:rgba(89,100,84,.28);
+}
+.home-visual-board[data-active="2"] .visual-board-orbit{
+  transform:translate(calc(-50% - 9px),calc(-50% + 9px)) scale(.96);
+  border-color:rgba(89,100,84,.28);
+}
+.home-visual-board[data-active="3"] .visual-board-orbit{
+  transform:translate(calc(-50% + 9px),calc(-50% + 9px)) scale(.96);
+  border-color:rgba(89,100,84,.28);
+}
+
+.visual-board-readout{
+  min-width:130px;
+}
+.visual-board-readout b{
+  color:var(--ink);
+  font-weight:500;
+  letter-spacing:.08em;
+  transition:color 220ms ease;
+}
+.home-visual-board[data-active] .visual-board-readout b{
+  color:var(--accent);
+}
+
+@media(max-height:760px) and (min-width:901px){
+  .visual-network{top:38px;height:calc(100% - 76px)}
+  .home-visual-board{
+    box-shadow:
+      7px 7px 0 -1px rgba(241,238,231,.96),
+      7px 7px 0 0 rgba(27,30,26,.07);
+  }
+}
+
+@media(max-width:900px){
+  .home-visual-board{box-shadow:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .visual-link,
+  .visual-node,
+  .visual-tile,
+  .visual-board-orbit,
+  .visual-board-readout b{
+    transition:none!important;
+  }
+}
