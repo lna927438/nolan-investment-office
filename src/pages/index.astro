@@ -1,27 +1,12 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
-
-const base = import.meta.env.BASE_URL;
-const url = (path = "") => `${base}${path}`;
-
-const focus = [
-  "Technology",
-  "Healthcare",
-  "Energy & Infrastructure",
-  "Selective Consumer"
-];
-
-const approach = [
-  ["01", "Long-term perspective", "We favor durable businesses and patient decision-making over short-term activity."],
-  ["02", "Selective capital", "We invest deliberately, with a focused review process and a high bar for conviction."],
-  ["03", "Direct relationships", "We value thoughtful, straightforward relationships with founders, operators and partners."]
-];
 ---
 <SiteLayout
   active="home"
+  showFooter={false}
   description="Nolan Investment Office is an independent investment office focused on technology, healthcare, energy, infrastructure and selected enduring businesses."
 >
-  <div id="top" class="wrap hero">
+  <div id="top" class="wrap hero home-hero">
     <div class="hero-inner" data-reveal>
       <div class="eyebrow">Independent Investment Office</div>
       <h1>Selective capital.<br />Long-term perspective.</h1>
@@ -37,65 +22,4 @@ const approach = [
       </div>
     </div>
   </div>
-
-  <section class="home-overview">
-    <div class="wrap" data-reveal>
-      <div class="section-head">
-        <div class="section-number">01 / Focus</div>
-        <h2>A focused set of sectors.</h2>
-      </div>
-      <div class="focus-strip">
-        {focus.map((item, index) => (
-          <div class="focus-strip-item">
-            <small>0{index + 1}</small>
-            <span>{item}</span>
-          </div>
-        ))}
-      </div>
-      <a class="text-link section-link" href={url("focus/")}>Explore investment focus</a>
-    </div>
-  </section>
-
-  <section id="approach">
-    <div class="wrap" data-reveal>
-      <div class="section-head">
-        <div class="section-number">02 / Approach</div>
-        <h2>Deliberate by design.</h2>
-      </div>
-      <div class="approach-list">
-        {approach.map(([n, title, text]) => (
-          <div class="approach-row">
-            <small>{n}</small>
-            <strong>{title}</strong>
-            <p>{text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap" data-reveal>
-      <div class="section-head compact-head">
-        <div class="section-number">03 / Office</div>
-        <h2>Independent by structure.</h2>
-      </div>
-      <div class="home-statement">
-        Nolan Investment Office is led by Renee Nolan and supported by a small,
-        dedicated operating structure designed to keep decisions direct and
-        relationships personal.
-      </div>
-      <a class="text-link section-link" href={url("office/")}>About the office</a>
-    </div>
-  </section>
-
-  <section class="home-contact">
-    <div class="wrap" data-reveal>
-      <div class="section-number">04 / Contact</div>
-      <div class="home-contact-row">
-        <h2>Office correspondence.</h2>
-        <a class="text-link" href={url("contact/")}>Contact the office</a>
-      </div>
-    </div>
-  </section>
 </SiteLayout>
