@@ -1,0 +1,20 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  label: string;
+  href: string;
+}
+
+const { eyebrow, title, label, href } = Astro.props;
+---
+<section class="page-cta route-section">
+  <a class="wrap route-module" href={href} data-module>
+    <span class="route-kicker">{eyebrow}</span>
+    <h2>{title}</h2>
+    <span class="route-action">
+      <span>{label}</span>
+      <span class="route-arrow" aria-hidden="true">↗</span>
+    </span>
+  </a>
+</section>
