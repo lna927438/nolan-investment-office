@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import "../styles/reliability.css";
 
 interface Props {
   title?: string;
@@ -74,23 +75,5 @@ const url = (path = "") => `${base}${path}`;
         </div>
       </footer>
     )}
-
-    <script is:inline>
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const items = document.querySelectorAll('[data-reveal]');
-      if (reduceMotion || !('IntersectionObserver' in window)) {
-        items.forEach((el) => el.classList.add('is-visible'));
-      } else {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.12 });
-        items.forEach((el) => observer.observe(el));
-      }
-    </script>
   </body>
 </html>
