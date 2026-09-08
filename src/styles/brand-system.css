@@ -151,7 +151,11 @@
   z-index:1;
   display:grid;
   grid-template-columns:repeat(3,1fr);
+  gap:0;
   border-left:1px solid var(--line);
+  font-size:inherit;
+  letter-spacing:normal;
+  text-transform:none;
 }
 
 .footer-route-map a{
@@ -163,6 +167,7 @@
   transition:background-color var(--module-duration) var(--module-ease),color var(--module-duration) ease;
 }
 
+.footer-route-map a::after{display:none}
 .footer-route-map a:last-child{border-right:0}
 .footer-route-map a:hover,.footer-route-map a:focus-visible{background:var(--module-fill-hover);color:var(--ink)}
 .footer-route-map a:active{background:var(--module-fill-press)}
