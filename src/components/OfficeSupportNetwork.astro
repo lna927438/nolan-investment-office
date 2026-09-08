@@ -1,0 +1,88 @@
+---
+import NioMark from "./NioMark.astro";
+
+interface Props {
+  items: [string, string, string][];
+}
+
+const { items } = Astro.props;
+const first = items[0];
+---
+<div class="support-system" data-support-system>
+  <div class="support-controls" role="group" aria-label="Office operating model">
+    {items.map(([number, title, text], index) => (
+      <button
+        type="button"
+        class="support-control"
+        data-support-index={index}
+        data-support-title={title}
+        data-support-copy={text}
+        aria-pressed={index === 0 ? "true" : "false"}
+      >
+        <span class="support-control-number">{number}</span>
+        <strong>{title}</strong>
+        <span class="support-control-copy">{text}</span>
+        <span class="support-control-state" aria-hidden="true"></span>
+      </button>
+    ))}
+  </div>
+
+  <div class="support-network" data-module data-support-stage="0">
+    <div class="support-network-head">
+      <span>Operating network</span>
+      <span data-support-count>01 / 03</span>
+    </div>
+
+    <div class="support-network-map" aria-hidden="true">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line class="support-link support-link-0" x1="50" y1="50" x2="22" y2="25"></line>
+        <line class="support-link support-link-1" x1="50" y1="50" x2="78" y2="25"></line>
+        <line class="support-link support-link-2" x1="50" y1="50" x2="50" y2="80"></line>
+        <circle class="support-node support-node-0" cx="22" cy="25" r="2"></circle>
+        <circle class="support-node support-node-1" cx="78" cy="25" r="2"></circle>
+        <circle class="support-node support-node-2" cx="50" cy="80" r="2"></circle>
+      </svg>
+      <div class="support-network-core">
+        <NioMark className="support-core-mark" />
+      </div>
+      <span class="support-map-label support-map-label-a">Research</span>
+      <span class="support-map-label support-map-label-b">Operations</span>
+      <span class="support-map-label support-map-label-c">Partners</span>
+    </div>
+
+    <div class="support-network-readout">
+      <span>Active layer</span>
+      <strong data-support-display-title>{first[1]}</strong>
+      <p data-support-display-copy>{first[2]}</p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-support-system]').forEach((system) => {
+    const controls = [...system.querySelectorAll('[data-support-index]')];
+    const network = system.querySelector('[data-support-stage]');
+    const count = system.querySelector('[data-support-count]');
+    const title = system.querySelector('[data-support-display-title]');
+    const copy = system.querySelector('[data-support-display-copy]');
+
+    const activate = (control) => {
+      const index = Number(control.dataset.supportIndex || 0);
+      controls.forEach((item, itemIndex) => {
+        item.setAttribute('aria-pressed', itemIndex === index ? 'true' : 'false');
+      });
+      if (network) network.dataset.supportStage = String(index);
+      if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(controls.length).padStart(2, '0')}`;
+      if (title) title.textContent = control.dataset.supportTitle || '';
+      if (copy) copy.textContent = control.dataset.supportCopy || '';
+    };
+
+    controls.forEach((control) => {
+      control.addEventListener('click', () => activate(control));
+      control.addEventListener('focus', () => activate(control));
+      if (window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+        control.addEventListener('pointerenter', () => activate(control));
+      }
+    });
+  });
+</script>
