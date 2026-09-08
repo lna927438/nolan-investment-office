@@ -4,13 +4,13 @@ import SiteLayout from "../components/SiteLayout.astro";
 const channels = [
   ["01", "Founders & operators", "Company introductions and operating conversations. A concise overview of the business, sector, stage and relevant contact information is sufficient for an initial introduction."],
   ["02", "Professional correspondence", "Advisers, service providers, professional partners and institutional relationships."],
-  ["03", "General office", "Administrative and other office correspondence. Direct contact details will be added before formal launch."],
+  ["03", "General office", "Administrative and other general office correspondence."],
 ];
 ---
 <SiteLayout
   active="contact"
   title="Contact | Nolan Investment Office"
-  description="Contact information and correspondence categories for Nolan Investment Office."
+  description="Correspondence information and inquiry categories for Nolan Investment Office."
 >
   <div class="wrap page-hero contact-page-hero">
     <div class="page-hero-inner" data-reveal>
@@ -23,7 +23,8 @@ const channels = [
         </p>
         <p>
           Nolan Investment Office is based in California, United States.
-          Formal office contact details will be added before public launch.
+          Correspondence is reviewed in the context of the office's current
+          areas of focus and ongoing work.
         </p>
       </div>
     </div>
@@ -39,10 +40,6 @@ const channels = [
             <p>{text}</p>
           </article>
         ))}
-      </div>
-      <div class="contact-status">
-        <span class="dot" aria-hidden="true"></span>
-        <span>Direct office email and mailing details pending final launch configuration.</span>
       </div>
     </div>
   </section>
