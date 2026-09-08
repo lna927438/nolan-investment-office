@@ -102,6 +102,16 @@ const first = items[0];
     let current = 0;
     let switching = false;
 
+    const announceSpaceFocus = (tab, index) => {
+      window.dispatchEvent(new CustomEvent('nio:focuschange', {
+        detail: {
+          index,
+          title: tab?.dataset.focusTitle || '',
+          slug: tab?.dataset.focusSlug || ''
+        }
+      }));
+    };
+
     const updateText = (tab, index) => {
       if (count) count.textContent = `${tab.dataset.focusNumber} / ${String(tabs.length).padStart(2, '0')}`;
       if (code) code.textContent = tab.dataset.focusCode || '';
@@ -113,6 +123,7 @@ const first = items[0];
         item.setAttribute('aria-selected', itemIndex === index ? 'true' : 'false');
         item.tabIndex = itemIndex === index ? 0 : -1;
       });
+      announceSpaceFocus(tab, index);
     };
 
     const animateCards = (nextImage) => {
@@ -195,6 +206,7 @@ const first = items[0];
       if (index >= 0 && index !== current) activate(index, false);
     };
 
+    if (tabs[0]) announceSpaceFocus(tabs[0], 0);
     fromHash();
     window.addEventListener('hashchange', fromHash);
   });
