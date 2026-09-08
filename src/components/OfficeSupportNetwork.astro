@@ -66,6 +66,12 @@ const first = items[0];
     const title = system.querySelector('[data-support-display-title]');
     const copy = system.querySelector('[data-support-display-copy]');
 
+    const refreshNetwork = () => {
+      if (!network) return;
+      network.classList.remove('is-switching');
+      requestAnimationFrame(() => network.classList.add('is-switching'));
+    };
+
     const activate = (control) => {
       const index = Number(control.dataset.supportIndex || 0);
       controls.forEach((item, itemIndex) => {
@@ -75,6 +81,7 @@ const first = items[0];
       if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(controls.length).padStart(2, '0')}`;
       if (title) title.textContent = control.dataset.supportTitle || '';
       if (copy) copy.textContent = control.dataset.supportCopy || '';
+      refreshNetwork();
     };
 
     controls.forEach((control) => {
