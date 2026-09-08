@@ -1,0 +1,181 @@
+/* V2.3: progressive motion, section handoff and unified Nolan interaction states. */
+
+:root{
+  --nio-motion-fast:180ms;
+  --nio-motion-base:320ms;
+  --nio-motion-slow:620ms;
+  --nio-motion-ease:cubic-bezier(.25,1,.5,1);
+}
+
+/* Page-level state: a slightly more resolved mark once the visitor has moved into content. */
+body.has-scrolled .brand-mark .nio-mark-node{
+  fill:var(--accent);
+}
+body.has-scrolled .brand-mark .nio-mark-axis{
+  opacity:.58;
+}
+
+.brand-mark .nio-mark-node,
+.brand-mark .nio-mark-axis{
+  transition:fill var(--nio-motion-base) ease,opacity var(--nio-motion-base) ease;
+}
+
+/* Progress rail carries both page code and the active content section. */
+.page-progress-section{
+  position:absolute;
+  top:0;
+  right:16px;
+  width:max-content;
+  max-width:140px;
+  color:rgba(89,100,84,.62);
+  font-size:7px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  opacity:.78;
+  transition:opacity var(--nio-motion-base) ease,color var(--nio-motion-base) ease;
+}
+
+.page-progress-rail.is-section-change .page-progress-section{
+  color:var(--ink);
+  opacity:1;
+}
+
+/* Text/readout changes should feel connected to the visual state, not snap abruptly. */
+.support-network.is-switching .support-network-readout,
+.contact-routing-board.is-switching .contact-routing-readout,
+.process-stage.is-switching .process-stage-copy{
+  animation:nio-readout-shift 320ms var(--nio-motion-ease) both;
+}
+
+@keyframes nio-readout-shift{
+  0%{opacity:.38;transform:translateY(5px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+
+.support-network.is-switching .support-core-mark,
+.contact-routing-board.is-switching .contact-core-mark,
+.process-stage.is-switching .process-core-mark{
+  animation:nio-mark-focus 380ms var(--nio-motion-ease) both;
+}
+
+@keyframes nio-mark-focus{
+  0%{transform:scale(.9);opacity:.55}
+  55%{transform:scale(1.055);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+
+/* Home Focus Board gains a compact second-level readout without increasing the board footprint. */
+.visual-board-footer{
+  min-height:43px;
+}
+
+.visual-board-context{
+  min-width:0;
+  flex:1 1 auto;
+  display:flex;
+  justify-content:flex-end;
+  overflow:hidden;
+}
+
+.visual-board-context span{
+  display:block;
+  max-width:154px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  color:var(--muted);
+  transition:opacity 180ms ease,transform 240ms var(--nio-motion-ease),color 180ms ease;
+}
+
+.home-visual-board[data-active] .visual-board-context span{
+  color:var(--ink);
+}
+
+.visual-board-context.is-switching span{
+  animation:nio-context-shift 260ms var(--nio-motion-ease) both;
+}
+
+@keyframes nio-context-shift{
+  from{opacity:.25;transform:translateX(5px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* Progressive enhancement: modern browsers get restrained view-entry movement; fallback stays fully visible. */
+@supports (animation-timeline: view()){
+  @media(prefers-reduced-motion:no-preference){
+    body:not(.home-shell) .page-signal-deck,
+    body:not(.home-shell) .page-section > .wrap,
+    body:not(.home-shell) .route-module,
+    body:not(.home-shell) .footer-brand-panel{
+      animation-name:nio-view-enter;
+      animation-duration:1ms;
+      animation-timing-function:linear;
+      animation-fill-mode:both;
+      animation-timeline:view();
+      animation-range:entry 0% cover 24%;
+    }
+
+    @keyframes nio-view-enter{
+      0%{opacity:.72;transform:translateY(12px)}
+      100%{opacity:1;transform:translateY(0)}
+    }
+  }
+}
+
+/* Section headings receive a quiet line-build effect tied to their entry. */
+.section-head::after{
+  content:"";
+  grid-column:1 / -1;
+  width:0;
+  height:1px;
+  margin-top:22px;
+  background:linear-gradient(to right,var(--accent),transparent 72%);
+  opacity:.38;
+  transition:width var(--nio-motion-slow) var(--nio-motion-ease);
+}
+
+.section-head.nio-section-active::after{
+  width:min(220px,34%);
+}
+
+/* Click / focus changes unify the Nolan mark behavior across systems. */
+.support-network[data-support-stage] .nio-mark-node,
+.contact-routing-board[data-contact-stage] .nio-mark-node,
+.process-stage[data-process-stage] .nio-mark-node{
+  transition:fill var(--nio-motion-base) ease,transform var(--nio-motion-base) var(--nio-motion-ease);
+}
+
+.support-network:hover .nio-mark-node,
+.contact-routing-board:hover .nio-mark-node,
+.process-stage:hover .nio-mark-node{
+  fill:var(--accent);
+}
+
+@media(max-width:1180px){
+  .page-progress-section{display:none}
+}
+
+@media(max-width:620px){
+  .section-head::after{margin-top:14px}
+  .visual-board-context{display:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .brand-mark .nio-mark-node,
+  .brand-mark .nio-mark-axis,
+  .page-progress-section,
+  .section-head::after{
+    transition:none!important;
+  }
+  .support-network.is-switching .support-network-readout,
+  .contact-routing-board.is-switching .contact-routing-readout,
+  .process-stage.is-switching .process-stage-copy,
+  .support-network.is-switching .support-core-mark,
+  .contact-routing-board.is-switching .contact-core-mark,
+  .process-stage.is-switching .process-core-mark,
+  .visual-board-context.is-switching span{
+    animation:none!important;
+  }
+}
