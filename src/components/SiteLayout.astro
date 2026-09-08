@@ -37,7 +37,7 @@ const url = (path = "") => `${base}${path}`;
     <link rel="icon" type="image/svg+xml" href={url("favicon.svg")} />
     <title>{title}</title>
   </head>
-  <body>
+  <body class={active === "home" ? "home-shell" : undefined}>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
