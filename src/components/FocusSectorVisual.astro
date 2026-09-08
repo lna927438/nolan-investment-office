@@ -1,0 +1,78 @@
+---
+interface Props {
+  type: "technology" | "healthcare" | "energy" | "consumer";
+  code: string;
+  label: string;
+}
+
+const { type, code, label } = Astro.props;
+---
+<div class={`sector-visual sector-visual-${type}`} data-sector-visual={type} aria-label={`${label} visual system`}>
+  <div class="sector-visual-head">
+    <span>{code}</span>
+    <span>Field signal</span>
+  </div>
+
+  <div class="sector-visual-stage" aria-hidden="true">
+    {type === "technology" && (
+      <>
+        <svg viewBox="0 0 100 70" class="sector-svg tech-svg">
+          <path d="M15 48L34 25L54 39L78 16" />
+          <path d="M34 25L31 55L54 39L75 54L78 16" />
+          <circle cx="15" cy="48" r="2.4" />
+          <circle cx="34" cy="25" r="2.4" />
+          <circle cx="31" cy="55" r="2.4" />
+          <circle cx="54" cy="39" r="3.1" class="sector-svg-active" />
+          <circle cx="75" cy="54" r="2.4" />
+          <circle cx="78" cy="16" r="2.4" />
+        </svg>
+        <span class="tech-pulse tech-pulse-a"></span>
+        <span class="tech-pulse tech-pulse-b"></span>
+      </>
+    )}
+
+    {type === "healthcare" && (
+      <>
+        <div class="health-ring health-ring-a"></div>
+        <div class="health-ring health-ring-b"></div>
+        <div class="health-ring health-ring-c"></div>
+        <span class="health-core"></span>
+        <svg viewBox="0 0 100 70" class="sector-svg health-svg">
+          <polyline points="4,42 18,42 25,31 34,51 44,18 53,42 69,42 76,34 83,42 96,42" />
+        </svg>
+      </>
+    )}
+
+    {type === "energy" && (
+      <>
+        <div class="energy-grid">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="energy-flow energy-flow-a"></div>
+        <div class="energy-flow energy-flow-b"></div>
+        <div class="energy-flow energy-flow-c"></div>
+        <span class="energy-node energy-node-a"></span>
+        <span class="energy-node energy-node-b"></span>
+        <span class="energy-node energy-node-c"></span>
+      </>
+    )}
+
+    {type === "consumer" && (
+      <>
+        <div class="consumer-orbit consumer-orbit-a"></div>
+        <div class="consumer-orbit consumer-orbit-b"></div>
+        <span class="consumer-core">N</span>
+        <span class="consumer-point consumer-point-a"></span>
+        <span class="consumer-point consumer-point-b"></span>
+        <span class="consumer-point consumer-point-c"></span>
+        <span class="consumer-point consumer-point-d"></span>
+      </>
+    )}
+  </div>
+
+  <div class="sector-visual-foot">
+    <span>Observe</span>
+    <span>Review</span>
+    <span>Conviction</span>
+  </div>
+</div>
