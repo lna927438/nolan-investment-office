@@ -1,15 +1,23 @@
-# Nolan Investment Office — V1.2
+# Nolan Investment Office — V1.4
 
-Minimal website for Nolan Investment Office, built with Astro.
+Minimal multi-page website for Nolan Investment Office, built with Astro.
 
-## Current structure
-- Hero
-- Investment Focus
-- Approach
+## Current site structure
+- Home
+- Focus
 - Office
-- Contact routing
-- Legal page
-- 404 page
+- Contact
+- Legal
+- 404
+
+## Navigation model
+The public navigation now uses real pages rather than in-page anchor links:
+
+- `/` — Home overview and approach
+- `/focus/` — sector focus and areas of attention
+- `/office/` — leadership, operating model and review process
+- `/contact/` — correspondence categories
+- `/legal/` — website disclosures
 
 ## Design direction
 - Private investment office, not a fund-marketing website
@@ -21,12 +29,15 @@ Minimal website for Nolan Investment Office, built with Astro.
 - Minimal motion
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
-## V1.2 refinements
-- Refined NOLAN wordmark proportions and spacing
-- Updated hero statement to “Selective capital. Long-term perspective.”
-- Tightened institutional copy across Focus, Approach and Office
-- Added structured correspondence categories without publishing placeholder contact data
-- Improved mobile contact layout and typography
+## V1.4 refinements
+- Converted the original single-page navigation into a true multi-page site
+- Added a shared site layout for consistent navigation, metadata and footer behavior
+- Kept Approach on the Home page to avoid unnecessary page fragmentation
+- Added a dedicated Focus page with four research areas
+- Added a dedicated Office page covering leadership, operating structure and review workflow
+- Added a dedicated Contact page without publishing placeholder or invented contact data
+- Added current-page navigation states
+- Preserved GitHub Pages base-path compatibility and noindex preview status
 
 ## Development
 
@@ -37,11 +48,14 @@ npm run dev
 
 ## Build verification
 
-Every push to `main` runs a GitHub Actions Astro build check.
+Every push to `main` runs an Astro build check and the preview site is deployed through GitHub Pages.
 
-## Before public launch
+Preview: https://lna927438.github.io/nolan-investment-office/
+
+## Before formal public launch
 - Confirm final domain
 - Add official office email/contact channel
 - Confirm final legal entity wording and disclosure language
 - Decide whether the source repository should remain public
+- Switch preview pages from `noindex` to `index`
 - Add a social preview image only if needed
