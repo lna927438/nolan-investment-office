@@ -1,5 +1,16 @@
 /* V3 Focus reset: image-forward gallery structure adapted from MIT gallery/studio patterns. */
 
+.focus-page-hero{
+  min-height:46vh;
+  padding-top:6.5vh;
+  padding-bottom:5.5vh;
+}
+
+.focus-gallery-section{
+  border-top:0;
+  padding:0 0 104px;
+}
+
 .focus-gallery{
   border-top:1px solid var(--line-strong);
   border-bottom:1px solid var(--line-strong);
@@ -252,6 +263,8 @@
 }
 
 @media(max-width:900px){
+  .focus-page-hero{min-height:42vh}
+  .focus-gallery-section{padding-bottom:82px}
   .focus-gallery-grid{grid-template-columns:1fr;min-height:0}
   .focus-gallery-copy{
     min-height:410px;
@@ -270,6 +283,8 @@
 }
 
 @media(max-width:620px){
+  .focus-page-hero{min-height:auto;padding:44px 0 34px}
+  .focus-gallery-section{padding-bottom:62px}
   .focus-gallery-copy{min-height:0;padding:28px 0 32px}
   .focus-gallery-kicker{margin-bottom:52px}
   .focus-gallery-copy h2{font-size:clamp(42px,13vw,58px)}
