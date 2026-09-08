@@ -1,0 +1,42 @@
+/* Runtime safety fallbacks for script-disabled, WebGL-unavailable and context-lost states. */
+.no-js .nio-space,
+.no-js .nio-model-layer,
+.no-js .nio-model-controls,
+.no-js .nio-asset-layer,
+.no-js .nio-asset-controls,
+.no-webgl .nio-space,
+.no-webgl .nio-model-layer,
+.no-webgl .nio-model-controls,
+.no-webgl .nio-asset-layer,
+.no-webgl .nio-asset-controls,
+.webgl-lost .nio-model-controls,
+.webgl-lost .nio-asset-controls{
+  display:none!important;
+}
+
+.no-webgl body,
+.no-js body{
+  background:
+    radial-gradient(circle at 70% 28%,rgba(89,111,164,.18),transparent 36%),
+    radial-gradient(circle at 28% 74%,rgba(63,126,143,.12),transparent 32%),
+    #03050a!important;
+}
+
+.webgl-lost::after{
+  content:"3D rendering paused";
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:20;
+  padding:8px 10px;
+  border:1px solid rgba(173,211,255,.14);
+  background:rgba(4,7,13,.72);
+  color:rgba(210,225,242,.62);
+  font:500 7px/1 var(--sans);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+@media(max-width:760px){
+  .webgl-lost::after{right:12px;bottom:12px}
+}
