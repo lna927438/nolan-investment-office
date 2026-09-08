@@ -1,0 +1,144 @@
+/* V5 Nolan Orbit / Vector identity. Loaded after legacy brand styles. */
+
+.nio-mark{
+  --mark-size:32px;
+  width:var(--mark-size);
+  height:var(--mark-size);
+  color:currentColor;
+  overflow:visible;
+}
+
+.nio-mark-letter,
+.nio-mark-orbit{
+  fill:none;
+  stroke:currentColor;
+  vector-effect:non-scaling-stroke;
+}
+
+.nio-mark-letter{
+  stroke-width:1.55;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  opacity:.96;
+}
+
+.nio-mark-orbit{
+  stroke-width:.82;
+  stroke-linecap:round;
+  transition:opacity .28s ease,stroke-dashoffset .55s cubic-bezier(.25,1,.5,1);
+}
+
+.nio-mark-orbit-primary{
+  opacity:.52;
+  stroke-dasharray:1 0;
+}
+
+.nio-mark-orbit-secondary{opacity:.22}
+
+.nio-mark-node{
+  fill:var(--space-cyan,#7ee8ff);
+  stroke:none;
+  vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 4px rgba(126,232,255,.52));
+  transform-origin:57.3px 34.2px;
+  transition:transform .28s cubic-bezier(.25,1,.5,1),filter .28s ease;
+}
+
+.brand-mark{--mark-size:34px!important}
+.footer-mark{--mark-size:58px!important}
+
+.brand:hover .nio-mark-node,
+.brand:focus-visible .nio-mark-node{
+  transform:scale(1.35);
+  filter:drop-shadow(0 0 7px rgba(126,232,255,.82));
+}
+
+.brand:hover .nio-mark-orbit-primary,
+.brand:focus-visible .nio-mark-orbit-primary{opacity:.84}
+
+.brand-copy>strong{
+  font-family:var(--sans)!important;
+  font-weight:600!important;
+  letter-spacing:.25em!important;
+}
+
+.footer-brand-name strong{
+  font-family:var(--sans)!important;
+  letter-spacing:.26em!important;
+}
+
+.nio-icon{
+  width:18px;
+  height:18px;
+  display:inline-block;
+  flex:0 0 auto;
+  overflow:visible;
+}
+
+.nio-icon path,
+.nio-icon circle{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.35;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
+
+.nio-icon .nio-icon-node{
+  fill:var(--space-cyan,#7ee8ff);
+  stroke:none;
+  filter:drop-shadow(0 0 3px rgba(126,232,255,.55));
+}
+
+.nio-action-icon{
+  width:14px;
+  height:14px;
+  opacity:.78;
+}
+
+.nio-route-icon{
+  width:20px;
+  height:20px;
+  transition:transform .28s cubic-bezier(.25,1,.5,1),opacity .2s ease;
+}
+
+a:hover .nio-route-icon,
+a:focus-visible .nio-route-icon{transform:translate(2px,-2px);opacity:1}
+
+.nio-model-actions button,
+.nio-asset-actions button{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+}
+
+.nio-model-actions button .nio-icon,
+.nio-asset-actions button .nio-icon{color:rgba(194,225,255,.72)}
+
+.nio-model-actions button:hover .nio-icon,
+.nio-asset-actions button:hover .nio-icon,
+.nio-model-actions button[aria-pressed="true"] .nio-icon{color:#fff}
+
+.focus-gallery-tab .nio-route-icon{
+  justify-self:end;
+  width:17px;
+  height:17px;
+  color:currentColor;
+  opacity:.58;
+}
+
+.focus-gallery-tab[aria-selected="true"] .nio-route-icon{opacity:1}
+
+@media(max-width:700px){
+  .brand-mark{--mark-size:29px!important}
+  .footer-mark{--mark-size:48px!important}
+  .nio-route-icon{width:18px;height:18px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .nio-mark-orbit,
+  .nio-mark-node,
+  .nio-route-icon{transition:none!important}
+}
