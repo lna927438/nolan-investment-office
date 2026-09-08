@@ -1,0 +1,609 @@
+---
+interface Props {
+  enabled?: boolean;
+}
+
+const { enabled = true } = Astro.props;
+---
+
+{enabled && (
+  <>
+    <div class="nio-model-layer" data-nio-model-layer aria-hidden="true">
+      <canvas class="nio-model-canvas" data-nio-model-canvas></canvas>
+    </div>
+    <div class="nio-model-controls" data-nio-model-controls>
+      <div class="nio-model-readout">
+        <span>Interactive model</span>
+        <strong data-nio-model-label>NIO CORE</strong>
+        <small data-nio-model-count>01 / 01</small>
+      </div>
+      <div class="nio-model-actions">
+        <button type="button" data-nio-model-explode aria-pressed="false">Explode</button>
+        <button type="button" data-nio-model-reset>Reset</button>
+      </div>
+      <span class="nio-model-hint">Click model · drag · Esc reset</span>
+    </div>
+  </>
+)}
+
+<script>
+  import * as THREE from 'three';
+  import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+  const layer = document.querySelector('[data-nio-model-layer]');
+  const canvas = document.querySelector('[data-nio-model-canvas]');
+  const controls = document.querySelector('[data-nio-model-controls]');
+
+  if (layer instanceof HTMLElement && canvas instanceof HTMLCanvasElement && controls instanceof HTMLElement) {
+    const page = document.body.dataset.page || 'utility';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    const mobile = coarse || window.innerWidth < 760;
+    const labelEl = controls.querySelector('[data-nio-model-label]');
+    const countEl = controls.querySelector('[data-nio-model-count]');
+    const explodeButton = controls.querySelector('[data-nio-model-explode]');
+    const resetButton = controls.querySelector('[data-nio-model-reset]');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 80);
+    const baseCamera = new THREE.Vector3(0, 0, mobile ? 11.8 : 10.6);
+    camera.position.copy(baseCamera);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: !mobile,
+      powerPreference: 'high-performance'
+    });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.15 : 1.6));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.12;
+
+    let composer = null;
+    if (!mobile && !reduceMotion) {
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.38, 0.5, 0.34));
+    }
+
+    scene.add(new THREE.HemisphereLight(0xbcd5ff, 0x05060a, 1.05));
+    const key = new THREE.PointLight(0x7ee8ff, 34, 26, 1.7);
+    key.position.set(4.5, 3.8, 6.2);
+    scene.add(key);
+    const fill = new THREE.PointLight(0x9d8cff, 24, 24, 1.8);
+    fill.position.set(-4.8, -2.2, 4.6);
+    scene.add(fill);
+    const warm = new THREE.PointLight(0xe6c98b, 16, 18, 1.6);
+    warm.position.set(0, 4.8, 2.2);
+    scene.add(warm);
+
+    const stage = new THREE.Group();
+    scene.add(stage);
+
+    const pickables = [];
+    const models = [];
+
+    const metal = (accent = 0x7ee8ff, options = {}) => new THREE.MeshPhysicalMaterial({
+      color: options.color ?? 0x111a27,
+      emissive: new THREE.Color(accent),
+      emissiveIntensity: options.emissiveIntensity ?? 0.18,
+      metalness: options.metalness ?? 0.86,
+      roughness: options.roughness ?? 0.18,
+      clearcoat: options.clearcoat ?? 0.9,
+      clearcoatRoughness: options.clearcoatRoughness ?? 0.1,
+      transparent: true,
+      opacity: options.opacity ?? 1,
+      side: options.side ?? THREE.FrontSide
+    });
+
+    const glass = (accent = 0x7ee8ff) => new THREE.MeshPhysicalMaterial({
+      color: 0xbadfff,
+      emissive: new THREE.Color(accent),
+      emissiveIntensity: 0.08,
+      metalness: 0.08,
+      roughness: 0.08,
+      transmission: 0.78,
+      thickness: 0.48,
+      ior: 1.38,
+      transparent: true,
+      opacity: 0.78,
+      clearcoat: 1,
+      clearcoatRoughness: 0.04
+    });
+
+    const createModel = (label, accent, index = 0) => {
+      const group = new THREE.Group();
+      group.userData.label = label;
+      group.userData.index = index;
+      group.userData.pieces = [];
+      group.userData.explode = 0;
+      group.userData.explodeTarget = 0;
+      group.userData.rotationTarget = new THREE.Euler(0.08, -0.22, 0);
+      group.userData.positionTarget = new THREE.Vector3();
+      group.userData.scaleTarget = 1;
+      group.userData.accent = accent;
+      models.push(group);
+      stage.add(group);
+      return group;
+    };
+
+    const addPiece = (model, geometry, material, position, explodeVector, rotation = [0, 0, 0], scale = [1, 1, 1], pick = true) => {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(...position);
+      mesh.rotation.set(...rotation);
+      mesh.scale.set(...scale);
+      mesh.userData.basePosition = mesh.position.clone();
+      mesh.userData.explodeVector = new THREE.Vector3(...explodeVector);
+      mesh.userData.model = model;
+      mesh.userData.baseOpacity = material.opacity ?? 1;
+      model.userData.pieces.push(mesh);
+      model.add(mesh);
+      if (pick) pickables.push(mesh);
+      return mesh;
+    };
+
+    const addEdgeShell = (model, geometry, color, opacity = 0.32) => {
+      const line = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geometry),
+        new THREE.LineBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending })
+      );
+      line.userData.basePosition = line.position.clone();
+      line.userData.explodeVector = new THREE.Vector3();
+      model.add(line);
+      return line;
+    };
+
+    const buildNioCore = () => {
+      const m = createModel('NIO SCULPTURE', 0x7ee8ff, 0);
+      const mat = metal(0x7ee8ff, { color: 0x101827, emissiveIntensity: 0.28, roughness: 0.12 });
+      addPiece(m, new THREE.BoxGeometry(0.24, 2.4, 0.42), mat.clone(), [-0.78, 0, 0], [-1.4, 0.2, 0.4]);
+      addPiece(m, new THREE.BoxGeometry(0.24, 2.4, 0.42), mat.clone(), [0.78, 0, 0], [1.4, -0.2, -0.4]);
+      addPiece(m, new THREE.BoxGeometry(0.25, 2.15, 0.42), mat.clone(), [0, 0, 0], [0, 1.1, 0.9], [0, 0, -0.67]);
+      addPiece(m, new THREE.TorusGeometry(1.48, 0.035, 12, 160), metal(0x9d8cff, { color: 0x0e1420, emissiveIntensity: 0.52 }), [0, 0, -0.14], [0, 0, -1.2], [1.14, 0.3, 0.18]);
+      addPiece(m, new THREE.IcosahedronGeometry(0.34, 3), glass(0xe6c98b), [0, 0, 0.3], [0, 0, 1.55]);
+      addEdgeShell(m, new THREE.BoxGeometry(2.6, 2.9, 1.1), 0x7ee8ff, 0.18);
+      return m;
+    };
+
+    const buildTech = () => {
+      const m = createModel('TECH CORE', 0x7ee8ff, 0);
+      const dark = metal(0x7ee8ff, { color: 0x101a27, emissiveIntensity: 0.24 });
+      addPiece(m, new THREE.CylinderGeometry(0.52, 0.52, 1.7, 48), dark.clone(), [0, 0, 0], [0, 0, 1.5], [Math.PI / 2, 0, 0]);
+      addPiece(m, new THREE.TorusGeometry(0.84, 0.06, 16, 120), metal(0x9d8cff, { emissiveIntensity: 0.45 }), [0, 0, 0.54], [0, 0, 1.05]);
+      addPiece(m, new THREE.TorusGeometry(1.12, 0.028, 12, 140), metal(0x7ee8ff, { emissiveIntensity: 0.55 }), [0, 0, -0.38], [0, 0, -1.2], [0.25, 0.6, 0]);
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        addPiece(
+          m,
+          new THREE.BoxGeometry(0.18, 0.66, 0.58),
+          dark.clone(),
+          [Math.cos(a) * 1.18, Math.sin(a) * 1.18, 0],
+          [Math.cos(a) * 1.35, Math.sin(a) * 1.35, (i % 2 ? 0.55 : -0.45)],
+          [0, 0, a]
+        );
+      }
+      for (let i = 0; i < 5; i++) {
+        const a = i * Math.PI * 0.4 + 0.2;
+        addPiece(m, new THREE.SphereGeometry(0.1, 22, 22), metal(0xb7ffdc, { emissiveIntensity: 1.35 }), [Math.cos(a) * 1.7, Math.sin(a) * 0.88, Math.sin(a * 1.6) * 0.6], [Math.cos(a) * 1.7, Math.sin(a) * 1.2, Math.sin(a * 1.6)]);
+      }
+      return m;
+    };
+
+    const buildHealthcare = () => {
+      const m = createModel('DIAGNOSTIC RING', 0x89ffd8, 1);
+      const ringMat = metal(0x89ffd8, { color: 0x101d22, emissiveIntensity: 0.28, roughness: 0.22 });
+      addPiece(m, new THREE.TorusGeometry(1.18, 0.18, 28, 160), ringMat.clone(), [0, 0.2, 0], [0, 0.4, 1.8], [0, 0.16, 0]);
+      addPiece(m, new THREE.TorusGeometry(0.83, 0.022, 14, 140), metal(0x6fc7ff, { emissiveIntensity: 0.7 }), [0, 0.2, 0.08], [0, -0.2, -1.25], [0, 0.16, 0]);
+      addPiece(m, new THREE.BoxGeometry(2.45, 0.18, 0.62), metal(0xe8f7ff, { color: 0x172028, emissiveIntensity: 0.08 }), [0, -1.04, 0.12], [0, -1.5, 0.6]);
+      addPiece(m, new THREE.BoxGeometry(0.58, 0.18, 2.15), glass(0x89ffd8), [0, -0.82, -0.28], [0, -0.8, -1.3]);
+      addPiece(m, new THREE.CylinderGeometry(0.13, 0.13, 2.2, 28), metal(0x89ffd8, { emissiveIntensity: 0.6 }), [0, 0.2, 0.02], [0.9, 0, 0.3], [0, 0, Math.PI / 2], [1, 1, 0.08]);
+      for (let i = 0; i < 6; i++) {
+        const a = i * Math.PI / 3;
+        addPiece(m, new THREE.SphereGeometry(0.075, 18, 18), metal(0xe8f7ff, { emissiveIntensity: 1.2 }), [Math.cos(a) * 1.18, 0.2 + Math.sin(a) * 1.18, 0.08], [Math.cos(a) * 1.6, Math.sin(a) * 1.6, i % 2 ? 0.8 : -0.6]);
+      }
+      return m;
+    };
+
+    const buildEnergy = () => {
+      const m = createModel('ENERGY TURBINE', 0xe6c98b, 2);
+      const hub = metal(0xe6c98b, { color: 0x211c13, emissiveIntensity: 0.23, roughness: 0.19 });
+      addPiece(m, new THREE.CylinderGeometry(0.44, 0.44, 1.45, 40), hub.clone(), [0, 0, 0], [0, 0, 1.45], [Math.PI / 2, 0, 0]);
+      addPiece(m, new THREE.TorusGeometry(1.55, 0.045, 14, 160), metal(0x7ee8ff, { emissiveIntensity: 0.52 }), [0, 0, -0.14], [0, 0, -1.3], [0.06, 0.22, 0]);
+      addPiece(m, new THREE.TorusGeometry(1.1, 0.025, 12, 140), metal(0x91a6ff, { emissiveIntensity: 0.46 }), [0, 0, 0.3], [0, 0, 1.0], [-0.2, 0.08, 0]);
+      for (let i = 0; i < 10; i++) {
+        const a = i * Math.PI * 0.2;
+        addPiece(
+          m,
+          new THREE.BoxGeometry(0.17, 1.2, 0.34),
+          hub.clone(),
+          [Math.cos(a) * 0.94, Math.sin(a) * 0.94, 0],
+          [Math.cos(a) * 1.7, Math.sin(a) * 1.7, (i % 2 ? 0.8 : -0.6)],
+          [0, 0, a - Math.PI / 2]
+        );
+      }
+      return m;
+    };
+
+    const buildConsumer = () => {
+      const m = createModel('MATERIAL OBJECT', 0xc58bff, 3);
+      addPiece(m, new THREE.CylinderGeometry(0.72, 0.86, 1.55, 64), glass(0xc58bff), [0, -0.18, 0], [0, -0.3, 1.8]);
+      addPiece(m, new THREE.CylinderGeometry(0.31, 0.42, 0.62, 48), glass(0xff9ec8), [0, 0.92, 0], [0, 1.25, -0.7]);
+      addPiece(m, new THREE.TorusGeometry(0.42, 0.07, 22, 90), metal(0xff9ec8, { color: 0x211522, emissiveIntensity: 0.36 }), [0, 0.62, 0], [0.9, 0.8, 0]);
+      addPiece(m, new THREE.SphereGeometry(0.16, 28, 28), metal(0x7ee8ff, { emissiveIntensity: 1.15 }), [0, 1.36, 0], [0, 1.6, 0.6]);
+      addPiece(m, new THREE.TorusGeometry(1.25, 0.022, 12, 140), metal(0x7ee8ff, { emissiveIntensity: 0.44 }), [0, 0, -0.3], [0, 0, -1.4], [0.65, 0.3, 0.08]);
+      return m;
+    };
+
+    const buildStructure = () => {
+      const m = createModel('STRUCTURE MODEL', 0xc3d6ff, 0);
+      const structural = metal(0xc3d6ff, { color: 0x111827, emissiveIntensity: 0.16, roughness: 0.26 });
+      const floorMat = glass(0x9b8cff);
+      for (let y = -1.25; y <= 1.25; y += 0.62) {
+        addPiece(m, new THREE.BoxGeometry(2.5, 0.07, 1.55), floorMat.clone(), [0, y, 0], [0, y * 1.4, y > 0 ? 1.1 : -1.1], [0, 0.12, 0]);
+      }
+      [[-1.05,-0.62], [1.05,-0.62], [-1.05,0.62], [1.05,0.62]].forEach(([x,z], i) => {
+        addPiece(m, new THREE.BoxGeometry(0.1, 3.25, 0.1), structural.clone(), [x, 0, z], [x * 1.2, i < 2 ? -0.8 : 0.8, z * 1.4]);
+      });
+      addPiece(m, new THREE.BoxGeometry(0.42, 2.8, 0.42), glass(0xe6c98b), [0, 0, 0], [0, 0, 1.6]);
+      addEdgeShell(m, new THREE.BoxGeometry(2.8, 3.4, 1.85), 0xc3d6ff, 0.28);
+      return m;
+    };
+
+    const buildSignal = () => {
+      const m = createModel('SIGNAL ARRAY', 0x71f7d4, 0);
+      addPiece(m, new THREE.IcosahedronGeometry(0.48, 3), glass(0x71f7d4), [0, 0, 0], [0, 0, 1.6]);
+      [0.85, 1.32, 1.82].forEach((r, i) => addPiece(m, new THREE.TorusGeometry(r, 0.022, 12, 140), metal(i === 0 ? 0x71f7d4 : i === 1 ? 0x7aa7ff : 0xc58bff, { emissiveIntensity: 0.58 }), [0, 0, -i * 0.08], [0, 0, -0.8 - i * 0.4], [0.22 * i, 0.14 * i, 0]));
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        const x = Math.cos(a) * 1.65;
+        const y = Math.sin(a) * 1.18;
+        const bar = addPiece(m, new THREE.CylinderGeometry(0.025, 0.025, 1.25, 12), metal(0x71f7d4, { emissiveIntensity: 0.72 }), [x * 0.52, y * 0.52, 0], [x * 0.8, y * 0.8, i % 2 ? 0.9 : -0.6], [0, 0, a - Math.PI / 2]);
+        bar.scale.y = 1.2;
+        addPiece(m, new THREE.SphereGeometry(0.09, 18, 18), metal(i % 2 ? 0xc58bff : 0x7aa7ff, { emissiveIntensity: 1.25 }), [x, y, 0], [x * 1.4, y * 1.4, i % 2 ? 0.8 : -0.5]);
+      }
+      return m;
+    };
+
+    let activeIndex = 0;
+    let pageModels;
+    if (page === 'focus') pageModels = [buildTech(), buildHealthcare(), buildEnergy(), buildConsumer()];
+    else if (page === 'office') pageModels = [buildStructure()];
+    else if (page === 'contact') pageModels = [buildSignal()];
+    else pageModels = [buildNioCore()];
+
+    const focusPosition = new THREE.Vector3(mobile ? 0.2 : 2.35, mobile ? -0.55 : 0.05, -0.45);
+    const offPositions = [
+      new THREE.Vector3(-4.4, 2.2, -4.8),
+      new THREE.Vector3(4.5, 2.1, -5.3),
+      new THREE.Vector3(-4.2, -2.3, -5.1),
+      new THREE.Vector3(4.4, -2.2, -4.7)
+    ];
+
+    const setModelVisualOpacity = (model, opacity) => {
+      model.traverse((obj) => {
+        if (!obj.material) return;
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+        materials.forEach((mat) => {
+          if (mat.userData.baseOpacity == null) mat.userData.baseOpacity = mat.opacity ?? 1;
+          mat.transparent = true;
+          mat.opacity = mat.userData.baseOpacity * opacity;
+        });
+      });
+    };
+
+    const activateModel = (index, closeCamera = false) => {
+      activeIndex = Math.max(0, Math.min(pageModels.length - 1, index));
+      pageModels.forEach((model, i) => {
+        const active = i === activeIndex;
+        model.userData.positionTarget.copy(active ? focusPosition : offPositions[i % offPositions.length]);
+        model.userData.scaleTarget = active ? (mobile ? 0.78 : 1.02) : 0.46;
+        model.userData.opacityTarget = active ? 1 : 0.18;
+      });
+      const active = pageModels[activeIndex];
+      if (labelEl) labelEl.textContent = active.userData.label;
+      if (countEl) countEl.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(pageModels.length).padStart(2, '0')}`;
+      key.color.set(active.userData.accent);
+      if (closeCamera) {
+        cameraTarget.set(focusPosition.x * 0.34, focusPosition.y * 0.2, mobile ? 9.2 : 7.15);
+        lookTarget.copy(focusPosition);
+        focused = true;
+      }
+      window.dispatchEvent(new CustomEvent('nio:modelchange', { detail: { index: activeIndex, label: active.userData.label } }));
+    };
+
+    pageModels.forEach((model, i) => {
+      model.position.copy(i === 0 ? focusPosition : offPositions[i % offPositions.length]);
+      model.scale.setScalar(i === 0 ? (mobile ? 0.78 : 1.02) : 0.46);
+      model.userData.opacityTarget = i === 0 ? 1 : 0.18;
+      setModelVisualOpacity(model, i === 0 ? 1 : 0.18);
+    });
+
+    const pointer = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
+    const cameraTarget = baseCamera.clone();
+    const lookTarget = focusPosition.clone();
+    const baseLookTarget = focusPosition.clone();
+    let focused = false;
+    let hovering = false;
+    let dragging = false;
+    let movedDuringDrag = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let lastX = 0;
+    let lastY = 0;
+    let frame = 0;
+    let running = true;
+    let lastTime = performance.now();
+
+    const updatePointer = (event) => {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -((event.clientY / window.innerHeight) * 2 - 1);
+    };
+
+    const hitModel = () => {
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(pickables, false);
+      return hits.find((hit) => hit.object.visible && hit.object.userData.model?.visible !== false) || null;
+    };
+
+    const onPointerMove = (event) => {
+      updatePointer(event);
+      if (dragging && !mobile) {
+        const dx = event.clientX - lastX;
+        const dy = event.clientY - lastY;
+        if (Math.abs(event.clientX - dragStartX) + Math.abs(event.clientY - dragStartY) > 4) movedDuringDrag = true;
+        const active = pageModels[activeIndex];
+        active.userData.rotationTarget.y += dx * 0.007;
+        active.userData.rotationTarget.x += dy * 0.005;
+        active.userData.rotationTarget.x = THREE.MathUtils.clamp(active.userData.rotationTarget.x, -1.05, 1.05);
+        lastX = event.clientX;
+        lastY = event.clientY;
+        controls.classList.add('is-dragging');
+        return;
+      }
+      if (!coarse) {
+        const hit = hitModel();
+        const nowHovering = Boolean(hit && hit.object.userData.model === pageModels[activeIndex]);
+        if (hovering !== nowHovering) {
+          hovering = nowHovering;
+          document.body.classList.toggle('nio-model-hover', hovering);
+          controls.classList.toggle('is-hovering', hovering);
+        }
+      }
+    };
+
+    const onPointerDown = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('a,button,summary,input,textarea,select,label')) return;
+      updatePointer(event);
+      const hit = hitModel();
+      if (!hit || hit.object.userData.model !== pageModels[activeIndex]) return;
+      dragging = !mobile;
+      movedDuringDrag = false;
+      dragStartX = lastX = event.clientX;
+      dragStartY = lastY = event.clientY;
+    };
+
+    const onPointerUp = (event) => {
+      if (!dragging && !mobile) return;
+      const wasDragging = dragging;
+      dragging = false;
+      controls.classList.remove('is-dragging');
+      if (wasDragging && movedDuringDrag) return;
+      updatePointer(event);
+      const hit = hitModel();
+      if (hit && hit.object.userData.model === pageModels[activeIndex]) activateModel(activeIndex, true);
+    };
+
+    const onClick = (event) => {
+      if (!mobile || event.target instanceof Element && event.target.closest('a,button,summary,input,textarea,select,label')) return;
+      updatePointer(event);
+      const hit = hitModel();
+      if (hit && hit.object.userData.model === pageModels[activeIndex]) activateModel(activeIndex, true);
+    };
+
+    const resetView = () => {
+      focused = false;
+      cameraTarget.copy(baseCamera);
+      lookTarget.copy(baseLookTarget);
+      pageModels.forEach((model) => {
+        model.userData.explodeTarget = 0;
+        model.userData.rotationTarget.set(0.08, -0.22, 0);
+      });
+      if (explodeButton instanceof HTMLButtonElement) explodeButton.setAttribute('aria-pressed', 'false');
+    };
+
+    const toggleExplode = () => {
+      const active = pageModels[activeIndex];
+      active.userData.explodeTarget = active.userData.explodeTarget > 0.5 ? 0 : 1;
+      if (explodeButton instanceof HTMLButtonElement) explodeButton.setAttribute('aria-pressed', active.userData.explodeTarget ? 'true' : 'false');
+    };
+
+    explodeButton?.addEventListener('click', toggleExplode);
+    resetButton?.addEventListener('click', resetView);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('click', onClick);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') resetView();
+      if (event.key.toLowerCase() === 'e' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) toggleExplode();
+    });
+
+    const onFocusChange = (event) => {
+      if (page !== 'focus') return;
+      const index = Number(event.detail?.index || 0);
+      activateModel(index, false);
+      resetView();
+      activateModel(index, false);
+    };
+    window.addEventListener('nio:focuschange', onFocusChange);
+
+    const resize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.15 : 1.6));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      composer?.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', resize);
+
+    const animate = (now) => {
+      if (!running) return;
+      frame = requestAnimationFrame(animate);
+      const dt = Math.min(1 / 30, Math.max(1 / 120, (now - lastTime) / 1000));
+      lastTime = now;
+
+      camera.position.lerp(cameraTarget, focused ? 0.065 : 0.035);
+      const desiredLook = lookTarget.clone();
+      camera.lookAt(desiredLook);
+
+      key.position.x += ((pointer.x * 4.2 + 3.8) - key.position.x) * 0.045;
+      key.position.y += ((pointer.y * 3.1 + 2.8) - key.position.y) * 0.045;
+
+      pageModels.forEach((model, index) => {
+        model.position.lerp(model.userData.positionTarget, 0.055);
+        const s = THREE.MathUtils.lerp(model.scale.x, model.userData.scaleTarget, 0.065);
+        model.scale.setScalar(s);
+        model.rotation.x += (model.userData.rotationTarget.x - model.rotation.x) * 0.07;
+        model.rotation.y += (model.userData.rotationTarget.y - model.rotation.y) * 0.07;
+        model.rotation.z += (model.userData.rotationTarget.z - model.rotation.z) * 0.07;
+        if (!dragging || index !== activeIndex) model.userData.rotationTarget.y += dt * (index === activeIndex ? 0.07 : 0.025);
+
+        const targetOpacity = model.userData.opacityTarget ?? 1;
+        model.traverse((obj) => {
+          if (!obj.material) return;
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+          mats.forEach((mat) => {
+            if (mat.userData.baseOpacity == null) mat.userData.baseOpacity = mat.opacity ?? 1;
+            mat.opacity += (mat.userData.baseOpacity * targetOpacity - mat.opacity) * 0.08;
+          });
+        });
+
+        model.userData.explode += (model.userData.explodeTarget - model.userData.explode) * 0.08;
+        model.userData.pieces.forEach((piece) => {
+          const base = piece.userData.basePosition;
+          const vector = piece.userData.explodeVector;
+          if (!base || !vector) return;
+          piece.position.lerp(base.clone().addScaledVector(vector, model.userData.explode), 0.13);
+        });
+      });
+
+      if (composer) composer.render();
+      else renderer.render(scene, camera);
+    };
+
+    activateModel(0, false);
+    if (reduceMotion) renderer.render(scene, camera);
+    else frame = requestAnimationFrame(animate);
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        running = false;
+        cancelAnimationFrame(frame);
+      } else if (!reduceMotion && !running) {
+        running = true;
+        lastTime = performance.now();
+        frame = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    const cleanup = () => {
+      running = false;
+      cancelAnimationFrame(frame);
+      document.body.classList.remove('nio-model-hover');
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('click', onClick);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('nio:focuschange', onFocusChange);
+      document.removeEventListener('visibilitychange', onVisibility);
+      renderer.dispose();
+      composer?.dispose();
+    };
+    window.addEventListener('pagehide', cleanup, { once: true });
+  }
+</script>
+
+<style is:global>
+  .nio-model-layer{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .nio-model-canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+    pointer-events:none;
+  }
+  .nio-model-controls{
+    position:fixed;
+    left:22px;
+    bottom:19px;
+    z-index:8;
+    width:min(430px,calc(100vw - 44px));
+    display:grid;
+    grid-template-columns:1fr auto;
+    grid-template-areas:"readout actions" "hint hint";
+    gap:8px 18px;
+    padding:12px 13px 10px;
+    border:1px solid rgba(165,211,255,.13);
+    background:rgba(4,7,13,.46);
+    backdrop-filter:blur(14px) saturate(125%);
+    -webkit-backdrop-filter:blur(14px) saturate(125%);
+    color:rgba(224,237,252,.8);
+    box-shadow:0 18px 50px rgba(0,0,0,.18);
+    transition:border-color .22s ease,background-color .22s ease,transform .22s ease;
+  }
+  .nio-model-controls.is-hovering{border-color:rgba(126,232,255,.38);background:rgba(7,12,22,.66)}
+  .nio-model-controls.is-dragging{transform:translateY(-2px);border-color:rgba(157,140,255,.5)}
+  .nio-model-readout{grid-area:readout;display:grid;grid-template-columns:auto auto;gap:5px 12px;align-items:baseline;min-width:0}
+  .nio-model-readout>span{grid-column:1/-1;color:rgba(171,198,228,.52);font:500 7px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+  .nio-model-readout strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#eef6ff;font:500 10px/1.15 var(--sans);letter-spacing:.12em;text-transform:uppercase}
+  .nio-model-readout small{justify-self:end;color:rgba(157,190,224,.45);font:500 7px/1 var(--sans);letter-spacing:.14em}
+  .nio-model-actions{grid-area:actions;display:flex;gap:6px;align-items:center}
+  .nio-model-actions button{
+    min-height:32px;
+    padding:0 10px;
+    border:1px solid rgba(162,206,255,.14);
+    background:rgba(11,17,29,.52);
+    color:rgba(225,237,250,.72);
+    font:500 7px/1 var(--sans);
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background-color .2s ease,border-color .2s ease,color .2s ease;
+  }
+  .nio-model-actions button:hover,.nio-model-actions button[aria-pressed="true"]{border-color:rgba(126,232,255,.38);background:rgba(17,32,50,.74);color:#fff}
+  .nio-model-hint{grid-area:hint;color:rgba(161,187,216,.4);font:500 6.5px/1.25 var(--sans);letter-spacing:.12em;text-transform:uppercase}
+  body.nio-model-hover{cursor:grab}
+  body.nio-model-hover .nio-model-controls.is-dragging{cursor:grabbing}
+
+  @media(max-width:760px){
+    .nio-model-controls{
+      left:12px;
+      bottom:12px;
+      width:calc(100vw - 24px);
+      padding:9px 10px;
+      grid-template-columns:1fr auto;
+    }
+    .nio-model-hint{display:none}
+    .nio-model-actions button{min-height:30px;padding:0 8px}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    .nio-model-controls{transition:none!important}
+  }
+</style>
