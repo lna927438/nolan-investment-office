@@ -11,6 +11,7 @@ import "../styles/brand-system.css";
 import "../styles/mobile-density.css";
 import "../styles/refinement-motion.css";
 import "../styles/production-polish.css";
+import "../styles/media-layer.css";
 
 interface Props {
   title?: string;
@@ -38,6 +39,7 @@ const pageCodes: Record<string, string> = {
   legal: "NIO / L",
 };
 const pageCode = pageCodes[pageName];
+const surfaceStyle = `--nio-surface:url('${url("media/surface-concrete.webp")}')`;
 ---
 <!doctype html>
 <html lang="en">
@@ -56,7 +58,7 @@ const pageCode = pageCodes[pageName];
     <link rel="icon" type="image/svg+xml" href={url("favicon.svg")} />
     <title>{title}</title>
   </head>
-  <body class={active === "home" ? "home-shell" : undefined} data-page={pageName}>
+  <body class={active === "home" ? "home-shell" : undefined} data-page={pageName} style={surfaceStyle}>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
