@@ -11,7 +11,13 @@ const focus = [
 const approach = [
   ["01", "Long-term perspective", "We favor durable businesses and patient decision-making over short-term activity."],
   ["02", "Selective capital", "We invest deliberately, with a focused review process and a high bar for conviction."],
-  ["03", "Direct relationships", "We value thoughtful, straightforward relationships with founders, operators and partners."]
+  ["03", "Direct relationships", "We value thoughtful, straightforward relationships with founders, operators and professional partners."]
+];
+
+const contactTypes = [
+  ["Founders & operators", "Company introductions and relevant business opportunities."],
+  ["Professional correspondence", "Legal, finance, advisory and operating matters."],
+  ["General office", "All other business correspondence for the office."]
 ];
 ---
 <!doctype html>
@@ -19,17 +25,17 @@ const approach = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Nolan Investment Office is an independent investment office focused on technology, healthcare, energy, infrastructure and selected enduring businesses." />
+    <meta name="description" content="Nolan Investment Office is an independent California-based investment office focused on technology, healthcare, energy, infrastructure and selected enduring businesses." />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#f1eee7" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Nolan Investment Office" />
-    <meta property="og:description" content="Independent investing with a selective, long-term perspective." />
+    <meta property="og:description" content="Selective capital. Long-term perspective." />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Nolan Investment Office" />
-    <meta name="twitter:description" content="Independent investing with a selective, long-term perspective." />
+    <meta name="twitter:description" content="Selective capital. Long-term perspective." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Nolan Investment Office</title>
+    <title>Nolan Investment Office | Independent Investment Office</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -52,16 +58,17 @@ const approach = [
     <main id="main">
       <div id="top" class="wrap hero">
         <div class="hero-inner" data-reveal>
-          <div class="eyebrow">Independent Investment Office</div>
-          <h1>Quiet conviction.<br />Long-term perspective.</h1>
+          <div class="eyebrow">Independent Investment Office · California</div>
+          <h1>Selective capital.<br />Long-term perspective.</h1>
           <div class="hero-bottom">
             <div class="hero-copy">
-              Nolan Investment Office invests selectively across technology,
-              healthcare, energy, infrastructure and enduring businesses.
+              An independent investment office focused on a small number of
+              opportunities across technology, healthcare, energy,
+              infrastructure and selected enduring businesses.
             </div>
             <div class="hero-note">
-              California based. Privately managed. Built around direct
-              relationships and a research-led investment process.
+              Privately managed. Direct relationships. Research-led decision
+              making.
             </div>
           </div>
         </div>
@@ -71,7 +78,7 @@ const approach = [
         <div class="wrap" data-reveal>
           <div class="section-head">
             <div class="section-number">01 / Focus</div>
-            <h2>Areas we follow closely.</h2>
+            <h2>A focused set of sectors.</h2>
           </div>
           <div class="grid">
             {focus.map(([n, title, text]) => (
@@ -89,7 +96,7 @@ const approach = [
         <div class="wrap" data-reveal>
           <div class="section-head">
             <div class="section-number">02 / Approach</div>
-            <h2>Simple by design.</h2>
+            <h2>Deliberate by design.</h2>
           </div>
           <div class="approach-list">
             {approach.map(([n, title, text]) => (
@@ -107,21 +114,23 @@ const approach = [
         <div class="wrap" data-reveal>
           <div class="section-head">
             <div class="section-number">03 / Office</div>
-            <h2>A small office with a focused mandate.</h2>
+            <h2>Independent by structure.</h2>
           </div>
           <div class="office-copy">
-            Nolan Investment Office is an independent investment office led by
-            Renee Nolan, supported by a dedicated team across research,
-            operations and professional coordination.
+            Nolan Investment Office is an independent, California-based
+            investment office led by Renee Nolan. The office operates with a
+            small dedicated team and professional partners, keeping research,
+            diligence and day-to-day coordination close to the decision-making
+            process.
           </div>
           <div class="office-meta">
             <p>
-              The office is structured to keep decisions direct, diligence
-              practical and relationships personal.
+              Opportunities are reviewed selectively, with emphasis on business
+              quality, practical diligence and long-term alignment.
             </p>
             <p>
-              We are not built around volume. We prefer a selective pipeline,
-              thoughtful review and long-term alignment.
+              Relationships are handled directly. The office is not structured
+              around a high-volume sourcing model.
             </p>
           </div>
         </div>
@@ -130,10 +139,18 @@ const approach = [
       <section id="contact" class="contact">
         <div class="wrap" data-reveal>
           <div class="section-number">04 / Contact</div>
-          <h2>Founder and business inquiries.</h2>
+          <h2>Office correspondence.</h2>
+          <div class="contact-grid">
+            {contactTypes.map(([title, text]) => (
+              <div class="contact-item">
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
           <div class="contact-line">
             <span class="dot" aria-hidden="true"></span>
-            <span>Direct office contact details will be added before public launch.</span>
+            <span>Direct office contact details will be published with the formal launch.</span>
           </div>
         </div>
       </section>
@@ -148,6 +165,7 @@ const approach = [
         </p>
         <div class="footer-side">
           <a href="/legal">Legal</a>
+          <span>California, United States</span>
           <span>© 2026 Nolan Investment Office</span>
         </div>
       </div>
