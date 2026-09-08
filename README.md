@@ -1,64 +1,52 @@
-# Nolan Investment Office — V2.4
+# Nolan Investment Office — V4
 
-Minimal multi-page website for Nolan Investment Office, built with Astro.
+Interactive multi-page website for Nolan Investment Office, built with Astro, Three.js and cannon-es.
 
 ## Current site structure
-- Home — strict single-screen landing page with connected visual focus board and mobile focus rail
-- Focus — interactive sector modules with four distinct sector visual systems
-- Office — leadership, linked operating network, interactive decision system and signal deck
-- Contact — visual correspondence routing system and signal deck
+- Home — strict single-screen landing page over a real-time WebGL space scene
+- Focus — image-forward sector gallery synchronized with the 3D environment
+- Office — editorial leadership, operating model and review process over the live space layer
+- Contact — large correspondence route modules over the live space layer
 - Legal
 - 404
 
-## Navigation model
-- `/` — single-screen brand landing page
-- `/focus/` — sector focus and areas of attention
-- `/office/` — leadership, operating model and review process
-- `/contact/` — correspondence routing categories
-- `/legal/` — website disclosures
+## V4 true 3D space system
+- Added a site-wide Three.js WebGL scene rendered behind the interface
+- Added a real perspective camera with pointer-driven parallax and view rotation
+- Added scroll-driven camera depth and scene rotation on interior pages
+- Added wheel-driven depth response on the non-scrolling homepage
+- Added a three-dimensional star field, dust particles, orbital rings, wireframe structures and a metallic central core
+- Added physically based materials, multiple dynamic lights and desktop bloom post-processing
+- Added cannon-es rigid-body physics with dynamic 3D objects, collision boundaries, restitution and continuous motion
+- Clicking non-interactive parts of the page applies real physical impulses to the floating bodies and creates a temporary spatial pulse
+- Pointer movement changes camera position and the live 3D light position in real time
+- Focus sector changes synchronize the 3D lighting palette, orbit-node emphasis and spatial focus state
+- Added page-specific 3D modes: Deep Space, Sector Orbit, Structure Field and Signal Space
+- Preserved `prefers-reduced-motion` with a static 3D render instead of forcing continuous animation
+- Reduced particle counts, disabled bloom and lowered pixel ratio on mobile / coarse-pointer devices
+- Pauses the render loop when the page is hidden to reduce GPU use
 
-## Design direction
-- Private investment office, not a fund-marketing website
-- Warm ivory background
-- Charcoal typography
-- Muted olive accents
-- Editorial serif headlines
-- Restrained Nolan wordmark and custom NIO symbol
-- Structured hairline dividers, modular diagrams and generous whitespace
-- Progressive motion without heavy animation libraries
-- No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
+## V3 editorial reset retained above the 3D layer
+- Bodoni Moda display typography + Manrope interface typography
+- high-contrast editorial composition
+- large image and dark-field modules rather than dashboard-like micro-panels
+- image-forward Focus gallery adapted from an MIT-licensed Astro gallery project
+- dark editorial Office and Contact modules
 
-## V2.4 production polish
-- Preserved the strict single-screen homepage
-- Expanded practical hit targets for navigation and touch interaction without creating visible button chrome
-- Removed sticky hover residue on touch-first devices and separated hover / press behavior
-- Added text wrapping resilience for narrow layouts and OS font substitutions
-- Added Focus deep-link scroll offsets and native grouped disclosure behavior
-- Upgraded the Office process tabs with roving tabindex, Home/End navigation and explicit tab / panel relationships
-- Added polite live-region updates to interactive Office and Contact readouts
-- Reduced high-frequency pointer and scroll work through requestAnimationFrame scheduling
-- Reduced mobile backdrop-filter cost while preserving the visual hierarchy
-- Tightened footer height and retained active-route context
-- Added prefers-contrast, forced-colors and reduced-motion production fallbacks
+## Technology
+- Astro 5
+- Three.js
+- cannon-es
+- Three.js EffectComposer / UnrealBloomPass
+- native Web Animations API for selected foreground transitions
 
-## V2.3 refinement and motion layer
-- Progressive view-entry movement with static fallbacks
-- Active-section handoff to the right-side Page Progress Rail
-- Section-heading line-build states
-- Scrolled-state response to the Nolan header symbol
-- Synchronized micro-transitions for Office and Contact interactive systems
-- Homepage Focus Board second-level research readout
+## Licensing
+Third-party software and adapted open-source design notices are documented in `THIRD_PARTY_NOTICES.md`.
 
-## V2.2 sector and routing system
-- Four distinct Focus visual languages for Technology, Healthcare, Energy & Infrastructure and Selective Consumer
-- Linked Office Operating Network with Research, Operations and Professional Partners states
-- Interactive Contact Correspondence Router with Founder, Professional and General routes
-- Compact mobile signal deck and interior density rules
-
-## Visual references and asset sourcing
-Open-source design references and license notes are documented in `docs/visual-references.md`.
-
-The curated media / texture / SVG / motion shortlist is documented in `docs/nolan-asset-library.md`. The asset library records source URLs, license baselines, intended placement, treatment guidance and recommendation priority before any media is promoted into the production site.
+Media sources and license records are documented in:
+- `docs/media-sources.md`
+- `docs/nolan-asset-library.md`
+- `docs/visual-references.md`
 
 ## Development
 
@@ -78,4 +66,4 @@ Preview: https://lna927438.github.io/nolan-investment-office/
 - Confirm final legal entity wording and disclosure language
 - Decide whether the source repository should remain public
 - Switch preview pages from `noindex` to `index`
-- Add a social preview image only if needed
+- Run a final device/GPU performance pass on iPhone, iPad, integrated-graphics laptops and desktop browsers
