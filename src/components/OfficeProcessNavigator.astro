@@ -45,8 +45,8 @@ const first = steps[0];
 
     <div class="process-stage-copy">
       <span class="process-stage-kicker">Current stage</span>
-      <strong data-process-title>{first[1]}</strong>
-      <p data-process-copy>{first[2]}</p>
+      <strong data-process-display-title>{first[1]}</strong>
+      <p data-process-display-copy>{first[2]}</p>
     </div>
   </div>
 </div>
@@ -56,8 +56,8 @@ const first = steps[0];
     const tabs = [...system.querySelectorAll('[data-process-index]')];
     const stage = system.querySelector('[data-process-stage]');
     const count = system.querySelector('[data-process-count]');
-    const title = system.querySelector('[data-process-title]');
-    const copy = system.querySelector('[data-process-copy]');
+    const title = system.querySelector('[data-process-display-title]');
+    const copy = system.querySelector('[data-process-display-copy]');
 
     const activate = (tab) => {
       const index = Number(tab.dataset.processIndex || 0);
