@@ -1,0 +1,111 @@
+---
+import NioMark from "./NioMark.astro";
+
+interface RouteItem {
+  number: string;
+  title: string;
+  code: string;
+  text: string;
+  guide: string;
+}
+
+interface Props {
+  items: RouteItem[];
+}
+
+const { items } = Astro.props;
+const first = items[0];
+---
+<div class="contact-routing-system" data-contact-routing>
+  <div class="contact-route-controls" role="group" aria-label="Correspondence categories">
+    {items.map((item, index) => (
+      <button
+        type="button"
+        class="contact-route-control"
+        data-contact-index={index}
+        data-contact-title={item.title}
+        data-contact-copy={item.text}
+        data-contact-guide={item.guide}
+        aria-pressed={index === 0 ? "true" : "false"}
+      >
+        <span class="contact-route-number">{item.number}</span>
+        <span class="contact-route-code">{item.code}</span>
+        <strong>{item.title}</strong>
+        <span class="contact-route-summary">{item.text}</span>
+        <span class="contact-route-state" aria-hidden="true">→</span>
+      </button>
+    ))}
+  </div>
+
+  <div class="contact-routing-board" data-module data-contact-stage="0">
+    <div class="contact-routing-head">
+      <span>Correspondence router</span>
+      <span data-contact-count>01 / 03</span>
+    </div>
+
+    <div class="contact-routing-map" aria-hidden="true">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line class="contact-intake-line" x1="8" y1="50" x2="50" y2="50"></line>
+        <line class="contact-branch contact-branch-0" x1="50" y1="50" x2="86" y2="24"></line>
+        <line class="contact-branch contact-branch-1" x1="50" y1="50" x2="86" y2="50"></line>
+        <line class="contact-branch contact-branch-2" x1="50" y1="50" x2="86" y2="76"></line>
+        <circle class="contact-route-node contact-route-node-0" cx="86" cy="24" r="2"></circle>
+        <circle class="contact-route-node contact-route-node-1" cx="86" cy="50" r="2"></circle>
+        <circle class="contact-route-node contact-route-node-2" cx="86" cy="76" r="2"></circle>
+        <circle class="contact-intake-node" cx="8" cy="50" r="1.8"></circle>
+      </svg>
+
+      <span class="contact-intake-label">Initial context</span>
+      <span class="contact-map-label contact-map-label-a">Founder</span>
+      <span class="contact-map-label contact-map-label-b">Professional</span>
+      <span class="contact-map-label contact-map-label-c">General</span>
+
+      <div class="contact-routing-core">
+        <NioMark className="contact-core-mark" />
+      </div>
+    </div>
+
+    <div class="contact-routing-readout">
+      <div>
+        <span>Selected route</span>
+        <strong data-contact-display-title>{first.title}</strong>
+      </div>
+      <p data-contact-display-copy>{first.text}</p>
+      <div class="contact-routing-guide">
+        <span>Useful first context</span>
+        <p data-contact-display-guide>{first.guide}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-contact-routing]').forEach((system) => {
+    const controls = [...system.querySelectorAll('[data-contact-index]')];
+    const board = system.querySelector('[data-contact-stage]');
+    const count = system.querySelector('[data-contact-count]');
+    const title = system.querySelector('[data-contact-display-title]');
+    const copy = system.querySelector('[data-contact-display-copy]');
+    const guide = system.querySelector('[data-contact-display-guide]');
+
+    const activate = (control) => {
+      const index = Number(control.dataset.contactIndex || 0);
+      controls.forEach((item, itemIndex) => {
+        item.setAttribute('aria-pressed', itemIndex === index ? 'true' : 'false');
+      });
+      if (board) board.dataset.contactStage = String(index);
+      if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(controls.length).padStart(2, '0')}`;
+      if (title) title.textContent = control.dataset.contactTitle || '';
+      if (copy) copy.textContent = control.dataset.contactCopy || '';
+      if (guide) guide.textContent = control.dataset.contactGuide || '';
+    };
+
+    controls.forEach((control) => {
+      control.addEventListener('click', () => activate(control));
+      control.addEventListener('focus', () => activate(control));
+      if (window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+        control.addEventListener('pointerenter', () => activate(control));
+      }
+    });
+  });
+</script>
