@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../components/SiteLayout.astro";
 import NioModelLayer from "../components/NioModelLayer.astro";
+import NioIcon from "../components/NioIcon.astro";
 import "../styles/home.css";
 
 const base = import.meta.env.BASE_URL;
@@ -25,15 +26,15 @@ const base = import.meta.env.BASE_URL;
       <nav class="v3-home-routes" aria-label="Explore Nolan Investment Office">
         <a href={`${base}focus/`}>
           <span>01</span>
-          <strong>Focus ↗</strong>
+          <strong>Focus <NioIcon name="arrow-up-right" className="nio-route-icon" /></strong>
         </a>
         <a href={`${base}office/`}>
           <span>02</span>
-          <strong>Office ↗</strong>
+          <strong>Office <NioIcon name="arrow-up-right" className="nio-route-icon" /></strong>
         </a>
         <a href={`${base}contact/`}>
           <span>03</span>
-          <strong>Contact ↗</strong>
+          <strong>Contact <NioIcon name="arrow-up-right" className="nio-route-icon" /></strong>
         </a>
       </nav>
     </div>
