@@ -1,0 +1,170 @@
+/* V2.4: production polish for interaction, accessibility and resilient layouts. */
+
+:root{
+  --nio-hit:44px;
+  --nio-focus:rgba(89,100,84,.92);
+  --nio-press:rgba(89,100,84,.095);
+}
+
+/* Keep interaction geometry predictable across mouse, touch and keyboard. */
+:where(a,button,summary){
+  touch-action:manipulation;
+}
+
+:where(button,.sector-summary,.visual-tile,.home-route,.route-module,.mobile-focus-node,.footer-route-map a){
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* Primary nav remains visually small while the actual hit area is comfortable. */
+.site-header nav a{
+  min-height:var(--nio-hit);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding-left:2px;
+  padding-right:2px;
+}
+
+.brand{
+  min-height:var(--nio-hit);
+}
+
+/* Consistent keyboard focus without turning the site into a button-heavy UI. */
+:where(a,button,summary):focus-visible{
+  outline:1px solid var(--nio-focus);
+  outline-offset:4px;
+}
+
+.sector-summary:focus-visible,
+.process-tab:focus-visible,
+.support-control:focus-visible,
+.contact-route-control:focus-visible{
+  outline-offset:-1px;
+}
+
+/* Text resilience for narrow widths and OS font substitution. */
+:where(.sector-title,.support-control strong,.contact-route-control strong,.process-tab-title,.route-module h2,.home-route-label){
+  overflow-wrap:break-word;
+  text-wrap:balance;
+}
+
+:where(.sector-summary-copy,.support-control-copy,.contact-route-summary,.process-stage-copy p,.support-network-readout p,.contact-routing-readout p){
+  overflow-wrap:anywhere;
+}
+
+/* No sticky hover residue on touch-first devices. Active feedback remains immediate. */
+@media(hover:none), (pointer:coarse){
+  .brand:hover{opacity:1}
+  .brand:hover .brand-mark{transform:none}
+  .visual-tile:hover strong,
+  .sector-row:hover h2,
+  .process-row:hover strong,
+  .correspondence-row:hover h2,
+  .support-item:hover h3,
+  .route-module:hover .route-arrow{
+    transform:none;
+  }
+
+  .home-route:hover,
+  .visual-tile:hover,
+  .sector-summary:hover,
+  .support-control:hover,
+  .contact-route-control:hover,
+  .process-tab:hover,
+  .footer-route-map a:hover{
+    background-color:transparent;
+  }
+
+  .home-route:active,
+  .visual-tile:active,
+  .sector-summary:active,
+  .support-control:active,
+  .contact-route-control:active,
+  .process-tab:active,
+  .footer-route-map a:active{
+    background-color:var(--nio-press);
+  }
+}
+
+/* Footer retains identity but resolves faster at the end of a long page. */
+.footer-inner{gap:22px}
+.footer-brand-panel{min-height:116px}
+.footer-route-map a{min-height:50px}
+footer{padding-bottom:34px}
+
+/* Reduce abrupt system-state changes while keeping them fast. */
+.support-control,
+.contact-route-control,
+.process-tab,
+.sector-summary,
+.route-module,
+.home-route{
+  transition-duration:220ms;
+}
+
+/* Prevent accidental horizontal movement from transformed or diagrammatic children. */
+body:not(.home-shell){
+  overflow-x:clip;
+}
+
+/* Tablet: maintain compact controls and avoid oversized diagrams. */
+@media(max-width:900px){
+  .site-header nav a{min-height:42px}
+  .footer-brand-panel{min-height:0}
+  .footer-route-map a{min-height:48px}
+
+  .support-system,
+  .contact-routing-system,
+  .process-system{
+    max-width:100%;
+  }
+}
+
+/* Mobile: touch targets stay usable even as visual density is reduced. */
+@media(max-width:620px){
+  :root{--nio-hit:42px}
+
+  .site-header nav a{min-height:40px}
+  .brand{min-height:40px}
+  .home-route{min-height:44px}
+  .mobile-focus-node{min-height:54px}
+  .footer-route-map a{min-height:44px}
+
+  .route-module{
+    min-height:112px;
+  }
+
+  .footer-inner{gap:16px}
+  footer{padding-bottom:24px}
+}
+
+/* Stronger boundaries only when the user explicitly requests more contrast. */
+@media(prefers-contrast:more){
+  :root{
+    --line:rgba(27,30,26,.28);
+    --line-strong:rgba(27,30,26,.42);
+    --module-line:rgba(27,30,26,.28);
+    --module-line-strong:rgba(27,30,26,.42);
+  }
+
+  .nio-mark-frame,.nio-mark-axis{opacity:.72}
+  .page-progress-track{background:rgba(27,30,26,.22)}
+}
+
+/* Windows High Contrast / forced-colors fallback. */
+@media(forced-colors:active){
+  :where(a,button,summary):focus-visible{
+    outline:2px solid Highlight;
+  }
+
+  .nio-mark-frame,.nio-mark-letter,.nio-mark-axis,.nio-mark-node,
+  .visual-link,.visual-node,.support-link,.support-node,
+  .contact-branch,.contact-route-node,.process-stage-node{
+    forced-color-adjust:auto;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+}
