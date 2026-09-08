@@ -1,11 +1,11 @@
-# Nolan Investment Office — V2.0
+# Nolan Investment Office — V2.1
 
 Minimal multi-page website for Nolan Investment Office, built with Astro.
 
 ## Current site structure
-- Home — strict single-screen landing page with interactive visual focus board
+- Home — strict single-screen landing page with interactive visual focus board and mobile focus rail
 - Focus — interactive sector modules and context signal deck
-- Office — modular leadership, operating model, process rail and signal deck
+- Office — modular leadership, operating model, interactive decision system and signal deck
 - Contact — modular correspondence categories and signal deck
 - Legal
 - 404
@@ -23,29 +23,24 @@ Minimal multi-page website for Nolan Investment Office, built with Astro.
 - Charcoal typography
 - Muted olive accents
 - Editorial serif headlines
-- Restrained sans-serif wordmark and navigation
+- Restrained Nolan wordmark and custom NIO symbol
 - Structured hairline dividers and generous whitespace
 - Modular interaction without heavy animation libraries
 - No financial dashboards, AUM claims, portfolio-logo walls or sales-style CTAs
 
-## V2.0 visual information system
-- Preserved the homepage as a strict one-screen layout with no vertical scrolling
-- Upgraded the homepage Focus Board into a connected visual network with center node, sector links and active focus states
-- Added responsive readout behavior so hover/focus on a sector changes the active connection, endpoint and board label
-- Added layered panel depth to the homepage board without images or heavy effects
-- Added reusable translucent Page Signal Deck modules to Focus, Office and Contact
-- Added page-specific contextual modules for scope, method, horizon, structure, support, base and routing
-- Added dynamic right-edge Page Progress Rails to interior pages on larger screens
-- Added page coordinate marks such as `NIO / 01`, architectural grid lines, orbital background fields and quiet geometric anchors
-- Added native cross-document view transitions where supported
-- Added pointer-responsive radial highlight behavior to interactive modules
-- Added tactile hover, focus and press states for desktop and touch input
-- Converted Focus sectors into accessible native disclosure modules with single-open accordion behavior
-- Added direct homepage-to-sector deep links that open the matching Focus module
-- Added reusable large Route Module components between major pages
-- Added visual decision-rail nodes to the Office process and signal-bar details to Contact modules
-- Added interior support-module symbols and leadership watermark treatment
-- Preserved reduced-motion accessibility and no-JS content visibility
+## V2.1 Nolan brand system
+- Added a custom linear NIO symbol built from a framed N-form, center node and coordinate axes
+- Integrated the NIO symbol into the primary header lockup, homepage network core, Office decision system and modular footer
+- Updated the favicon to use the same Nolan visual mark
+- Added a branded modular footer panel with office identity, location context and route navigation
+- Upgraded the Office review process from static rows to an interactive five-stage Decision System
+- Added keyboard-accessible process navigation with synchronized stage count, active node, moving orbit, title and explanatory copy
+- Added a simplified four-node mobile Focus Rail so tablet and mobile users retain a visual focus map instead of losing the desktop board entirely
+- Preserved the homepage as a strict single-screen layout while adding the mobile visual layer
+- Preserved the V2.0 connected homepage network, signal decks, page progress rails, focus accordion, page transitions and route modules
+- Fixed legacy selector conflicts introduced by the new brand lockup and isolated footer navigation from primary navigation styles
+- Fixed Office process display target selectors so interaction updates the correct visual panel
+- Preserved reduced-motion accessibility and no-JS content visibility wherever practical
 
 ## Visual references
 The visual system incorporates selected design ideas from MIT-licensed Astro projects while keeping Nolan's implementation original and intentionally restrained. Reference and license notes are documented in `docs/visual-references.md`.
