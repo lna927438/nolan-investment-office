@@ -1,5 +1,6 @@
 ---
 import NioMark from "./NioMark.astro";
+import NioSpace from "./NioSpace.astro";
 import "../styles/global.css";
 import "../styles/reliability.css";
 import "../styles/editorial.css";
@@ -13,6 +14,7 @@ import "../styles/refinement-motion.css";
 import "../styles/production-polish.css";
 import "../styles/media-layer.css";
 import "../styles/v3-reset.css";
+import "../styles/space3d.css";
 
 interface Props {
   title?: string;
@@ -49,7 +51,7 @@ const surfaceStyle = `--nio-surface:url('${url("media/surface-concrete.webp")}')
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex,follow" : "index,follow"} />
-    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="theme-color" content="#03050a" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -64,6 +66,7 @@ const surfaceStyle = `--nio-surface:url('${url("media/surface-concrete.webp")}')
   </head>
   <body class={active === "home" ? "home-shell" : undefined} data-page={pageName} style={surfaceStyle}>
     <a class="skip-link" href="#main">Skip to content</a>
+    <NioSpace />
 
     <header class="site-header">
       <div class="wrap nav">
