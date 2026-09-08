@@ -1,4 +1,6 @@
 ---
+import NioIcon from "./NioIcon.astro";
+
 interface Props {
   eyebrow: string;
   title: string;
@@ -14,7 +16,7 @@ const { eyebrow, title, label, href } = Astro.props;
     <h2>{title}</h2>
     <span class="route-action">
       <span>{label}</span>
-      <span class="route-arrow" aria-hidden="true">↗</span>
+      <NioIcon name="arrow-up-right" className="nio-route-icon route-arrow" />
     </span>
   </a>
 </section>
