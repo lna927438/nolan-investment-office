@@ -1,32 +1,47 @@
-# Nolan Investment Office — V4
+# Nolan Investment Office — V4.1
 
 Interactive multi-page website for Nolan Investment Office, built with Astro, Three.js and cannon-es.
 
 ## Current site structure
-- Home — strict single-screen landing page over a real-time WebGL space scene
-- Focus — image-forward sector gallery synchronized with the 3D environment
-- Office — editorial leadership, operating model and review process over the live space layer
-- Contact — large correspondence route modules over the live space layer
+- Home — strict single-screen landing page over a real-time WebGL space scene with an interactive NIO sculpture
+- Focus — image-forward sector gallery synchronized with four selectable 3D sector models
+- Office — editorial leadership, operating model and review process over a manipulable architectural structure model
+- Contact — correspondence route modules over a live 3D signal-array model
 - Legal
 - 404
 
-## V4 true 3D space system
-- Added a site-wide Three.js WebGL scene rendered behind the interface
-- Added a real perspective camera with pointer-driven parallax and view rotation
-- Added scroll-driven camera depth and scene rotation on interior pages
-- Added wheel-driven depth response on the non-scrolling homepage
-- Added a three-dimensional star field, dust particles, orbital rings, wireframe structures and a metallic central core
-- Added physically based materials, multiple dynamic lights and desktop bloom post-processing
-- Added cannon-es rigid-body physics with dynamic 3D objects, collision boundaries, restitution and continuous motion
-- Clicking non-interactive parts of the page applies real physical impulses to the floating bodies and creates a temporary spatial pulse
-- Pointer movement changes camera position and the live 3D light position in real time
-- Focus sector changes synchronize the 3D lighting palette, orbit-node emphasis and spatial focus state
-- Added page-specific 3D modes: Deep Space, Sector Orbit, Structure Field and Signal Space
-- Preserved `prefers-reduced-motion` with a static 3D render instead of forcing continuous animation
-- Reduced particle counts, disabled bloom and lowered pixel ratio on mobile / coarse-pointer devices
-- Pauses the render loop when the page is hidden to reduce GPU use
+## V4.1 interactive model system
+- Added a second transparent Three.js model layer above the physics space and below the HTML interface
+- Added real multi-mesh 3D model assemblies rather than flat image or CSS pseudo-3D treatments
+- Home uses a sculptural 3D NIO mark assembled from volumetric geometry, rings and a glass core
+- Focus includes four dedicated model assemblies: Technology Core, Diagnostic Ring, Energy Turbine and Material Object
+- Office includes an explodable architectural structure / frame model
+- Contact includes an interactive radial signal-array model
+- Added Three.js Raycaster picking so visible model geometry can be selected from pointer coordinates
+- Clicking a model triggers a camera fly-to / dolly state
+- Desktop pointer drag rotates the selected model in real time
+- Added an Explode control that separates model components along stored three-dimensional vectors and reassembles them smoothly
+- Added Reset and Escape-key behavior to restore camera, rotation and exploded state
+- Focus tab changes now synchronize both the existing live-space palette and the foreground 3D model selection
+- Dynamic model lighting follows pointer position and changes with the active model/sector
+- Added responsive model scaling and lower-cost rendering behavior on coarse-pointer/mobile devices
+- Preserved reduced-motion behavior with a static 3D model render
+- The V4.1 model layer adds only a small dedicated client chunk while reusing the existing shared Three.js/post-processing bundle
 
-## V3 editorial reset retained above the 3D layer
+## V4 true 3D space system
+- Site-wide Three.js WebGL scene rendered behind the interface
+- Real perspective camera with pointer-driven parallax and view rotation
+- Scroll-driven camera depth and scene rotation on interior pages
+- Wheel-driven depth response on the non-scrolling homepage
+- Three-dimensional star field, dust particles, orbital rings, wireframe structures and a metallic central core
+- Physically based materials, multiple dynamic lights and desktop bloom post-processing
+- cannon-es rigid-body physics with dynamic 3D objects, collision boundaries, restitution and continuous motion
+- Clicking non-interactive page space applies real physical impulses to floating bodies and creates a spatial pulse
+- Focus sector changes synchronize lighting palette, orbit-node emphasis and spatial focus state
+- Page-specific 3D modes: Deep Space, Sector Orbit, Structure Field and Signal Space
+- Render loop pauses when the page is hidden to reduce GPU use
+
+## V3 editorial system retained above the 3D layers
 - Bodoni Moda display typography + Manrope interface typography
 - high-contrast editorial composition
 - large image and dark-field modules rather than dashboard-like micro-panels
@@ -38,6 +53,7 @@ Interactive multi-page website for Nolan Investment Office, built with Astro, Th
 - Three.js
 - cannon-es
 - Three.js EffectComposer / UnrealBloomPass
+- Three.js Raycaster
 - native Web Animations API for selected foreground transitions
 
 ## Licensing
@@ -67,3 +83,4 @@ Preview: https://lna927438.github.io/nolan-investment-office/
 - Decide whether the source repository should remain public
 - Switch preview pages from `noindex` to `index`
 - Run a final device/GPU performance pass on iPhone, iPad, integrated-graphics laptops and desktop browsers
+- Decide whether later V4.x releases should introduce external GLB/GLTF assets in addition to the native Three.js model assemblies
