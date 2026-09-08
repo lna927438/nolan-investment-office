@@ -88,6 +88,12 @@ const first = items[0];
     const copy = system.querySelector('[data-contact-display-copy]');
     const guide = system.querySelector('[data-contact-display-guide]');
 
+    const refreshBoard = () => {
+      if (!board) return;
+      board.classList.remove('is-switching');
+      requestAnimationFrame(() => board.classList.add('is-switching'));
+    };
+
     const activate = (control) => {
       const index = Number(control.dataset.contactIndex || 0);
       controls.forEach((item, itemIndex) => {
@@ -98,6 +104,7 @@ const first = items[0];
       if (title) title.textContent = control.dataset.contactTitle || '';
       if (copy) copy.textContent = control.dataset.contactCopy || '';
       if (guide) guide.textContent = control.dataset.contactGuide || '';
+      refreshBoard();
     };
 
     controls.forEach((control) => {
