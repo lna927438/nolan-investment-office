@@ -1,0 +1,14 @@
+/* Keep the page and profiles readable when scripting is unavailable. */
+.menu-toggle,.language-switch,.design-tools,.hero-video-toggle{display:none!important}
+.header-inner{background:var(--brown);color:var(--cream);padding:1rem}
+.member-link,.member-dialog [data-member-close]{display:none!important}
+.member-card{cursor:default}
+.member-dialog:not([open]){display:block;position:static;width:calc(100% - 2rem);max-height:none;margin:2rem auto}
+.member-dialog-shell,.member-dialog-content{max-height:none;overflow:visible}
+@media(max-width:991px){
+  .site-header{position:relative;inset:auto}
+  .header-inner{flex-wrap:wrap;gap:.75rem}
+  .desktop-nav{display:flex;width:100%;gap:.5rem;flex-wrap:wrap}
+  .desktop-nav a{font-size:.875rem;padding:.625rem;min-height:44px}
+  .header-tools{display:none!important}
+}

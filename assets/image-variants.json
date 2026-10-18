@@ -1,0 +1,128 @@
+{
+  "format": "webp",
+  "quality": 88,
+  "resize": "contain, no crop, no upscale",
+  "images": [
+    {
+      "original": {
+        "path": "assets/asset-02-d7b6e1ad58e6.png",
+        "width": 1672,
+        "height": 941,
+        "bytes": 2326790
+      },
+      "desktop": {
+        "path": "assets/asset-02-d7b6e1ad58e6-desktop.webp",
+        "width": 1600,
+        "height": 900,
+        "bytes": 227656,
+        "savingsPercent": 90.22
+      },
+      "mobile": {
+        "path": "assets/asset-02-d7b6e1ad58e6-mobile.webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 67704,
+        "savingsPercent": 97.09
+      }
+    },
+    {
+      "original": {
+        "path": "assets/asset-06-26bbd3cd7ebe.png",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 2416405
+      },
+      "desktop": {
+        "path": "assets/asset-06-26bbd3cd7ebe-desktop.webp",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 188320,
+        "savingsPercent": 92.21
+      },
+      "mobile": {
+        "path": "assets/asset-06-26bbd3cd7ebe-mobile.webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 63302,
+        "savingsPercent": 97.38
+      }
+    },
+    {
+      "original": {
+        "path": "assets/asset-07-574f1699d4ea.png",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 2429968
+      },
+      "desktop": {
+        "path": "assets/asset-07-574f1699d4ea-desktop.webp",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 221698,
+        "savingsPercent": 90.88
+      },
+      "mobile": {
+        "path": "assets/asset-07-574f1699d4ea-mobile.webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 85488,
+        "savingsPercent": 96.48
+      }
+    },
+    {
+      "original": {
+        "path": "assets/asset-08-650aebff52ea.png",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 2061925
+      },
+      "desktop": {
+        "path": "assets/asset-08-650aebff52ea-desktop.webp",
+        "width": 1448,
+        "height": 1086,
+        "bytes": 130486,
+        "savingsPercent": 93.67
+      },
+      "mobile": {
+        "path": "assets/asset-08-650aebff52ea-mobile.webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 59874,
+        "savingsPercent": 97.1
+      }
+    },
+    {
+      "original": {
+        "path": "assets/asset-09-1448f8bb5eb3.png",
+        "width": 1586,
+        "height": 992,
+        "bytes": 2423503
+      },
+      "desktop": {
+        "path": "assets/asset-09-1448f8bb5eb3-desktop.webp",
+        "width": 1586,
+        "height": 992,
+        "bytes": 181236,
+        "savingsPercent": 92.52
+      },
+      "mobile": {
+        "path": "assets/asset-09-1448f8bb5eb3-mobile.webp",
+        "width": 768,
+        "height": 480,
+        "bytes": 44294,
+        "savingsPercent": 98.17
+      }
+    }
+  ],
+  "totals": {
+    "original": 11658591,
+    "desktop": 949396,
+    "mobile": 320662,
+    "desktopSavingsPercent": 91.86,
+    "mobileSavingsPercent": 97.25
+  },
+  "unchangedPortraitSHA256": {
+    "asset-04-9a68284010df.jpg": "9a68284010dfd9104597ba0021f2f31c90b744f6ace97a455659e4b0e4afdbda",
+    "asset-05-98ff7c98efa5.jpg": "98ff7c98efa5a1fa1b9f3f177e91a69ab9b477fa7b65cc1d0a471a99fcf9770b"
+  }
+}
