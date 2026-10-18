@@ -1,17 +1,11 @@
 {
-  "name": "nolan-investment-office",
-  "version": "0.1.0",
+  "name": "cala-vale-office",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "verify": "node scripts/validate-assets.mjs",
-    "build": "astro build",
-    "preview": "astro preview"
-  },
-  "dependencies": {
-    "astro": "^5.0.0",
-    "cannon-es": "^0.20.0",
-    "three": "^0.180.0"
+    "verify": "node scripts/verify.mjs",
+    "build": "node scripts/build.mjs"
   }
 }
+
