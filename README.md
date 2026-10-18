@@ -8,7 +8,7 @@ Preview: https://lna927438.github.io/nolan-investment-office/
 
 - A concise introduction, clear conversation and investment-interest links, and consistent controls.
 - English, Chinese and Spanish. Share language links with `?lang=en`, `?lang=zh` or `?lang=es`; the last choice is remembered when browser storage is available.
-- Original, uncropped member photographs with accessible profile dialogs.
+- Original, uncropped member photographs with accessible profile dialogs. Member cards display immediately without waiting for entrance animations.
 - Responsive WebP backgrounds and illustrations. The five desktop variants total 949,396 bytes, down from 11,658,591 bytes; mobile variants total 320,662 bytes.
 - Optional background film loaded only after the visitor chooses to play. It pauses offscreen, in a background tab, or when motion is disabled.
 - Branded favicon, touch icon and sharing card, with metadata for the current Pages URL.
@@ -51,7 +51,7 @@ npm run verify
 npm run build
 ```
 
-The verifier checks local assets, JavaScript and JSON syntax, unique IDs, ARIA and anchor targets, profile dialogs, language controls and image dimensions. The build safely replaces this project's `dist/` directory. Serve it with a static HTTP server for review.
+The verifier checks local assets, JavaScript and JSON syntax, unique IDs, ARIA and anchor targets, profile dialogs, language controls and image dimensions. The build safely replaces this project's `dist/` directory. CSS and JavaScript URLs receive content-based versions so new pages do not reuse outdated resources. Serve it with a static HTTP server for review.
 
 Pushes to `main` verify and publish through the existing GitHub Pages workflow. Browser visual checks at 360, 390 and 768 pixels, 200% text size, and device-specific mail-app behavior remain part of release review when a browser is available.
 

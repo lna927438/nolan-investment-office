@@ -1,4 +1,5 @@
-import { mkdir, copyFile, cp, lstat, realpath, rm } from 'node:fs/promises';
+import { mkdir, copyFile, cp, lstat, realpath, rm, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -44,6 +45,22 @@ for (const name of ['assets', 'styles', 'js', 'data']) {
   });
   copied.push(name);
 }
+
+// Each HTML release requests the exact current CSS and JS, even if a visitor
+// still has the preceding files cached under their stable filenames.
+let html = await readFile(path.join(root, 'index.html'), 'utf8');
+const references = [...html.matchAll(/(?:href|src)="(\.\/(?:styles|js)\/[^"?]+)(?:\?[^\"]*)?"/g)];
+for (const match of references) {
+  const relative = match[1];
+  const filename = path.resolve(root, relative);
+  if (!filename.startsWith(root + path.sep)) throw new Error('Asset outside project: ' + relative);
+  const version = createHash('sha256').update(await readFile(filename)).digest('hex').slice(0, 12);
+  const attribute = match[0].slice(0, match[0].indexOf('='));
+  html = html.replace(match[0], attribute + '="' + relative + '?v=' + version + '"');
+}
+const buildVersion = createHash('sha256').update(html).digest('hex').slice(0, 12);
+html = html.replace('</head>', '<meta name="site-build" content="' + buildVersion + '"></head>');
+await writeFile(path.join(dist, 'index.html'), html);
 
 console.log('Built a clean static website in dist/ (' + copied.join(', ') + ').');
 
