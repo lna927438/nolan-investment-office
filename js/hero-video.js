@@ -1,89 +1,67 @@
-/* Decorative stock footage, loaded only after an explicit play action.
+/* Decorative stock footage, muted and looping automatically on the homepage.
  * Scott Unfried / Pexels 19666972, Pexels License.
  */
 (() => {
   'use strict';
   const video = document.getElementById('hero-video');
-  const button = document.getElementById('hero-video-toggle');
-  if (!video || !button) return;
-  const root = document.documentElement;
+  if (!video) return;
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-  const mobile = window.matchMedia?.('(max-width: 767px)');
-  const connection = navigator.connection;
-  let wantsPlayback = false;
   let inView = true;
-  let failed = false;
   let pending = false;
-  const labels = {
-    en: { play: 'Play background', pause: 'Pause background', retry: 'Retry background', playDescription: 'Play background video', pauseDescription: 'Pause background video' },
-    zh: { play: '播放背景', pause: '暂停背景', retry: '重试播放', playDescription: '播放背景视频', pauseDescription: '暂停背景视频' },
-    es: { play: 'Reproducir fondo', pause: 'Pausar fondo', retry: 'Reintentar vídeo', playDescription: 'Reproducir vídeo de fondo', pauseDescription: 'Pausar vídeo de fondo' }
-  };
-  const source = () => ((mobile?.matches || window.innerWidth <= 767) && video.dataset.videoSrcMobile) || video.dataset.videoSrc || video.dataset.src;
-  const policy = () => `${Boolean(reduced?.matches)}:${document.body.classList.contains('motion-off')}:${Boolean(connection?.saveData)}`;
-  let previousPolicy = policy();
-  function label() {
-    const language = root.lang.startsWith('zh') ? 'zh' : root.lang.startsWith('es') ? 'es' : 'en';
-    const copy = labels[language];
-    button.hidden = !source();
-    button.disabled = !source();
-    const playing = wantsPlayback && !failed && (pending || !video.paused);
-    button.setAttribute('aria-pressed', String(playing));
-    button.setAttribute('aria-busy', String(pending));
-    button.textContent = failed ? copy.retry : playing ? copy.pause : copy.play;
-    button.setAttribute('aria-label', playing ? copy.pauseDescription : copy.playDescription);
-    button.setAttribute('title', playing ? copy.pauseDescription : copy.playDescription);
-  }
+  let failed = false;
+  let blocked = false;
+  const shouldPlay = () => inView && !document.hidden && !failed &&
+    !reduced?.matches && !document.body.classList.contains('motion-off');
+
+  video.muted = true;
+  video.defaultMuted = true;
+  video.autoplay = true;
+  video.loop = true;
+  video.playsInline = true;
+
   async function sync() {
-    if (!wantsPlayback || !inView || document.hidden || failed) {
+    if (!shouldPlay()) {
       video.pause();
-      label();
       return;
     }
     if (!video.getAttribute('src')) {
-      const url = source();
-      if (!url) { wantsPlayback = false; label(); return; }
-      video.muted = true;
-      video.src = url;
+      if (!video.dataset.src) return;
+      video.src = video.dataset.src;
       video.load();
     }
-    if (video.paused && !pending) {
-      pending = true;
-      label();
-      try { await video.play(); }
-      catch (error) { if (error.name !== 'AbortError') wantsPlayback = false; }
-      finally { pending = false; }
-      if (!wantsPlayback || !inView || document.hidden || failed) video.pause();
+    if (pending || !video.paused) return;
+    pending = true;
+    try {
+      await video.play();
+      blocked = false;
+    } catch (error) {
+      blocked = error.name === 'NotAllowedError';
+    } finally {
+      pending = false;
     }
-    label();
+    if (!shouldPlay()) video.pause();
   }
-  // A new reduced-motion/data-saving preference pauses playback. A subsequent
-  // explicit play action may override it, without enabling decorative motion.
-  function preferenceChanged() {
-    const next = policy();
-    if (next !== previousPolicy && (reduced?.matches || document.body.classList.contains('motion-off') || connection?.saveData)) {
-      wantsPlayback = false;
-      video.classList.remove('is-ready');
-    }
-    previousPolicy = next;
-    sync();
-  }
-  video.addEventListener('playing', () => { if (wantsPlayback && inView && !document.hidden) video.classList.add('is-ready'); label(); });
-  video.addEventListener('pause', label);
-  video.addEventListener('error', () => { failed = true; wantsPlayback = false; video.classList.remove('is-ready'); label(); });
-  button.addEventListener('click', () => {
-    if (failed) { failed = false; video.removeAttribute('src'); }
-    wantsPlayback = !wantsPlayback;
-    sync();
+
+  video.addEventListener('playing', () => {
+    if (shouldPlay()) video.classList.add('is-ready');
+    else video.pause();
   });
-  reduced?.addEventListener?.('change', preferenceChanged);
-  connection?.addEventListener?.('change', preferenceChanged);
+  video.addEventListener('error', () => {
+    failed = true;
+    video.classList.remove('is-ready');
+  });
   document.addEventListener('visibilitychange', sync);
-  document.addEventListener('office-language-change', label);
-  document.addEventListener('office-motion-change', preferenceChanged);
+  document.addEventListener('office-motion-change', sync);
+  reduced?.addEventListener?.('change', sync);
+  // If the browser blocks autoplay, retry on the visitor's next interaction.
+  const retry = () => { if (blocked) sync(); };
+  document.addEventListener('pointerdown', retry, { passive: true });
+  document.addEventListener('keydown', retry);
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(entries => { inView = entries[0].isIntersecting; sync(); }, { threshold: 0 }).observe(video);
+    new IntersectionObserver(entries => {
+      inView = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 }).observe(video);
   }
-  // No source assignment, preload or autoplay occurs before a visitor presses play.
-  label();
+  sync();
 })();

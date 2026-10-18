@@ -10,7 +10,7 @@ Preview: https://lna927438.github.io/nolan-investment-office/
 - English, Chinese and Spanish. Share language links with `?lang=en`, `?lang=zh` or `?lang=es`; the last choice is remembered when browser storage is available.
 - Original, uncropped member photographs with accessible profile dialogs. Member cards display immediately without waiting for entrance animations.
 - Responsive WebP backgrounds and illustrations. The five desktop variants total 949,396 bytes, down from 11,658,591 bytes; mobile variants total 320,662 bytes.
-- Optional background film loaded only after the visitor chooses to play. It pauses offscreen, in a background tab, or when motion is disabled.
+- The original background film plays automatically, muted and looping, without a dedicated playback button. It pauses offscreen, in a background tab, or when motion is disabled, and resumes when appropriate.
 - Branded favicon, touch icon and sharing card, with metadata for the current Pages URL.
 - Separate styles, interaction scripts and contact configuration. No third-party build dependencies.
 
