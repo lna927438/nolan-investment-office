@@ -1,13 +1,13 @@
 # Cala Vale Office
 
-Current static website preview for Cala Vale Office, replacing the previous Nolan/Astro site.
+Static website preview for Cala Vale Office.
 
 ## Current version
 
 - English, Chinese and Spanish language switching.
 - Maria Alvaró and Alissa Bryan appear in parallel member cards with name, role and location.
 - Each card opens a detailed member profile. Close, Escape and outside click return to the page.
-- One original photograph remains for each member. Maria's other photographs and gallery have been removed.
+- Each member uses one original photograph.
 - Original animation, layout, image bytes and font are preserved from the latest approved preview package.
 - Embedded images and the font are stored separately in `assets/` so browsers can load and cache them individually.
 
@@ -31,5 +31,4 @@ Pushes to `main` run verification and publish the preview through the existing G
 
 Preview: https://lna927438.github.io/nolan-investment-office/
 
-See `MATERIALS.md` for source and license notes. The Aspekta font license remains in the HTML. Earlier versions remain in Git history.
-
+See `MATERIALS.md` for source and license notes. The Aspekta font license is included in the HTML.
