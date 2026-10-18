@@ -674,8 +674,8 @@ html[lang=zh-CN] .focus-item .focus-detail>.prose{line-height:1.75}
 /* Compact member cards reveal biographies in native dialogs. Portraits
    retain their original proportions inside equal, uncropped 4:5 frames. */
 .members-grid{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-  align-items:start;gap:2rem;width:100%;max-width:56rem;margin-inline:auto;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:start;gap:2rem;width:100%;max-width:68rem;margin-inline:auto;
 }
 .member-card{
   display:block;min-width:0;width:100%;margin:0;padding:0;
@@ -876,3 +876,7 @@ button,a,summary,input,select,textarea{touch-action:manipulation}
 @media print{
   .office-intro,.principal,.focus,.approach,.contact{padding-block:2rem}
 }
+
+/* Three-member roster: reflow without clipping portraits or text. */
+@media(max-width:991px){.members-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:56rem}}
+@media(max-width:359px){.members-grid{grid-template-columns:minmax(0,1fr);max-width:22rem}}
