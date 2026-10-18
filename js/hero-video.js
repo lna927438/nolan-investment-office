@@ -19,7 +19,7 @@
   video.loop = true;
   video.playsInline = true;
 
-  async function sync() {
+  async function sync(retryAbort = true) {
     if (!shouldPlay()) {
       video.pause();
       return;
@@ -31,15 +31,19 @@
     }
     if (pending || !video.paused) return;
     pending = true;
+    let aborted = false;
     try {
       await video.play();
       blocked = false;
     } catch (error) {
       blocked = error.name === 'NotAllowedError';
+      aborted = error.name === 'AbortError';
     } finally {
       pending = false;
     }
     if (!shouldPlay()) video.pause();
+    // A quick leave-and-return can cancel an earlier play request. Retry once.
+    else if (aborted && retryAbort) sync(false);
   }
 
   video.addEventListener('playing', () => {
